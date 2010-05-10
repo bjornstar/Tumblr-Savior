@@ -1,0 +1,158 @@
+<html>
+  <head>
+    <title>Options for Tumblr Savior</title>
+    <style type="text/css">
+      html{
+        color:black;
+        font-family:arial,helvetica,sans-serif;
+        margin:0;
+        padding:0 10px;
+        background-color:#2C4762;
+        background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAARHCAIAAAC9OZ68AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAc9JREFUeNrsVlF2wzAIQzvXLrKD7PyqYwMWdry+fi8fvDYuAQESrn3//H6Z2RtjM5QztjPEGZshPil+SD/aOB/vSDx6LPg5Iz7amclz4BBcyzthSP+DBV6NSfhZYGOPAa3N41642P3Zc/Vz7nnyN4sYvMEn/VhyjV5i5Lzw0GMWH+8x95r3PrDmKz3d59Kfrx5fuDH7ljgcS/QpejPqDNzuj4ml+3ptOM3WIi+yb1nv1sfJRWbfWWrvHPSeDSysfCjzEDzBkzssztOVT6O+4BRvcsze7dpB8c2eBc993rb0dNehzNAGtyeulQdMrdZaFi7pb5LjVm9XLRR9ouJkwTN5zVUDkRuhcxRenrWOyqklJ0LP/XvjSosHzhmmb/Js1Ysd+COaMJlrzE60XeOrZid2tB4SPO8x0a/qj7Jre7yeD6IXK3pRvMRhX/LmPsg5L99jf0Zturus8hvCD3q/Bt+w+P+hJVs1E7uFdYfnvnIO5V0me0x33hWHdZfEe1VHdtytlQvrfSH3KKrmw3/0gkVvYw/s/Kqc0Lkh61TMdV9i7vV4zr0XvdN+Dm5CPiNfnvvdzpu7r2gX9vk9/thjjz322GOfGN7/h3js39tLgAEA5+M4ca0bVE0AAAAASUVORK5CYII=);
+        background-repeat:repeat-x;
+        color:#4F545A;
+      }
+      h1{
+        color:black;
+      }
+      a{
+        color:#4F545A;
+        text-decoration:none;
+      }
+      #content{
+        background: white url(content_bg.png) repeat-y;
+        display: block;
+        margin: 0px;
+        outline-color: #444;
+        outline-style: none;
+        outline-width: 0px;
+        padding-bottom: 5px;
+        padding-left: 30px;
+        padding-right: 30px;
+        padding-top: 5px;
+        width: 840px;
+      }
+      #content_top,#content_bottom{
+        display: inline;
+        height: 25px;
+        outline-color: #444;
+        outline-style: none;
+        outline-width: 0px;
+        width: 900px;
+      }
+      #listBlack,#listWhite{
+        float:left;
+        width:400px;
+        margin-bottom:25px;
+      }
+      #listBlack p,#listWhite p{
+        width:300px;
+      }
+      #spacer{
+        width:840px;
+        clear:left;
+      }
+    </style>
+    <script type="text/javascript">
+      var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'] }; //initialize default values.
+
+      function loadOptions() {
+        var settings = localStorage['settings'];
+
+        if (settings == undefined) {
+          settings = defaultSettings;
+        } else {
+          settings = JSON.parse(settings);
+        }
+        
+        for (var itemBlack in settings['listBlack']) {
+          addInput("Black", settings['listBlack'][itemBlack]);
+        }
+        
+        for (var itemWhite in settings['listWhite']) {
+          addInput("White", settings['listWhite'][itemWhite]);
+        }
+        
+        addInput("Black"); //prepare a blank input box.
+        addInput("White"); //prepare a blank input box.
+      }
+
+      function addInput(whichList, itemValue) {
+        if (itemValue == undefined) {
+          itemValue = "";
+        }
+        var garbageTruck = document.getElementById('list'+whichList);
+        garbageInput = document.createElement('input');
+        garbageInput.value = itemValue;
+        garbageInput.name = 'option'+whichList;
+        currentLength = document.getElementsByTagName('input').length;
+        garbageInput.id = 'option'+whichList+currentLength;
+        garbageAdd = document.createElement('a');
+        garbageAdd.href = "#";
+        garbageAdd.setAttribute('onclick', 'removeInput(\'option'+whichList+currentLength+'\'); return false;');
+        garbageAdd.innerHTML = '<img src="x_7x7.png" />&nbsp;';
+        garbageLinebreak = document.createElement('br');
+        garbageTruck.appendChild(garbageAdd);
+        garbageTruck.appendChild(garbageInput);
+        garbageTruck.appendChild(garbageLinebreak);
+      }
+
+      function removeInput(garbageWhich) {
+        var garbageInput = document.getElementById(garbageWhich);
+        garbageInput.parentNode.removeChild(garbageInput.previousSibling);
+        garbageInput.parentNode.removeChild(garbageInput.nextSibling);
+        garbageInput.parentNode.removeChild(garbageInput);
+      }
+
+      function saveOptions() {
+        var settings = {};
+
+        settings['listWhite'] = [];
+        settings['listBlack'] = [];
+
+        var garbages = document.getElementsByTagName('input');
+        for (var i = 0; i< garbages.length; i++) {
+          if (garbages[i].value != "") {
+            if (garbages[i].name.substring(0,11) == "optionWhite") {
+              settings['listWhite'].push(garbages[i].value);
+            } else if (garbages[i].name.substring(0,11) == "optionBlack") {
+              settings['listBlack'].push(garbages[i].value);
+            }
+          }
+        }
+        localStorage['settings'] = JSON.stringify(settings);
+        location.reload();
+      }
+
+      function eraseOptions() {
+        localStorage.removeItem('settings');
+        location.reload();
+      }
+    </script>
+  </head>
+  <body onload="loadOptions()">
+    <div style="width:100%;height:64px;margin-bottom:12px;">
+    <h1 style="line-height:64px;">Tumblr Savior Options</h1>
+    </div>
+    <img src="content_top.png?alpha" alt="" id="content_top">
+    <div id="content">
+      <div id="listBlack">
+        <h2>Black List</h2>
+        <p>Tumblr Savior will save you from posts with these words in them:</p>
+        <a href="#" onclick="addInput('Black'); return false;">add</a><br />
+      </div>
+      <div id="listWhite">
+        <h2>White List</h2>
+        <p>Tumblr Savior will always show posts with these words in them:</p>
+        <a href="#" onclick="addInput('White'); return false;">add</a><br />
+      </div>
+      <div id="spacer">
+        &nbsp;
+      </div>
+      <br />
+      <input onclick="saveOptions()" type="button" value="Save" />&nbsp;&nbsp;
+      <input onclick="eraseOptions()" type="button" value="Restore default" />
+    </div>
+    <img src="content_bottom.png" alt="" id="content_bottom">
+  </body>
+</html>

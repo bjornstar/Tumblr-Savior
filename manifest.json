@@ -1,0 +1,12 @@
+{
+  "name": "Tumblr Savior",
+  "version": "0.1",
+  "description": "Tired of posts about the iPhone filling up your dashboard? Hate hearing about some athlete's latest blunders? If you just want to hide posts about certain topics, Tumblr Savior is here to save you. Just add your most despised terms to the black list and Tumblr Savior will valiantly protect your delicate sensibilities. And if you wonder what got hidden, there’s a handy link to show you.",
+  "background_page"	: "background.html",
+  "options_page"	: "options.html",
+  "content_scripts": [ {
+    "js": [ "script.js" ],
+    "matches": [ "http://*/*", "https://*/*" ],
+    "include_globs": [ "http://*.tumblr.com/*" ]
+  } ]
+}
