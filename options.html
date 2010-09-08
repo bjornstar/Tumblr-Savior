@@ -54,7 +54,7 @@
       }
     </style>
     <script type="text/javascript">
-      var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'] }; //initialize default values.
+      var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': 'true' }; //initialize default values.
 
       function loadOptions() {
         var settings = localStorage['settings'];
@@ -64,6 +64,9 @@
         } else {
           settings = JSON.parse(settings);
         }
+        
+        var hide_source_cb = document.getElementById('hide_source_cb');
+        hide_source_cb.checked = settings['hide_source'];
         
         for (var itemBlack in settings['listBlack']) {
           addInput("Black", settings['listBlack'][itemBlack]);
@@ -107,6 +110,9 @@
       function saveOptions() {
         var settings = {};
 
+        var hide_source_cb = document.getElementById('hide_source_cb');
+        settings['hide_source'] = hide_source_cb.checked;
+
         settings['listWhite'] = [];
         settings['listBlack'] = [];
 
@@ -120,6 +126,7 @@
             }
           }
         }
+        
         localStorage['settings'] = JSON.stringify(settings);
         location.reload();
       }
@@ -136,6 +143,9 @@
     </div>
     <img src="content_top.png?alpha" alt="" id="content_top">
     <div id="content">
+      <div id="hide_source_div">
+        <input type="checkbox" id="hide_source_cb" name="hide_source_cb" /> <label for="hide_source_cb">Hide Source Attribution</label>
+      </div>
       <div id="listBlack">
         <h2>Black List</h2>
         <p>Tumblr Savior will save you from posts with these words in them:</p>

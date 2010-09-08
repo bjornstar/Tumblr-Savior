@@ -20,12 +20,21 @@ function needstobesaved(theStr){
   return blacklisted;
 }
 
+function hide_source() {
+  var better_rule = '.source_url {display:none!important;}';
+  try {
+    document.styleSheets[0].insertRule(better_rule, 0);
+  } catch (e) {
+    addGlobalStyle(better_rule);
+  }
+}
+
 var liPosts = document.getElementsByTagName('li');
 var last_check = 0;
 var settings;
 
 function loadSettings() {
-  var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'] }; //initialize default values.
+  var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': 'true' }; //initialize default values.
 	chrome.extension.sendRequest('getSettings', function(response) {
     savedSettings = response.settings;
     if (savedSettings == undefined) {
@@ -34,6 +43,10 @@ function loadSettings() {
 			settings = JSON.parse(savedSettings);
     }
     console.log(settings);
+    if (settings['hide_source']=='true'||settings['hide_source']==true) {
+      console.log('hiding source.');
+      hide_source();
+    }
     setInterval(check_for_saving, 200);
 	});
 }
