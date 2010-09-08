@@ -20,6 +20,15 @@ function needstobesaved(theStr){
   return blacklisted;
 }
 
+function addGlobalStyle(css) {
+  var elmHead, elmStyle;
+  elmHead = document.getElementsByTagName('head')[0];
+  elmStyle = document.createElement('style');
+  elmStyle.type = 'text/css';
+  elmHead.appendChild(elmStyle);
+  elmStyle.innerHTML = css;
+}
+
 function hide_source() {
   var better_rule = '.source_url {display:none!important;}';
   try {
@@ -42,9 +51,7 @@ function loadSettings() {
     } else {
 			settings = JSON.parse(savedSettings);
     }
-    console.log(settings);
     if (settings['hide_source']=='true'||settings['hide_source']==true) {
-      console.log('hiding source.');
       hide_source();
     }
     setInterval(check_for_saving, 200);
