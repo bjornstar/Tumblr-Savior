@@ -43,7 +43,7 @@ var last_check = 0;
 var settings;
 
 function loadSettings() {
-  var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': 'true' }; //initialize default values.
+  var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true }; //initialize default values.
 	chrome.extension.sendRequest('getSettings', function(response) {
     savedSettings = response.settings;
     if (savedSettings == undefined) {
@@ -54,6 +54,9 @@ function loadSettings() {
     if (settings['hide_source']=='true'||settings['hide_source']==true) {
       hide_source();
     }
+    if (settings['show_notice']=='true'){
+      settings['show_notice'] = true;
+    }
     setInterval(check_for_saving, 200);
 	});
 }
@@ -63,19 +66,23 @@ function check_for_saving() {
 		if (liPosts[i].id.substring(0,4)=='post' && liPosts[i].className.indexOf('not_mine') >= 0) {
 			var savedfrom = needstobesaved(liPosts[i].innerHTML);
 			if (savedfrom) {
-				var div_filtered = document.createElement('div');
-				div_filtered.style.display = 'none';
+        if (settings['show_notice']) {
+          var div_filtered = document.createElement('div');
+          div_filtered.style.display = 'none';
 
-				while (liPosts[i].childNodes.length > 1) {
-					div_filtered.appendChild(liPosts[i].childNodes[0]);
-				}
+          while (liPosts[i].childNodes.length > 1) {
+            div_filtered.appendChild(liPosts[i].childNodes[0]);
+          }
 
-				var div_notice = document.createElement('div');
-				div_notice.className = 'post_info';
-				div_notice.innerHTML = 'You have been saved from this post, it had something you didn\'t want to see in it. <a onclick="this.parentNode.style.display=\'none\'; this.parentNode.nextSibling.style.display=\'\'; return false;" href="#"><i>Click here</i></a> if you cannot resist the temptation.';
+          var div_notice = document.createElement('div');
+          div_notice.className = 'post_info';
+          div_notice.innerHTML = 'You have been saved from this post, it had something you didn\'t want to see in it. <a onclick="this.parentNode.style.display=\'none\'; this.parentNode.nextSibling.style.display=\'\'; return false;" href="#"><i>Click here</i></a> if you cannot resist the temptation.';
 
-				liPosts[i].appendChild(div_notice);
-				liPosts[i].appendChild(div_filtered);
+          liPosts[i].appendChild(div_notice);
+          liPosts[i].appendChild(div_filtered);
+        } else {
+          liPosts[i].style.display = 'none';
+        }
 			}
 		}
 	}

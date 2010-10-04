@@ -54,7 +54,7 @@
       }
     </style>
     <script type="text/javascript">
-      var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': 'true' }; //initialize default values.
+      var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true }; //initialize default values.
 
       function loadOptions() {
         var settings = localStorage['settings'];
@@ -67,6 +67,9 @@
         
         var hide_source_cb = document.getElementById('hide_source_cb');
         hide_source_cb.checked = settings['hide_source'];
+        
+        var show_notice_cb = document.getElementById('show_notice_cb');
+        show_notice_cb.checked = settings['show_notice'];
         
         for (var itemBlack in settings['listBlack']) {
           addInput("Black", settings['listBlack'][itemBlack]);
@@ -84,7 +87,9 @@
         if (itemValue == undefined) {
           itemValue = "";
         }
-        var garbageTruck = document.getElementById('list'+whichList);
+        var listDiv = document.getElementById('list'+whichList);
+        var listAdd = document.getElementById('list'+whichList+'Add');
+
         garbageInput = document.createElement('input');
         garbageInput.value = itemValue;
         garbageInput.name = 'option'+whichList;
@@ -95,9 +100,9 @@
         garbageAdd.setAttribute('onclick', 'removeInput(\'option'+whichList+currentLength+'\'); return false;');
         garbageAdd.innerHTML = '<img src="x_7x7.png" />&nbsp;';
         garbageLinebreak = document.createElement('br');
-        garbageTruck.appendChild(garbageAdd);
-        garbageTruck.appendChild(garbageInput);
-        garbageTruck.appendChild(garbageLinebreak);
+        listDiv.insertBefore(garbageAdd,listAdd);
+        listDiv.insertBefore(garbageInput,listAdd);
+        listDiv.insertBefore(garbageLinebreak,listAdd);
       }
 
       function removeInput(garbageWhich) {
@@ -112,6 +117,9 @@
 
         var hide_source_cb = document.getElementById('hide_source_cb');
         settings['hide_source'] = hide_source_cb.checked;
+        
+        var show_notice_cb = document.getElementById('show_notice_cb');
+        settings['show_notice'] = show_notice_cb.checked;
 
         settings['listWhite'] = [];
         settings['listBlack'] = [];
@@ -144,17 +152,20 @@
     <img src="content_top.png?alpha" alt="" id="content_top">
     <div id="content">
       <div id="hide_source_div">
-        <input type="checkbox" id="hide_source_cb" name="hide_source_cb" /> <label for="hide_source_cb">Hide Source Attribution</label>
+        <input type="checkbox" id="hide_source_cb" name="hide_source_cb" /> <label for="hide_source_cb">Hide Tumblr's source attribution.</label>
+      </div>
+      <div id="show_notice_div">
+        <input type="checkbox" id="show_notice_cb" name="show_notice_cb" /> <label for="show_notice_cb">Show warning that something has been hidden.</label>
       </div>
       <div id="listBlack">
         <h2>Black List</h2>
         <p>Tumblr Savior will save you from posts with these words in them:</p>
-        <a href="#" onclick="addInput('Black'); return false;">add</a><br />
+        <a href="#" onclick="addInput('Black'); return false;" id="listBlackAdd">add</a><br />
       </div>
       <div id="listWhite">
         <h2>White List</h2>
         <p>Tumblr Savior will always show posts with these words in them:</p>
-        <a href="#" onclick="addInput('White'); return false;">add</a><br />
+        <a href="#" onclick="addInput('White'); return false;" id="listWhiteAdd">add</a><br />
       </div>
       <div id="spacer">
         &nbsp;
