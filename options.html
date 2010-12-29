@@ -54,7 +54,7 @@
       }
     </style>
     <script type="text/javascript">
-      var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true }; //initialize default values.
+      var defaultSettings = { 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'no_pagetracker': false, 'match_words': false }; //initialize default values.
 
       function loadOptions() {
         var settings = localStorage['settings'];
@@ -70,6 +70,12 @@
         
         var show_notice_cb = document.getElementById('show_notice_cb');
         show_notice_cb.checked = settings['show_notice'];
+        
+        var pagetracker_cb = document.getElementById('pagetracker_cb');
+        pagetracker_cb.checked = settings['no_pagetracker'];
+        
+        var match_words_cb = document.getElementById('match_words_cb');
+        match_words_cb.checked = settings['match_words'];
         
         for (var itemBlack in settings['listBlack']) {
           addInput("Black", settings['listBlack'][itemBlack]);
@@ -98,7 +104,7 @@
         garbageAdd = document.createElement('a');
         garbageAdd.href = "#";
         garbageAdd.setAttribute('onclick', 'removeInput(\'option'+whichList+currentLength+'\'); return false;');
-        garbageAdd.innerHTML = '<img src="x_7x7.png" />&nbsp;';
+        garbageAdd.innerHTML = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGFJREFUeNpiXLVmfTwDA8MEIHYICwm8COTrA9kHgLiAEch5D2QIAPEHkABUIZjPBNIBlQAJLEBS6MAEMgqqAxkUgMQZkewQQJKE6ESSAAkkIFlxgAlq5AeoaxciuaEAIMAAiDAi7M96B5wAAAAASUVORK5CYII=" />&nbsp;';
         garbageLinebreak = document.createElement('br');
         listDiv.insertBefore(garbageAdd,listAdd);
         listDiv.insertBefore(garbageInput,listAdd);
@@ -120,6 +126,12 @@
         
         var show_notice_cb = document.getElementById('show_notice_cb');
         settings['show_notice'] = show_notice_cb.checked;
+        
+        var pagetracker_cb = document.getElementById('pagetracker_cb');
+        settings['no_pagetracker'] = pagetracker_cb.checked;
+        
+        var match_words_cb = document.getElementById('match_words_cb');
+        settings['match_words'] = match_words_cb.checked;
 
         settings['listWhite'] = [];
         settings['listBlack'] = [];
@@ -156,6 +168,12 @@
       </div>
       <div id="show_notice_div">
         <input type="checkbox" id="show_notice_cb" name="show_notice_cb" /> <label for="show_notice_cb">Show warning that something has been hidden.</label>
+      </div>
+      <div id="pagetracker_div">
+        <input type="checkbox" id="pagetracker_cb" name="pagetracker_cb" /> <label for="pagetracker_cb">Remove Google Analytics Pagetracker from links.</label>
+      </div>
+      <div id="match_words_div">
+        <input type="checkbox" id="match_words_cb" name="match_words_cb" /> <label for="match_words_cb">Match whole words only. Use * as a wildcard (ie. ip* would match ipad and iphone, but not flip or mudkips).</label>
       </div>
       <div id="listBlack">
         <h2>Black List</h2>

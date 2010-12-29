@@ -1,19 +1,29 @@
 function needstobesaved(theStr){
   var blackList = settings['listBlack'];
   var whiteList = settings['listWhite'];
+  var matchWords = settings['match_words'];
   var blacklisted = false;
   var whitelisted = false;
   
-  for(var i=0;i<=whiteList.length;i++) {
-    if(theStr.toLowerCase().indexOf(whiteList[i])>=0) {
+  for(var i=0;i<whiteList.length;i++) {
+    if(theStr.toLowerCase().indexOf(whiteList[i].toLowerCase())>=0) {
       whitelisted = true;
     }
   }
 
   if (!whitelisted) {
-    for(var i=0;i<=blackList.length;i++) {
-      if(theStr.toLowerCase().indexOf(blackList[i])>=0) {
-        blacklisted = true;
+    for(var i=0;i<blackList.length;i++) {
+      if (matchWords) {
+        var filterRegex;
+        filterRegex='(^|\\W)('+blackList[i].toLowerCase().replace(/\x2a/g, "(\\w*?)")+')(\\W|$)';
+        var re = new RegExp(filterRegex);
+        if (theStr.toLowerCase().match(re)) {
+          blacklisted = true;
+        }
+      } else {
+        if(theStr.toLowerCase().indexOf(blackList[i].toLowerCase())>=0) {
+          blacklisted = true;
+        }
       }
     }
   }
@@ -40,10 +50,12 @@ function hide_source() {
 
 var liPosts = document.getElementsByTagName('li');
 var last_check = 0;
+var anchors = document.getElementsByTagName('a');
+var last_anchor = 0;
 var settings;
 
 function loadSettings() {
-  var defaultSettings = { 'listBlack': ['iphone', 'nfl'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true }; //initialize default values.
+  var defaultSettings = { 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'no_pagetracker': false, 'match_words': false }; //initialize default values.
 	chrome.extension.sendRequest('getSettings', function(response) {
     savedSettings = response.settings;
     if (savedSettings == undefined) {
@@ -56,6 +68,9 @@ function loadSettings() {
     }
     if (settings['show_notice']=='true'){
       settings['show_notice'] = true;
+    }
+    if (settings['no_pagetracker']=='true') {
+      settings['no_pagetracker'] = true;
     }
     setInterval(check_for_saving, 200);
 	});
@@ -87,6 +102,15 @@ function check_for_saving() {
 		}
 	}
 	last_check = liPosts.length;
+
+	if (settings['no_pagetracker']) {
+    for (var i=last_anchor;i<anchors.length;i++) {
+      if (anchors[i].outerHTML.indexOf('pageTracker')>=0) {
+        anchors[i].outerHTML=anchors[i].outerHTML.replace(/pageTracker\._trackEvent\(.*\);/gm, " ");
+      }
+    }
+    last_anchor = anchors.length;
+  }
 }
 
 loadSettings();
