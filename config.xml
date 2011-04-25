@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets"
+  version="0.3.4">
+	<name short="Tumblr Savior">Tumblr Savior for Opera</name>
+	<description>Tired of iPad posts filling up your dashboard? Hate hearing about an athlete's latest blunders? Tumblr Savior is here to save you!</description>
+	<author href="http://bjornstar.com"
+    email="bjorn@bjornstar.com">Bjorn Stromberg (@bjornstar)</author>
+  <icon src="Icon-64.png"/>
+</widget>
