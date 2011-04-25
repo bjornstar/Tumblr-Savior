@@ -4,7 +4,7 @@
 // @exclude        http://www.tumblr.com/messages
 // ==/UserScript==
 
-var defaultSettings = { 'version': '0.3.4', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true }; //initialize default values.
+var defaultSettings = { 'version': '0.3.4', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true, 'follower_count': false }; //initialize default values.
 var settings;
 
 function needstobesaved(theStr){
