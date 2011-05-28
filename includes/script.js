@@ -1,11 +1,11 @@
 // ==UserScript==
-// @include        http://*.tumblr.com/*
-// @exclude        http://assets.tumblr.com/*
+// @include        http://www.tumblr.com/*
 // @exclude        http://www.tumblr.com/messages
 // ==/UserScript==
 
-var defaultSettings = { 'version': '0.3.4', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true, 'follower_count': false }; //initialize default values.
+var defaultSettings = { 'version': '0.3.6', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true, 'follower_count': false }; //initialize default values.
 var settings;
+var liBuffer = [];
 
 function needstobesaved(theStr){
   var blackList = settings['listBlack'];
@@ -122,8 +122,31 @@ function WaitForPosts() {
 	for(var liPost in liPosts){
 		checkPost(liPosts[liPost]);
 	}
-  olPosts.addEventListener("DOMNodeInserted", checkPost, false);
+	olPosts.addEventListener("DOMNodeInserted", handlePostInserted, false);
+  reconcileBuffer();
   hide_follower_count();
+  
+}
+
+function handlePostInserted(liPost) {
+  if (typeof liPost == 'object') {
+  var liPost = liPost.target;
+    checkPost(liPost);
+    reconcileBuffer();
+  }
+}
+
+function reconcileBuffer() {
+  while (liBuffer.length > 0) {
+    var liNotice = liBuffer.pop();
+    var liPost = document.getElementById(liNotice.id.replace('notification_',''));
+    var olPosts = document.getElementById('posts');
+    if(liPost.nextSibling) {
+      olPosts.insertBefore(liNotice, liPost.nextSibling);
+    } else {
+      olPosts.appendChild(liNotice);
+    }
+  }
 }
 
 function parseSettings(savedSettings) {
@@ -172,7 +195,7 @@ function initializeTumblrSavior() {
 function checkPost(liPost) {
   if (typeof liPost == 'object') {
     if (liPost.target) liPost = liPost.target;
-    if (liPost.id && liPost.id.substring(0,4)=='post' && liPost.className.indexOf('not_mine') >= 0) {
+    if (liPost.id && liPost.tagName=='LI' && liPost.id.substring(0,4)=='post' && liPost.className.indexOf('not_mine') >= 0) {
       var savedfrom = needstobesaved(liPost.innerHTML);
       var olPosts = document.getElementById('posts');
       if (savedfrom.length) {
@@ -206,11 +229,7 @@ function checkPost(liPost) {
           }
           li_notice.innerHTML += '.</b><br /><a onclick="this.parentNode.previousSibling.style.display=\'list-item\'; this.parentNode.style.display=\'none\'; return false;" href="#"><i>If you cannot resist the temptation, click here...</i></a>';
 
-          if(liPost.nextSibling) {
-            olPosts.insertBefore(li_notice, liPost.nextSibling);
-          } else {
-            olPosts.appendChild(li_notice);
-          }
+          liBuffer.push(li_notice); // We put it into a buffer so that we don't mess up the state of the posts as it's being iterated through. Gotta make sure we reconcile this after we're done.
         }
         liPost.style.display = 'none';
       } else {
@@ -232,7 +251,6 @@ function checkPost(liPost) {
 }
 
 function checkAnchors(liPost) {
-  console.log(liPost);
   var anchors = liPost.getElementsByTagName('a');
   if (settings['no_pagetracker']){
     for (var anchor in anchors) {
