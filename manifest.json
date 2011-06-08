@@ -1,6 +1,6 @@
 {
   "name": "Tumblr Savior",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Tired of iPad posts filling up your dashboard? Hate hearing about an athlete's latest blunders? Tumblr Savior is here to save you!",
   "background_page"	: "index.html",
   "browser_action": {
@@ -8,10 +8,10 @@
     "default_title": "Tumblr Savior"
   },
   "content_scripts": [ {
-    "exclude_globs": [ "http://www.tumblr.com/messages", "http://assets.tumblr.com/*" ],
-    "include_globs": [ "http://*.tumblr.com/*" ],
+    "exclude_globs": [ "http://www.tumblr.com/tumblelog/*" ],
+    "include_globs": [ "http://www.tumblr.com/*" ],
     "js": [ "includes/script.js" ],
-    "matches": [ "http://*.tumblr.com/*", "https://*.tumblr.com/*" ]
+    "matches": [ "http://www.tumblr.com/*" ]
   } ],
   "icons": { 
     "16": "Icon-16.png",
@@ -23,6 +23,6 @@
   "permissions": [
     "contextMenus",
     "tabs",
-    "http://*.tumblr.com/*"
+    "http://www.tumblr.com/*"
   ]
 }

@@ -1,9 +1,9 @@
 // ==UserScript==
 // @include        http://www.tumblr.com/*
-// @exclude        http://www.tumblr.com/messages
+// @exclude        http://www.tumblr.com/tumblelog/*
 // ==/UserScript==
 
-var defaultSettings = { 'version': '0.3.6', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true, 'follower_count': false }; //initialize default values.
+var defaultSettings = { 'version': '0.3.7', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true, 'follower_count': false }; //initialize default values.
 var settings;
 var liBuffer = [];
 
@@ -209,8 +209,11 @@ function checkPost(liPost) {
 
           var li_notice = document.createElement('li');
           li_notice.id = 'notification_'+liPost.id;
-          li_notice.className = 'notification single_notification';
-          li_notice.innerHTML = '<a href="http://'+author['name']+'.tumblr.com/" style="border-width:0px;"><img alt class="avatar" src="'+author['avatar']+'" /></a><b><a href="http://'+author['name']+'.tumblr.com/">'+author['name']+'</a> posted something';
+          li_notice.className = 'notification first_notification last_notification';
+          li_notice.innerHTML = '<a href="http://'+author['name']+'.tumblr.com/" class="avatar_frame"><img alt class="avatar" src="'+author['avatar']+'" /></a>';
+          li_notice.innerHTML += '<div class="nipple border"></div>';
+          li_notice.innerHTML += '<div class="nipple"></div>';
+          li_notice.innerHTML += '<b><a href="http://'+author['name']+'.tumblr.com/">'+author['name']+'</a> posted something';
           
           if (settings['show_words']) {
             li_notice.innerHTML += ' with';
@@ -276,7 +279,7 @@ function getAuthor(liPost) {
 	}
 	author['name'] = liPost.getElementsByClassName("post_info").item(0).getElementsByTagName("A").item(0).innerHTML;
 	var avatar = document.getElementById(liPost.id.replace('_','_avatar_'));
-	author['avatar'] = avatar.getAttribute("style").replace('background-image:url(\'','').replace('_64','_16').replace('\')','');
+	author['avatar'] = avatar.getAttribute("style").replace('background-image:url(\'','').replace('_64','_40').replace('\')','');
 	return author;
 }
 
