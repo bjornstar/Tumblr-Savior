@@ -6,7 +6,7 @@
 </head>
 <body>
 <script type="text/javascript">
-var defaultSettings = { 'version': '0.3.7', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true, 'follower_count': false }; //initialize default values.
+var defaultSettings = { 'version': '0.3.8', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true, 'follower_count': false }; //initialize default values.
 
 if(typeof chrome != 'undefined') {
   chrome.extension.onRequest.addListener(
@@ -42,7 +42,7 @@ if (typeof safari != "undefined") {
 function parseSettings() {
   var parsedSettings;
 
-  if (localStorage['settings'] == undefined) {
+  if (localStorage['settings'] == undefined || localStorage['settings'] == null) {
     parsedSettings = defaultSettings;
   } else {
     parsedSettings = JSON.parse(localStorage['settings']);
@@ -64,24 +64,25 @@ function chromeAddToBlackList(info, tab) {
         }
       }
       chrome.tabs.sendRequest(tab.id, "refreshSettings");
-      console.log('Added '+theword+' to your black list.');
-    } else {
-      console.log(theword+' is already on your list.');
     }
-  } else {
-    console.log(theword);
   }
 }
 
 function operaMessageHandler(event) {
-  if(event.data == "getSettings") {
-    event.source.postMessage(localStorage['settings']);
-  } else if (event.data == 'refreshSettings') {
-    opera.extension.broadcastMessage('refreshSettings');
-  } else if (event.data == 'toolbar') {
-    operaToolbar();
-  } else {
-    event.source.postMessage({}); // snub them.
+  switch (event.data) {
+    case 'getSettings':
+      event.source.postMessage({topic: 'settings', data: localStorage['settings']});
+      break;
+    case 'refreshSettings':
+      opera.extension.broadcastMessage('refreshSettings');
+      console.log('index.html received refreshSettings message.');
+      break;
+    case 'toolbar':
+      operaToolbar();
+      break;
+    default:
+      event.source.postMessage({}); // snub them.
+      break;
   }
 }
 
@@ -107,6 +108,7 @@ function safariMessageHandler(event) {
   if (event.name == "getSettings") {
     event.target.page.dispatchMessage("settings",{data: localStorage['settings']});
   } else if (event.name == "refreshSettings") {
+    localStorage['settings'] = JSON.stringify(event.message);
     for (tab in safari.application.activeBrowserWindow.tabs) {
       if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://*.tumblr.com/*'])) {
         safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage("refreshSettings");
@@ -140,7 +142,7 @@ function safariCommandHandler(event) {
           if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://*.tumblr.com/*'])) {
             safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage("refreshSettings");
           } else if (safari.application.activeBrowserWindow.tabs[tab].url == safari.extension.baseURI + "options.html") {
-            safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage("reload");
+            safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage("updateSettings", localStorage['settings']);
           }
         }
       }
@@ -164,7 +166,7 @@ function addToBlackList(theword) {
 function safariContextMenuHandler(event) {
   var wordBlack = event.userInfo;
   var settings = parseSettings();
-  if(settings['context_menu'] && typeof wordBlack != 'undefined') {
+  if(settings['context_menu'] && typeof wordBlack != 'undefined' && wordBlack != null) {
     if (wordBlack.length>25) {
       wordBlack = wordBlack.substr(0,25);
       wordBlack = wordBlack.replace(/^\s+|\s+$/g,"");

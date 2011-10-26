@@ -3,9 +3,10 @@
 // @exclude        http://www.tumblr.com/tumblelog/*
 // ==/UserScript==
 
-var defaultSettings = { 'version': '0.3.7', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true, 'follower_count': false }; //initialize default values.
+var defaultSettings = { 'version': '0.3.8', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true }; //initialize default values.
 var settings;
 var liBuffer = [];
+var isTumblrSaviorRunning = false;
 
 function needstobesaved(theStr){
   var blackList = settings['listBlack'];
@@ -67,9 +68,10 @@ function safariMessageHandler(event) {
     safari.self.tab.dispatchMessage("getSettings");
     return;
   }
-  savedSettings = event.message.data;
+  var savedSettings = event.message.data;
   settings = parseSettings(savedSettings);
   WaitForPosts();
+  Diaper();
 }
 
 function safariContextMenuHandler(event) {
@@ -82,50 +84,43 @@ function safariContextMenuHandler(event) {
 }
 
 function chromeHandleMessage(event) {
-  savedSettings = event.data;
+  var savedSettings = event.data;
   settings = parseSettings(savedSettings);
   WaitForPosts();
 }
 
 function operaHandleMessage(event) {
   if (event.data == "refreshSettings") {
-    opera.extension.postMessage("getSettings");
+    opera.extension.postMessage('getSettings');
     return;
   }
-  savedSettings = event.data;
-  settings = parseSettings(savedSettings);
-  WaitForPosts();
-}
-
-function hide_follower_count() {
-  var anchors = document.getElementsByTagName('a');
-  for (var anchor in anchors) {
-    if (anchors[anchor] && anchors[anchor].href=='http://www.tumblr.com/followers') {
-      var liFollowerCount = anchors[anchor].parentNode;
-      if (settings['follower_count']) {
-        liFollowerCount.style.display='none';
-      } else {
-        liFollowerCount.style.display='list-item';
-      }
-      return;
-    }
+  if (event.data.data != null) {
+    var savedSettings = event.data.data;
+    settings = parseSettings(savedSettings);
   }
+  WaitForPosts();
 }
 
 function WaitForPosts() {
   var olPosts = document.getElementById('posts');
-  if (olPosts === null) {
+  if (olPosts === null && !isTumblrSaviorRunning) {
     setTimeout(WaitForPosts, 10);
-    return;
+  } else if (!isTumblrSaviorRunning) {
+    olPosts.addEventListener("DOMNodeInserted", handlePostInserted, false);
+    isTumblrSaviorRunning = true;
+    setTimeout(Diaper, 200);
+  } else {
+    Diaper();
   }
+}
+
+function Diaper() {
+  var olPosts = document.getElementById('posts');
   var liPosts = olPosts.children;
-	for(var liPost in liPosts){
-		checkPost(liPosts[liPost]);
-	}
-	olPosts.addEventListener("DOMNodeInserted", handlePostInserted, false);
+  for(var fff=0;fff<liPosts.length;fff++){
+    checkPost(liPosts[fff]);
+  }
   reconcileBuffer();
-  hide_follower_count();
-  
 }
 
 function handlePostInserted(liPost) {
@@ -151,7 +146,7 @@ function reconcileBuffer() {
 
 function parseSettings(savedSettings) {
   var parsedSettings;
-  if (savedSettings == undefined) {
+  if (savedSettings == undefined || savedSettings == null) {
     parsedSettings = defaultSettings;
   } else {
     parsedSettings = JSON.parse(savedSettings);
@@ -209,7 +204,7 @@ function checkPost(liPost) {
 
           var li_notice = document.createElement('li');
           li_notice.id = 'notification_'+liPost.id;
-          li_notice.className = 'notification first_notification last_notification';
+          li_notice.className = 'notification first_notification last_notification tumblr_savior';
           li_notice.innerHTML = '<a href="http://'+author['name']+'.tumblr.com/" class="avatar_frame"><img alt class="avatar" src="'+author['avatar']+'" /></a>';
           li_notice.innerHTML += '<div class="nipple border"></div>';
           li_notice.innerHTML += '<div class="nipple"></div>';
@@ -236,7 +231,7 @@ function checkPost(liPost) {
         }
         liPost.style.display = 'none';
       } else {
-        if (liPost.style.display=='none') {
+        if (liPost.style.display=='none' && liPost.className.indexOf('tumblr_hate')<0) {
           liPost.style.display = 'list-item';
           if (settings['show_notice']) {
             var liRemove = document.getElementById('notification_'+liPost.id);
@@ -279,8 +274,24 @@ function getAuthor(liPost) {
 	}
 	author['name'] = liPost.getElementsByClassName("post_info").item(0).getElementsByTagName("A").item(0).innerHTML;
 	var avatar = document.getElementById(liPost.id.replace('_','_avatar_'));
-	author['avatar'] = avatar.getAttribute("style").replace('background-image:url(\'','').replace('_64','_40').replace('\')','');
+	if (avatar != null) {
+    author['avatar'] = avatar.getAttribute("style").replace('background-image:url(\'','').replace('_64','_40').replace('\')','');
+  }
 	return author;
 }
 
-initializeTumblrSavior();
+function checkurl(url, filter) {
+  for (var f in filter) {
+    var filterRegex;
+    filterRegex=filter[f].replace(/\x2a/g, "(.*?)");
+    var re = new RegExp(filterRegex);
+    if (url.match(re)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+if (!checkurl(window.location.href, ['http://www.tumblr.com/upload/*'])){
+  initializeTumblrSavior();
+}

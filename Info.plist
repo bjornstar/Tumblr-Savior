@@ -4,6 +4,8 @@
 <dict>
 	<key>Author</key>
 	<string>Bjorn Stromberg</string>
+	<key>Builder Version</key>
+	<string>534.51.22</string>
 	<key>CFBundleDisplayName</key>
 	<string>Tumblr Savior</string>
 	<key>CFBundleIdentifier</key>
@@ -11,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.3.7</string>
+	<string>0.3.8</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>Chrome</key>
@@ -63,11 +65,9 @@
 		<dict>
 			<key>Allowed Domains</key>
 			<array>
-				<string>www.tumblr.com</string>
 				<string>com.bjornstar.safari.tumblr-savior-4GANG9K96D</string>
+				<string>www.tumblr.com</string>
 			</array>
-			<key>Include Secure Pages</key>
-			<true/>
 			<key>Level</key>
 			<string>Some</string>
 		</dict>

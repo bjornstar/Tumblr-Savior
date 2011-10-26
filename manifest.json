@@ -1,14 +1,14 @@
 {
   "name": "Tumblr Savior",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Tired of iPad posts filling up your dashboard? Hate hearing about an athlete's latest blunders? Tumblr Savior is here to save you!",
   "background_page"	: "index.html",
   "browser_action": {
     "default_icon": "Icon-16.png",
+    "default_popup": "options.html",
     "default_title": "Tumblr Savior"
   },
   "content_scripts": [ {
-    "exclude_globs": [ "http://www.tumblr.com/tumblelog/*" ],
     "include_globs": [ "http://www.tumblr.com/*" ],
     "js": [ "includes/script.js" ],
     "matches": [ "http://www.tumblr.com/*" ]
