@@ -66,7 +66,7 @@
       }
     </style>
     <script type="text/javascript">
-      var defaultSettings = { 'version': '0.3.8', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'context_menu': true, 'toolbar_butt': true }; //initialize default values.
+      var defaultSettings = { 'version': '0.3.9', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'promoted_posts': false, 'context_menu': true, 'toolbar_butt': true }; //initialize default values.
 
       function parseSettings() {
         var parsedSettings;
@@ -101,6 +101,9 @@
         
         var promoted_tags_cb = document.getElementById('promoted_tags_cb');
         promoted_tags_cb.checked = loadSettings['promoted_tags'];
+        
+        var promoted_posts_db = document.getElementById('promoted_posts_cb');
+        promoted_posts_cb.checked = loadSettings['promoted_posts'];
         
         var context_menu_cb = document.getElementById('context_menu_cb');
         context_menu_cb.checked = loadSettings['context_menu'];
@@ -194,6 +197,9 @@
         
         var promoted_tags_cb = document.getElementById('promoted_tags_cb');
         newSettings['promoted_tags'] = promoted_tags_cb.checked;
+        
+        var promoted_posts_cb = document.getElementById('promoted_posts_cb');
+        newSettings['promoted_posts'] = promoted_posts_cb.checked;
         
         var context_menu_cb = document.getElementById('context_menu_cb');
         newSettings['context_menu'] = context_menu_cb.checked;
@@ -349,6 +355,9 @@
       </div>
       <div id="toolbar_butt_div">
         <input type="checkbox" id="toolbar_butt_cb" name="toolbar_butt_cb" /> <label for="toolbar_butt_cb">Show a button on your toolbar for easy Tumblr Savior access.</label>
+      </div>
+      <div id="promoted_posts_div">
+        <input type="checkbox" id="promoted_posts_cb" name="promoted_posts_cb" /> <label for="promoted_posts_cb">Display Tumblr promoted posts as normal posts.</label>
       </div>
       <div>
         <p>&nbsp;</p>
