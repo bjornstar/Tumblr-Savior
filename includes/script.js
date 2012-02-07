@@ -3,7 +3,7 @@
 // @exclude        http://www.tumblr.com/tumblelog/*
 // ==/UserScript==
 
-var defaultSettings = { 'version': '0.3.10', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'promoted_posts': false, 'context_menu': true, 'toolbar_butt': true }; //initialize default values.
+var defaultSettings = { 'version': '0.3.11', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'promoted_posts': false, 'context_menu': true, 'toolbar_butt': true }; //initialize default values.
 var settings = new Object();
 var liBuffer = [];
 var isTumblrSaviorRunning = false;
@@ -92,10 +92,10 @@ function chromeHandleMessage(event) {
 
 function operaHandleMessage(event) {
   if (event.data == "refreshSettings") {
-    opera.extension.postMessage('getSettings');
+    opera.extension.postMessage("getSettings");
     return;
   }
-  if (event.data.data != null) {
+  if (event.data.topic == "settings") {
     var savedSettings = event.data.data;
     settings = parseSettings(savedSettings);
   }
