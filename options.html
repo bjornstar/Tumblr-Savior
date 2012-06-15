@@ -66,7 +66,7 @@
       }
     </style>
     <script type="text/javascript">
-      var defaultSettings = { 'version': '0.3.12', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'promoted_posts': false, 'context_menu': true, 'toolbar_butt': true, 'white_notice': false }; //initialize default values.
+      var defaultSettings = { 'version': '0.3.13', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'promoted_posts': false, 'context_menu': true, 'toolbar_butt': true, 'white_notice': false, 'black_notice': false }; //initialize default values.
 
       function parseSettings() {
         var parsedSettings;
@@ -113,6 +113,9 @@
         
         var white_notice_cb = document.getElementById('white_notice_cb');
         white_notice_cb.checked = loadSettings['white_notice'];
+
+        var black_notice_cb = document.getElementById('black_notice_cb');
+        black_notice_cb.checked = loadSettings['black_notice'];
         
         for (var itemBlack in loadSettings['listBlack']) {
           addInput("Black", loadSettings['listBlack'][itemBlack]);
@@ -212,6 +215,9 @@
         
         var white_notice_cb = document.getElementById('white_notice_cb');
         newSettings['white_notice'] = white_notice_cb.checked;
+        
+        var black_notice_cb = document.getElementById('black_notice_cb');
+        newSettings['black_notice'] = black_notice_cb.checked;
 
         newSettings['listWhite'] = [];
         newSettings['listBlack'] = [];
@@ -366,7 +372,11 @@
         <input type="checkbox" id="promoted_posts_cb" name="promoted_posts_cb" /> <label for="promoted_posts_cb">Display Tumblr promoted posts as normal posts.</label>
       </div>
       <div id="white_notice_div">
-        <input type="checkbox" id="white_notice_cb" name="white_notice_cb" /> <label for="white_notice_cb">Show a notice when a post is white listed.</label>
+        <input type="checkbox" id="white_notice_cb" name="white_notice_cb" /> <label for="white_notice_cb">Show a notice when a post matches something from your white list.</label>
+      </div>
+      <div id="black_notice_div">
+        <input type="checkbox" id="black_notice_cb" name="black_notice_cb" /> <label for="black_notice_cb">Show a notice when a post matches something from your black list.</label>
+      </div>
       <div>
         <p>&nbsp;</p>
       </div>
