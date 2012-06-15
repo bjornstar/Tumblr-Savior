@@ -66,7 +66,7 @@
       }
     </style>
     <script type="text/javascript">
-      var defaultSettings = { 'version': '0.3.11', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'promoted_posts': false, 'context_menu': true, 'toolbar_butt': true }; //initialize default values.
+      var defaultSettings = { 'version': '0.3.12', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'promoted_posts': false, 'context_menu': true, 'toolbar_butt': true, 'white_notice': false }; //initialize default values.
 
       function parseSettings() {
         var parsedSettings;
@@ -110,6 +110,9 @@
 
         var toolbar_butt_cb = document.getElementById('toolbar_butt_cb');
         toolbar_butt_cb.checked = loadSettings['toolbar_butt'];
+        
+        var white_notice_cb = document.getElementById('white_notice_cb');
+        white_notice_cb.checked = loadSettings['white_notice'];
         
         for (var itemBlack in loadSettings['listBlack']) {
           addInput("Black", loadSettings['listBlack'][itemBlack]);
@@ -206,6 +209,9 @@
         
         var toolbar_butt_cb = document.getElementById('toolbar_butt_cb');
         newSettings['toolbar_butt'] = toolbar_butt_cb.checked;
+        
+        var white_notice_cb = document.getElementById('white_notice_cb');
+        newSettings['white_notice'] = white_notice_cb.checked;
 
         newSettings['listWhite'] = [];
         newSettings['listBlack'] = [];
@@ -359,6 +365,8 @@
       <div id="promoted_posts_div">
         <input type="checkbox" id="promoted_posts_cb" name="promoted_posts_cb" /> <label for="promoted_posts_cb">Display Tumblr promoted posts as normal posts.</label>
       </div>
+      <div id="white_notice_div">
+        <input type="checkbox" id="white_notice_cb" name="white_notice_cb" /> <label for="white_notice_cb">Show a notice when a post is white listed.</label>
       <div>
         <p>&nbsp;</p>
       </div>

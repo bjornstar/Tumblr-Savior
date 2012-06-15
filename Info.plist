@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.3.11</string>
+	<string>0.3.12</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>Chrome</key>
@@ -28,7 +28,7 @@
 				<key>Identifier</key>
 				<string>Tumblr Savior Toolbar Button</string>
 				<key>Image</key>
-				<string>Icon-16.png</string>
+				<string>Safari-16.png</string>
 				<key>Label</key>
 				<string>Tumblr Savior</string>
 				<key>Tool Tip</key>
