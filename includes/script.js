@@ -3,7 +3,25 @@
 // @exclude        http://www.tumblr.com/tumblelog/*
 // ==/UserScript==
 
-var defaultSettings = { 'version': '0.3.13', 'listBlack': ['iphone', 'ipad'], 'listWhite': ['bjorn', 'octopus'], 'hide_source': true, 'show_notice': true, 'show_words': true, 'no_pagetracker': false, 'match_words': false, 'promoted_tags': false, 'promoted_posts': false, 'context_menu': true, 'toolbar_butt': true, 'white_notice': false, 'black_notice': false }; //initialize default values.
+var defaultSettings = {
+  'version': '0.3.14',
+  'listBlack': ['iphone', 'ipad'],
+  'listWhite': ['bjorn', 'octopus'],
+  'hide_source': true,
+  'show_notice': true,
+  'show_words': true,
+  'no_pagetracker': false,
+  'match_words': false,
+  'promoted_tags': false,
+  'promoted_posts': false,
+  'context_menu': true,
+  'toolbar_butt': true,
+  'white_notice': false,
+  'black_notice': false,
+  'hide_pinned': false,
+  'auto_unpin': true
+}; //initialize default values.
+
 var settings = new Object();
 var liBuffer = [];
 var divBuffer = [];
@@ -104,6 +122,25 @@ function hide_black_notice() {
   cssRatings += "display: none;";
   cssRatings += "}";
   addGlobalStyle("black_notice_style", cssRatings);
+}
+
+function hide_pinned() {
+  var cssPinned = ".promotion_pinned {";
+  cssPinned += "display: none;";
+  cssPinned += "}";
+  addGlobalStyle("pinned_style", cssPinned);
+}
+
+function show_pinned() {
+  addGlobalStyle("pinned_style", "");
+}
+
+function unpin(thepost) {
+  var clickUnpin = document.createEvent("MouseEvents");
+  clickUnpin.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+  var pins = thepost.getElementsByClassName("pin");
+  var pin = pins[0];
+  pin.dispatchEvent(clickUnpin);
 }
 
 function hide_ratings() {
@@ -236,8 +273,6 @@ function handlePostInserted(liPost) {
   }
 }
 
-setInterval(checkPosts, 500);
-
 function checkPosts() {
   for (liPost in inProgress) {
     checkPost(document.getElementById(liPost));
@@ -306,6 +341,11 @@ function applySettings() {
   } else {
     hide_white_notice();
   }
+  if (settings['hide_pinned']) {
+    hide_pinned();
+  } else {
+    show_pinned();
+  }
 }
 
 function initializeTumblrSavior() {
@@ -333,6 +373,8 @@ var whiteListed = new Object();
 var blackListed = new Object();
 var promoted = new Array();
 
+var checkPostInterval = setInterval(checkPosts, 500);
+
 function checkPost(liPost) {
   if (typeof liPost != 'object') {
     return;
@@ -350,7 +392,10 @@ function checkPost(liPost) {
   if (liPost.className.indexOf('not_mine') < 0) {
     return;
   }
-
+  if (settings['auto_unpin'] && liPost.className.indexOf('promotion_pinned') >=0) {
+    unpin(liPost);
+  }
+  
   var savedfrom = needstobesaved(liPost.innerHTML);
   var olPosts = document.getElementById('posts');
 
