@@ -4,7 +4,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-  'version': '0.3.15',
+  'version': '0.3.16',
   'listBlack': ['iphone', 'ipad'],
   'listWhite': ['bjorn', 'octopus'],
   'hide_source': true,
@@ -199,6 +199,7 @@ function safariMessageHandler(event) {
   }
   var savedSettings = event.message.data;
   settings = parseSettings(savedSettings);
+  console.log(settings);
   applySettings();
   WaitForPosts();
 }
@@ -350,13 +351,13 @@ function applySettings() {
 
 function initializeTumblrSavior() {
   if (typeof chrome != 'undefined') {
-    chrome.extension.sendRequest('getSettings', chromeHandleMessage);
-    chrome.extension.onRequest.addListener(
+    chrome.extension.onMessage.addListener(
       function(request, sender, sendResponse) {
         if (request=="refreshSettings") {
-          chrome.extension.sendRequest('getSettings', chromeHandleMessage);
+          chrome.extension.sendMessage(null, 'getSettings', chromeHandleMessage);
         }
       });
+    chrome.extension.sendMessage(null, 'getSettings', chromeHandleMessage);
   }
   if (typeof opera != 'undefined') {
     opera.extension.onmessage = operaHandleMessage;
