@@ -37,7 +37,6 @@ function parseSettings() {
   } else {
     parsedSettings = JSON.parse(localStorage['settings']);
   }
-  console.log(parsedSettings);
   return parsedSettings;
 }
 

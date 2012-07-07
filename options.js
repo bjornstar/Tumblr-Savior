@@ -1,3 +1,5 @@
+var inputLast = 0;
+
 document.addEventListener("DOMContentLoaded", function () {
   var save_btn = document.getElementById("save_btn");
   var reset_btn = document.getElementById("reset_btn");
@@ -38,7 +40,6 @@ function parseSettings() {
   } else {
     parsedSettings = JSON.parse(localStorage["settings"]);
   }
-  console.log(parsedSettings);
   return parsedSettings;
 }
 
@@ -128,11 +129,10 @@ function addInput(whichList, itemValue) {
   }
   var listDiv = document.getElementById("list"+whichList);
   var listAdd = document.getElementById("list"+whichList+"Add");
-
   optionInput = document.createElement("input");
   optionInput.value = itemValue;
   optionInput.name = "option"+whichList;
-  currentLength = document.getElementsByTagName("input").length;
+  currentLength = inputLast++;
   optionInput.id = "option"+whichList+currentLength;
   optionAdd = document.createElement("a");
   optionAdd.href = "#";
@@ -140,7 +140,7 @@ function addInput(whichList, itemValue) {
   optionAdd.addEventListener(
     "click",
     function (e) {
-      removeInput(e.target);
+      removeInput(e.target.parentNode);
       e.preventDefault();
       e.stopPropagation();
     },
@@ -148,15 +148,19 @@ function addInput(whichList, itemValue) {
   );
   optionAdd.innerHTML = "<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGFJREFUeNpiXLVmfTwDA8MEIHYICwm8COTrA9kHgLiAEch5D2QIAPEHkABUIZjPBNIBlQAJLEBS6MAEMgqqAxkUgMQZkewQQJKE6ESSAAkkIFlxgAlq5AeoaxciuaEAIMAAiDAi7M96B5wAAAAASUVORK5CYII=\" />&nbsp;";
   optionLinebreak = document.createElement("br");
-  listDiv.insertBefore(optionAdd,listAdd);
-  listDiv.insertBefore(optionInput,listAdd);
-  listDiv.insertBefore(optionLinebreak,listAdd);
+  optionDiv = document.createElement("div");
+  optionDiv.id = "option"+whichList+currentLength+"_div";
+  optionDiv.appendChild(optionAdd);
+  optionDiv.appendChild(optionInput);
+  optionDiv.appendChild(optionLinebreak);
+  listDiv.insertBefore(optionDiv,listAdd);
 }
 
 function removeInput(optionWhich) {
-  var optionInput = optionWhich.parentNode
-  optionInput.parentNode.removeChild(optionInput.nextSibling);
-  optionInput.parentNode.removeChild(optionInput.nextSibling);
+  var optionInput = optionWhich.parentNode;
+  if (optionInput.id.indexOf("_div") <= 0) {
+    return;
+  }
   optionInput.parentNode.removeChild(optionInput);
 }
 
@@ -321,5 +325,3 @@ function checkurl(url, filter) {
 if (typeof safari != "undefined") {
   safari.self.addEventListener("message", safariMessageHandler, false);
 }
-
-
