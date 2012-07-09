@@ -1,11 +1,12 @@
-if(typeof chrome != 'undefined') {
-  chrome.extension.onMessage.addListener(
-    function(message, sender, sendResponse) {
-      if (message == 'getSettings')
-        sendResponse({data: localStorage['settings']});
-      else
-        sendResponse({}); // snub them.
-    });
+if(typeof chrome != "undefined") {
+  if (typeof chrome.extension.onMessage != "undefined") {
+    console.log("onMessage");
+    chrome.extension.onMessage.addListener(chromeMessageHandler);
+  } else if (typeof chrome.extension.onRequest != "undefined") {
+    console.log("onRequest");
+    chrome.extension.onRequest.addListener(chromeMessageHandler);
+  }
+
   var settings = parseSettings();
   if(settings['context_menu']=='true'||settings['context_menu']==true) {
     var cmAddToBlackList = chrome.contextMenus.create({
@@ -15,6 +16,14 @@ if(typeof chrome != 'undefined') {
       "documentUrlPatterns": ["http://*.tumblr.com/*"],
       "onclick": chromeAddToBlackList
     });
+  }
+}
+
+function chromeMessageHandler(message, sender, sendResponse) {
+  if (message == "getSettings") {
+    sendResponse({data: localStorage["settings"]});
+  } else {
+    sendResponse({}); // snub them.
   }
 }
 
@@ -53,7 +62,11 @@ function chromeAddToBlackList(info, tab) {
           chromeViews[chromeView].location.reload();
         }
       }
-      chrome.tabs.sendMessage(tab.id, "refreshSettings");
+      if (typeof chrome.tabs.sendMessage != "undefined") {
+        chrome.tabs.sendMessage(tab.id, "refreshSettings");
+      } else if (typeof chrome.tabs.sendRequest != "undefined") {
+        chrome.tabs.sendRequest(tab.id, "refreshSettings");
+      }
     }
   }
 }

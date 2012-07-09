@@ -4,7 +4,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-  'version': '0.3.17',
+  'version': '0.3.18',
   'listBlack': ['iphone', 'ipad'],
   'listWhite': ['bjorn', 'octopus'],
   'hide_source': true,
@@ -152,9 +152,6 @@ function hide_ratings() {
 
 function show_ratings() {
   var cssRatings = ".savior_rating {";
-/*  cssRatings += "background: -moz-linear-gradient(top, #d93023 10%, #f19f34 45%, #f19f34 55%, #57b787 90%);"; //Firefox
-  cssRatings += "background: -webkit-linear-gradient(top, #d93023 10%, #f19f34 45%, #f19f34 55%, #57b787 90%);"; //Chrome,Safari
-  cssRatings += "background: -o-linear-gradient(top, #d93023 10%, #f19f34 45%, #f19f34 55%, #57b787 90%);"; //Opera */
   cssRatings += "position: absolute;";
   cssRatings += "left: 532px;";
   cssRatings += "width: 20px;";
@@ -350,13 +347,23 @@ function applySettings() {
 
 function initializeTumblrSavior() {
   if (typeof chrome != 'undefined') {
-    chrome.extension.onMessage.addListener(
-      function(request, sender, sendResponse) {
-        if (request=="refreshSettings") {
-          chrome.extension.sendMessage(null, 'getSettings', chromeHandleMessage);
-        }
-      });
-    chrome.extension.sendMessage(null, 'getSettings', chromeHandleMessage);
+    if (typeof chrome.extension.onMessage != "undefined") {
+      chrome.extension.onMessage.addListener(
+        function(request, sender, sendResponse) {
+          if (request=="refreshSettings") {
+            chrome.extension.sendMessage(null, 'getSettings', chromeHandleMessage);
+          }
+        });
+      chrome.extension.sendMessage(null, 'getSettings', chromeHandleMessage);
+    } else if (typeof chrome.extension.onRequest != "undefined") {
+      chrome.extension.onRequest.addListener(
+        function(request, sender, sendResponse) {
+          if (request=="refreshSettings") {
+            chrome.extension.sendRequest('getSettings', chromeHandleMessage);
+          }
+        });
+      chrome.extension.sendRequest('getSettings', chromeHandleMessage);
+    }
   }
   if (typeof opera != 'undefined') {
     opera.extension.onmessage = operaHandleMessage;
