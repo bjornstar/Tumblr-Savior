@@ -1,9 +1,8 @@
 if(typeof chrome != "undefined") {
-  if (typeof chrome.extension.onMessage != "undefined") {
-    console.log("onMessage");
+/*  if (typeof chrome.extension.onMessage != "undefined") {
     chrome.extension.onMessage.addListener(chromeMessageHandler);
-  } else if (typeof chrome.extension.onRequest != "undefined") {
-    console.log("onRequest");
+  } else */
+  if (typeof chrome.extension.onRequest != "undefined") {
     chrome.extension.onRequest.addListener(chromeMessageHandler);
   }
 
@@ -62,9 +61,9 @@ function chromeAddToBlackList(info, tab) {
           chromeViews[chromeView].location.reload();
         }
       }
-      if (typeof chrome.tabs.sendMessage != "undefined") {
+/*      if (typeof chrome.tabs.sendMessage != "undefined") {
         chrome.tabs.sendMessage(tab.id, "refreshSettings");
-      } else if (typeof chrome.tabs.sendRequest != "undefined") {
+      } else */ if (typeof chrome.tabs.sendRequest != "undefined") {
         chrome.tabs.sendRequest(tab.id, "refreshSettings");
       }
     }

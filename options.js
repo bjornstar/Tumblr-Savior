@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     false
   );
 
-  listBlackAdd.addEventListener( // This is soooooo much easier than onclick="asdf(); return false;" yeah, thanks a lot Google.
+  listBlackAdd.addEventListener(
     "click",
     function(e) {
       addInput("Black");
@@ -86,6 +86,9 @@ function loadOptions() {
   
   var auto_unpin_cb = document.getElementById("auto_unpin_cb");
   auto_unpin_cb.checked = loadSettings["auto_unpin"];
+  
+  var show_tags_cb = document.getElementById("show_tags_cb");
+  show_tags_cb.checked = loadSettings["show_tags"];
   
   for (var itemBlack in loadSettings["listBlack"]) {
     addInput("Black", loadSettings["listBlack"][itemBlack]);
@@ -206,6 +209,9 @@ function saveOptions() {
   
   var auto_unpin_cb = document.getElementById("auto_unpin_cb");
   newSettings["auto_unpin"] = auto_unpin_cb.checked;
+  
+  var show_tags_cb = document.getElementById("show_tags_cb");
+  newSettings["show_tags"] = show_tags_cb.checked;
 
   newSettings["listWhite"] = [];
   newSettings["listBlack"] = [];
@@ -272,9 +278,9 @@ function notifyBrowsers(newSettings) {
 function chromeNotifyTumblr(tabs) {
   for (tab in tabs) {
     if(checkurl(tabs[tab].url, ["http://*.tumblr.com/*"])) {
-      if (typeof chrome.tabs.sendMessage != "undefined") {
+/*      if (typeof chrome.tabs.sendMessage != "undefined") {
         chrome.tabs.sendMessage(tabs[tab].id, "refreshSettings");
-      } else if (typeof chrome.tabs.sendRequest != "undefined") {
+      } else */ if (typeof chrome.tabs.sendRequest != "undefined") {
         chrome.tabs.sendRequest(tabs[tab].id, "refreshSettings");
       }
     }
@@ -299,9 +305,9 @@ function chromeAddToBlackList(info, tab) {
       chromeViews[chromeView].location.reload();
     }
   }
-  if (typeof chrome.tabs.sendMessage != "undefined") {
+/*  if (typeof chrome.tabs.sendMessage != "undefined") {
     chrome.tabs.sendMessage(tab.id, "refreshSettings");
-  } else if (typeof chrome.tabs.sendRequest != "undefined") {
+  } else */ if (typeof chrome.tabs.sendRequest != "undefined") {
     chrome.tabs.sendRequest(tab.id, "refreshSettings");
   }
 }

@@ -4,7 +4,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-  'version': '0.3.19',
+  'version': '0.3.20',
   'listBlack': ['iphone', 'ipad'],
   'listWhite': ['bjorn', 'octopus'],
   'hide_source': true,
@@ -19,7 +19,8 @@ var defaultSettings = {
   'white_notice': false,
   'black_notice': false,
   'hide_pinned': false,
-  'auto_unpin': true
+  'auto_unpin': true,
+  'show_tags': false
 }; //initialize default values.
 
 var settings = new Object();
@@ -33,7 +34,7 @@ function needstobesaved(theStr){
   var blackList = settings['listBlack'];
   var whiteList = settings['listWhite'];
   var rO = new Object(); //returnObject
-  
+
   rO.bL = []; //returnObject.blackListed
   rO.wL = []; //returnObject.whiteListed
 
@@ -88,6 +89,17 @@ function addGlobalStyle(styleID, css) {
   } else {
     cStyle.innerHTML = css;
   }
+}
+
+function show_tags() {
+  var notice_tags_css = ".tumblr_savior a.tag {";
+  notice_tags_css += "font-weight: normal !important;";
+  notice_tags_css += "}";
+  addGlobalStyle("notice_tags_css",notice_tags_css);
+}
+
+function hide_tags() {
+//  addGlobalStyle("notice_tags_css", "");
 }
 
 function show_white_notice() {
@@ -343,11 +355,16 @@ function applySettings() {
   } else {
     show_pinned();
   }
+  if (settings['show_tags']) {
+    show_tags();
+  } else {
+    hide_tags();
+  }
 }
 
 function initializeTumblrSavior() {
   if (typeof chrome != 'undefined') {
-    if (typeof chrome.extension.onMessage != "undefined") {
+/*  if (typeof chrome.extension.onMessage != "undefined") {
       chrome.extension.onMessage.addListener(
         function(request, sender, sendResponse) {
           if (request=="refreshSettings") {
@@ -355,7 +372,8 @@ function initializeTumblrSavior() {
           }
         });
       chrome.extension.sendMessage(null, 'getSettings', chromeHandleMessage);
-    } else if (typeof chrome.extension.onRequest != "undefined") {
+    } else */ 
+    if (typeof chrome.extension.onRequest != "undefined") {
       chrome.extension.onRequest.addListener(
         function(request, sender, sendResponse) {
           if (request=="refreshSettings") {
@@ -402,18 +420,38 @@ function checkPost(liPost) {
   if (settings['auto_unpin'] && liPost.className.indexOf('promotion_pinned') >=0) {
     unpin(liPost);
   }
-  
-  var savedfrom = needstobesaved(liPost.innerHTML);
+
   var olPosts = document.getElementById('posts');
+
+  var bln = liPost.getElementsByClassName("blacklisted");
+  var wln = liPost.getElementsByClassName("whitelisted");
+  var liRemove = document.getElementById('notification_'+liPost.id);
+
+  if(liRemove) {
+    olPosts.removeChild(liRemove);
+  }
+
+  if (bln.length) {
+    for (var n=0;n<bln.length;n++) {
+      if (bln[n].parentNode != undefined) {
+        bln[n].parentNode.removeChild(bln[n]);
+      }
+    }
+  }
+  
+  if (wln.length) {
+    for (var n=0;n<wln.length;n++) {
+      if (wln[n].parentNode != undefined) {
+        wln[n].parentNode.removeChild(wln[n]);
+      }
+    }
+  }
+
+  var savedfrom = needstobesaved(liPost.innerHTML);
 
   if (savedfrom.bL.length && savedfrom.wL.length == 0) {
     if (settings['show_notice']) {
       var author = getAuthor(liPost);
-
-      var liRemove = document.getElementById('notification_'+liPost.id);
-      if(liRemove) {
-        olPosts.removeChild(liRemove);
-      }
 
       var li_notice = document.createElement('li');
       li_notice.id = 'notification_'+liPost.id;
@@ -439,6 +477,14 @@ function checkPost(liPost) {
         li_notice.innerHTML += ' you probably didn\'t want to see';
       }
       li_notice.innerHTML += '.</b><br /><a onclick="this.parentNode.previousSibling.style.display=\'list-item\'; this.parentNode.style.display=\'none\'; return false;" href="#"><i>If you cannot resist the temptation, click here...</i></a>';
+      
+      if (settings['show_tags']) {
+        var span_tags = document.getElementById(liPost.id.replace('post_','post_tags_'));
+        if (span_tags != null) {
+          li_notice.innerHTML += '<br /><br />';
+          li_notice.innerHTML += '<span>Tags: '+span_tags.innerHTML+'</span>';
+        }
+      }
 
       liBuffer.push(li_notice); // We put it into a buffer so that we don't mess up the state of the posts as it's being iterated through. Gotta make sure we reconcile this after we're done.
     }
@@ -513,12 +559,18 @@ function checkPost(liPost) {
 }
 
 function getAuthor(liPost) {
+  var pPost = liPost;
   var author = [];
-	while(liPost.tagName != "LI" || liPost.getElementsByClassName("post_info").length == 0) {
-		liPost = liPost.previousSibling;
-	}
-	author['name'] = liPost.getElementsByClassName("post_info").item(0).getElementsByTagName("A").item(0).innerHTML;
-	var avatar = document.getElementById(liPost.id.replace('_','_avatar_'));
+
+	if (liPost.className.indexOf("same_user_as_last") >=0) { // There's no post_info data after the first in sequential posts by the same author, so we need to look for the previous post and it may not be immediately above the post we're looking at.
+    while(pPost.previousSibling.id == undefined || pPost.previousSibling.id.indexOf("post_") != 0 || pPost.previousSibling.className.indexOf("same_user_as_last") >= 0) {
+      pPost = pPost.previousSibling;
+    }
+    pPost = pPost.previousSibling;
+  }
+
+	author['name'] = pPost.getElementsByClassName("post_info").item(0).getElementsByTagName("A").item(0).innerHTML;
+	var avatar = document.getElementById(pPost.id.replace('_','_avatar_'));
 	if (avatar != null) {
     author['avatar'] = avatar.getAttribute("style").replace('background-image:url(\'','').replace('_64.','_40.').replace('\')','');
   }

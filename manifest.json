@@ -1,11 +1,8 @@
 {
   "name": "Tumblr Savior",
-  "version": "0.3.19",
+  "version": "0.3.20",
   "description": "Tired of iPad posts filling up your dashboard? Hate hearing about an athlete's latest blunders? Tumblr Savior is here to save you!",
   "background_page": "index.html",
-  "background": {
-    "page": "index.html"
-  },
   "browser_action": {
     "default_icon": "Icon-16.png",
     "default_popup": "options.html",
