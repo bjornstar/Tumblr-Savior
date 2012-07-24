@@ -4,7 +4,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-  'version': '0.3.20',
+  'version': '0.3.21',
   'listBlack': ['iphone', 'ipad'],
   'listWhite': ['bjorn', 'octopus'],
   'hide_source': true,
@@ -152,7 +152,9 @@ function unpin(thepost) {
   clickUnpin.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
   var pins = thepost.getElementsByClassName("pin");
   var pin = pins[0];
-  pin.dispatchEvent(clickUnpin);
+  if (pin != undefined) {
+    pin.dispatchEvent(clickUnpin);
+  }
 }
 
 function hide_ratings() {
