@@ -90,6 +90,9 @@ function loadOptions() {
   var show_tags_cb = document.getElementById("show_tags_cb");
   show_tags_cb.checked = loadSettings["show_tags"];
   
+  var hide_premium_cb = document.getElementById("hide_premium_cb");
+  hide_premium_cb.checked = loadSettings["hide_premium"];
+  
   for (var itemBlack in loadSettings["listBlack"]) {
     addInput("Black", loadSettings["listBlack"][itemBlack]);
   }
@@ -212,6 +215,9 @@ function saveOptions() {
   
   var show_tags_cb = document.getElementById("show_tags_cb");
   newSettings["show_tags"] = show_tags_cb.checked;
+  
+  var hide_premium_cb = document.getElementById("hide_premium_cb");
+  newSettings["hide_premium"] = hide_premium_cb.checked;
 
   newSettings["listWhite"] = [];
   newSettings["listBlack"] = [];

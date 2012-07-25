@@ -20,7 +20,8 @@ var defaultSettings = {
   'black_notice': false,
   'hide_pinned': false,
   'auto_unpin': true,
-  'show_tags': false
+  'show_tags': false,
+  'hide_premium': true
 }; //initialize default values.
 
 var settings = new Object();
@@ -134,6 +135,17 @@ function hide_black_notice() {
   cssRatings += "display: none;";
   cssRatings += "}";
   addGlobalStyle("black_notice_style", cssRatings);
+}
+
+function hide_premium() {
+  var cssPremium = "#tumblr_radar.premium {";
+  cssPremium += "display: none;";
+  cssPremium += "}";
+  addGlobalStyle("premium_style", cssPremium);
+}
+
+function show_premium() {
+  addGlobalStyle("premium_style", "");
 }
 
 function hide_pinned() {
@@ -361,6 +373,11 @@ function applySettings() {
     show_tags();
   } else {
     hide_tags();
+  }
+  if (settings['hide_premium']) {
+    hide_premium();
+  } else {
+    show_premium();
   }
 }
 
