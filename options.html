@@ -24,7 +24,7 @@
       }
       a{
         color:#4F545A;
-        text-decoration:none;
+        text-decoration: none;
       }
       #content{
         background: white;
@@ -36,11 +36,27 @@
         padding-bottom: 5px;
         padding-left: 30px;
         padding-right: 30px;
-        padding-top: 5px;
+        padding-top: 10px;
         width: 570px;
         -webkit-border-radius: 10px;
         -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, .46);
         border-radius: 10px;
+      }
+      #title{
+        background: white;
+        display: block;
+        margin: 0px;
+        outline-color: #444;
+        outline-style: none;
+        outline-width: 0px;
+        padding-bottom: 5px;
+        padding-left: 30px;
+        padding-right: 30px;
+        padding-top: 10px;
+        width: 570px;
+        -webkit-border-radius: 10px;
+        -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, .46);
+        border-radius: 10px; 
       }
       #listBlack,#listWhite{
         float:left;
@@ -54,6 +70,11 @@
         width:540px;
         clear:left;
       }
+      .disclaimer{
+        color:#A8B1BA;
+        font: 11px 'Lucida Grande',Verdana,sans-serif;
+        font-style:italic;
+      }
       #version_div{
         color:#A8B1BA;
         font: 11px 'Lucida Grande',Verdana,sans-serif;
@@ -64,78 +85,159 @@
         font: 11px 'Lucida Grande',Verdana,sans-serif;
         vertical-align:top;
       }
+      #backgroundDiv{
+        visibility:hidden;
+        position:absolute;
+      }
+      #tabs{
+        list-style-type: none;
+        display: block;
+        -webkit-font-smoothing: antialiased;
+        border-top: 1px solid rgba(0, 0, 0, .18);
+        border-right: 1px solid rgba(0, 0, 0, .18);
+        border-left: 1px solid rgba(0, 0, 0, .18);
+        -webkit-border-radius: 6px;
+        -moz-border-radius: 6px;
+        border-radius: 6px;
+        margin: 18px 10px 0px 10px;
+        padding: 0;
+        overflow: hidden;
+        clear: both;
+        width:408px;
+      }
+      #tabs li{
+        border: 1px solid rgba(0, 0, 0, .11);
+        background-color: rgba(255, 255, 255, .05);
+        -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+        -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+        padding: 0;
+        position: relative;
+        width: 100px;
+        float: left;
+      }
+      #tabs li:hover {
+        background-color: rgba(255, 255, 255, .07);
+      }
+      #tabs li a {
+        color: rgba(255, 255, 255, .69);
+        font-size: 14px;
+        font-weight: bold;
+        text-decoration: none;
+        background-repeat: no-repeat;
+        padding: 8px 10px 8px 10px;
+        display: block;
+      }
+      #tabs li.selected, #tabs li.selected:hover {
+        background-color: rgba(0, 0, 0, .06);
+        border-color: rgba(0, 0, 0, 0.39);
+        -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, .25) inset;
+        -moz-box-shadow: 0 0 2px rgba(0,0,0,.25) inset;
+        box-shadow: 0 0 2px rgba(0, 0, 0, .25) inset;
+      }
+      #aboutDiv a{
+        text-decoration: underline;
+      }
+      textarea#inandout {
+        width: 564px;
+        height: 240px;
+        resize: vertical;
+      }
     </style>
     <script src="defaults.js" type="text/javascript"></script>
     <script src="options.js" type="text/javascript"></script>
   </head>
   <body>
-    <div id="content">
+    <div id="title">
       <img style="float:left;" src="Icon-64.png">
-      <h1 style="line-height:32px;height:32px;margin-top:16px;">Tumblr Savior Options <span id="browser_span"> </span></h1>
-
-      <div id="hide_source_div">
-        <input type="checkbox" id="hide_source_cb" name="hide_source_cb" /> <label for="hide_source_cb">Hide Tumblr's source attribution.</label>
+      <h1 style="line-height:32px;height:32px;margin-top:16px;">Tumblr Savior <span id="browser_span"> </span></h1>
+    </div>
+    <div id="tabsDiv">
+      <ul id="tabs"><li id="listsTab" class="selected"><a href="#lists">Lists</a></li><li id="settingsTab"><a href="#settings">Settings</a></li><li id="saveloadTab"><a href="#saveload">Save/Load</a></li><li id="aboutTab"><a href="#about">About</a></li>
+    </div>
+    <div id="content">
+      <div id="foregroundDiv">
+        <div id="listsDiv">
+          <div id="listBlack">
+            <h2>Black List</h2>
+            <p>Tumblr Savior will save you from posts with these words in them:</p><br />
+            <a href="#" id="listBlackAdd">add</a><br />
+          </div>
+          <div id="listWhite">
+            <h2>White List</h2>
+            <p>Tumblr Savior will always show posts with these words in them:</p><br />
+            <a href="#" id="listWhiteAdd">add</a><br />
+          </div>
+        </div>
       </div>
-      <div id="show_notice_div">
-        <input type="checkbox" id="show_notice_cb" name="show_notice_cb" /> <label for="show_notice_cb">Show a notification when something has been hidden.</label>
-      </div>
-      <div id="show_words_div">
-        <input type="checkbox" id="show_words_cb" name="show_words_cb" /> <label for="show_words_cb">Show which words have been hidden.</label>
-      </div>
-      <div id="pagetracker_div">
-        <input type="checkbox" id="pagetracker_cb" name="pagetracker_cb" /> <label for="pagetracker_cb">Remove Google Analytics Pagetracker from links.</label>
-      </div>
-      <div id="match_words_div">
-        <input type="checkbox" id="match_words_cb" name="match_words_cb" /> <label for="match_words_cb">Match whole words only. Use * as a wildcard (ie. ip* would match ipad and iphone, but not flip or mudkips).</label>
-      </div>
-      <div id="promoted_tags_div">
-        <input type="checkbox" id="promoted_tags_cb" name="promoted_tags_cb" /> <label for="promoted_tags_cb">Display Tumblr promoted tags as normal tags.</label>
-      </div>
-      <div id="context_menu_div">
-        <input type="checkbox" id="context_menu_cb" name="context_menu_cb" /> <label for="context_menu_cb">Add a menu item when you right click to quickly add words to your black list.</label>
-      </div>
-      <div id="toolbar_butt_div">
-        <input type="checkbox" id="toolbar_butt_cb" name="toolbar_butt_cb" /> <label for="toolbar_butt_cb">Show a button on your toolbar for easy Tumblr Savior access.</label>
-      </div>
-      <div id="promoted_posts_div">
-        <input type="checkbox" id="promoted_posts_cb" name="promoted_posts_cb" /> <label for="promoted_posts_cb">Display Tumblr promoted posts as normal posts.</label>
-      </div>
-      <div id="black_notice_div">
-        <input type="checkbox" id="black_notice_cb" name="black_notice_cb" /> <label for="black_notice_cb">Show a notice when a post matches something from your black list.</label>
-      </div>
-      <div id="white_notice_div">
-        <input type="checkbox" id="white_notice_cb" name="white_notice_cb" /> <label for="white_notice_cb">Show a notice when a post matches something from your white list.</label>
-      </div>
-      <div id="hide_pinned_div">
-        <input type="checkbox" id="hide_pinned_cb" name="hide_pinned_cb" /> <label for="hide_pinned_cb">Hide pinned posts.</label>
-      </div>
-      <div id="auto_unpin_div">
-        <input type="checkbox" id="auto_unpin_cb" name="auto_unpin_cb" /> <label for="auto_unpin_cb">Automatically unpin all pinned posts.</label>
-      </div>
-      <div id="show_tags_div">
-        <input type="checkbox" id="show_tags_cb" name="show_tags_cb" /> <label for="show_tags_cb">Show tags from hidden posts.</label>
-      </div>
-      <div id="hide_premium_div">
-        <input type="checkbox" id="hide_premium_cb" name="hide_premium_cb" /> <label for="hide_premium_cb">Hide sponsored radar entries.</label>
-      </div>
-      <div>
-        <p>&nbsp;</p>
-      </div>
-      <div id="listBlack">
-        <h2>Black List</h2>
-        <p>Tumblr Savior will save you from posts with these words in them:</p><br />
-        <a href="#" id="listBlackAdd">add</a><br />
-      </div>
-      <div id="listWhite">
-        <h2>White List</h2>
-        <p>Tumblr Savior will always show posts with these words in them:</p><br />
-        <a href="#" id="listWhiteAdd">add</a><br />
+      <div id="backgroundDiv">
+        <div id="settingsDiv">
+          <h2>Settings</h2>
+          <div id="hide_source_div">
+            <input type="checkbox" id="hide_source_cb" name="hide_source_cb" /> <label for="hide_source_cb">Hide Tumblr's source attribution.</label>
+          </div>
+          <div id="show_notice_div">
+            <input type="checkbox" id="show_notice_cb" name="show_notice_cb" /> <label for="show_notice_cb">Show a notification when something has been hidden.</label>
+          </div>
+          <div id="show_words_div">
+            <input type="checkbox" id="show_words_cb" name="show_words_cb" /> <label for="show_words_cb">Show which words have been hidden.</label>
+          </div>
+          <div id="pagetracker_div">
+            <input type="checkbox" id="pagetracker_cb" name="pagetracker_cb" /> <label for="pagetracker_cb">Remove Google Analytics Pagetracker from links.</label>
+          </div>
+          <div id="match_words_div">
+            <input type="checkbox" id="match_words_cb" name="match_words_cb" /> <label for="match_words_cb">Match whole words only. Use * as a wildcard (ie. ip* would match ipad and iphone, but not flip or mudkips).</label>
+          </div>
+          <div id="promoted_tags_div">
+            <input type="checkbox" id="promoted_tags_cb" name="promoted_tags_cb" /> <label for="promoted_tags_cb">Display Tumblr promoted tags as normal tags.</label>
+          </div>
+          <div id="context_menu_div">
+            <input type="checkbox" id="context_menu_cb" name="context_menu_cb" /> <label for="context_menu_cb">Add a menu item when you right click to quickly add words to your black list.</label>
+          </div>
+          <div id="toolbar_butt_div">
+            <input type="checkbox" id="toolbar_butt_cb" name="toolbar_butt_cb" /> <label for="toolbar_butt_cb">Show a button on your toolbar for easy Tumblr Savior access.</label>
+          </div>
+          <div id="promoted_posts_div">
+            <input type="checkbox" id="promoted_posts_cb" name="promoted_posts_cb" /> <label for="promoted_posts_cb">Display Tumblr promoted posts as normal posts.</label>
+          </div>
+          <div id="black_notice_div">
+            <input type="checkbox" id="black_notice_cb" name="black_notice_cb" /> <label for="black_notice_cb">Show a notice when a post matches something from your black list.</label>
+          </div>
+          <div id="white_notice_div">
+            <input type="checkbox" id="white_notice_cb" name="white_notice_cb" /> <label for="white_notice_cb">Show a notice when a post matches something from your white list.</label>
+          </div>
+          <div id="hide_pinned_div">
+            <input type="checkbox" id="hide_pinned_cb" name="hide_pinned_cb" /> <label for="hide_pinned_cb">Hide pinned posts.</label>
+          </div>
+          <div id="auto_unpin_div">
+            <input type="checkbox" id="auto_unpin_cb" name="auto_unpin_cb" /> <label for="auto_unpin_cb">Automatically unpin all pinned posts.</label>
+          </div>
+          <div id="show_tags_div">
+            <input type="checkbox" id="show_tags_cb" name="show_tags_cb" /> <label for="show_tags_cb">Show tags from hidden posts.</label>
+          </div>
+          <div id="hide_premium_div">
+            <input type="checkbox" id="hide_premium_cb" name="hide_premium_cb" /> <label for="hide_premium_cb">Hide sponsored radar entries.</label>
+          </div>
+        </div>
+        <div id="saveloadDiv">
+          <h2>Save / Load</h2><br />
+          <textarea id="inandout"></textarea><br /><br />
+          <p>Copy the above text into a file to save. You can load your saved settings by pasting it back into this box and hitting the Load button. Press the Restore defaults button if something goes horribly wrong.</p><br />
+        </div>
+        <div id="aboutDiv">
+          <h2>About</h2><br />
+          <p><a href="http://tumblr-savior.bjornstar.com/">Tumblr Savior</a> is a free browser extension created and maintained by <a href="http://bjornstar.com/about">Bjorn Stromberg</a> to improve his experience on <a href="http://www.tumblr.com/">Tumblr</a>. He thought you might also find it useful and decided to share it with you.</p><br />
+          <p>This extension is open source and all source code can be found at <a href="https://github.com/bjornstar/Tumblr-Savior">https://github.com/bjornstar/Tumblr-Savior</a>.</p><br />
+          <p class="disclaimer">Disclaimer: Tumblr Savior is neither affiliated with nor supported by <a href="http://www.tumblr.com/">Tumblr</a> in any way.</p>
+          <p>
+        </div>
       </div>
       <div id="spacer">
         &nbsp;
       </div>
+      <input id="load_btn" type="button" value="Load" style="display:none;" />
       <input id="save_btn" type="button" value="Save" />&nbsp;&nbsp;
-      <input id="reset_btn" type="button" value="Restore default" />
+      <input id="reset_btn" type="button" value="Restore defaults" />
       <div id="version_div"> </div>
     </div>
   </body>

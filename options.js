@@ -3,44 +3,134 @@ var inputLast = 0;
 document.addEventListener("DOMContentLoaded", function () {
   var save_btn = document.getElementById("save_btn");
   var reset_btn = document.getElementById("reset_btn");
+  var load_btn = document.getElementById("load_btn");
   var listWhiteAdd = document.getElementById("listWhiteAdd");
   var listBlackAdd = document.getElementById("listBlackAdd");
+  var listsTab = document.getElementById("listsTab");
+  var settingsTab = document.getElementById("settingsTab");
+  var saveloadTab = document.getElementById("saveloadTab");
+  var aboutTab = document.getElementById("aboutTab");
 
   save_btn.addEventListener("click", saveOptions);
-  reset_btn.addEventListener("click", function() { if (confirm("Are you sure you want to restore defaults?")) {eraseOptions();}; });
+  load_btn.addEventListener("click", function() { if (confirm("Are you sure you want to load these settings?")) {importOptions()} });
+  reset_btn.addEventListener("click", function() { if (confirm("Are you sure you want to restore defaults?")) {eraseOptions()} });
 
-  listWhiteAdd.addEventListener(
-    "click",
-    function(e) {
+  listWhiteAdd.addEventListener("click", function(e) {
       addInput("White");
       e.preventDefault();
       e.stopPropagation();
-    },
-    false
-  );
+  }, false);
 
-  listBlackAdd.addEventListener(
-    "click",
-    function(e) {
+  listBlackAdd.addEventListener("click", function(e) {
       addInput("Black");
       e.preventDefault();
       e.stopPropagation();
-    },
-    false
-  );
+  }, false);
+
+  listsTab.addEventListener("click", function(e) {
+      tabClick(listsTab);
+      e.preventDefault();
+      e.stopPropagation();
+  }, false);
+
+  settingsTab.addEventListener("click", function(e) {
+      tabClick(settingsTab);
+      e.preventDefault();
+      e.stopPropagation();
+  }, false);
+  
+  saveloadTab.addEventListener("click", function(e) {
+      tabClick(saveloadTab);
+      e.preventDefault();
+      e.stopPropagation();
+  }, false);
+
+  aboutTab.addEventListener("click", function(e) {
+      tabClick(aboutTab);
+      e.preventDefault();
+      e.stopPropagation();
+  }, false);
 
   loadOptions();
 });
 
+function tabClick(whichTab) {
+  var tabs = document.getElementById("tabs");
+  for (tab in tabs.children) {
+    if (tabs.children[tab].id != whichTab.id) {
+      tabs.children[tab].className = "";
+    } else {
+      tabs.children[tab].className = "selected";
+    }
+  }
+
+  var foregroundDiv = document.getElementById('foregroundDiv');
+  var backgroundDiv = document.getElementById('backgroundDiv');
+  var save_btn = document.getElementById('save_btn');
+  var reset_btn = document.getElementById('reset_btn');
+  var spacerDiv = document.getElementById('spacer');
+
+  if (foregroundDiv.children[0].id != whichTab.id.replace("Tab","Div")) {  
+    var switchto = document.getElementById(whichTab.id.replace("Tab","Div"));
+    var switchfrom = foregroundDiv.children[0];
+    backgroundDiv.appendChild(switchfrom);
+    foregroundDiv.appendChild(switchto);
+    switch (whichTab.id) {
+      case "aboutTab":
+        load_btn.style.display = "none";
+        save_btn.style.display = "none";
+        reset_btn.style.display = "none";
+        spacerDiv.style.display = "none";
+        break;
+      case "saveloadTab":
+        load_btn.style.display = "";
+        save_btn.style.display = "none";
+        reset_btn.style.display = "";
+        spacerDiv.style.display = "none";
+        break
+      case "listsTab":
+      case "settingsTab":
+        load_btn.style.display = "none";
+        save_btn.style.display = "";
+        reset_btn.style.display = "";
+        spacerDiv.style.display = "";
+        break;
+    }
+  }
+}
+
 function parseSettings() {
   var parsedSettings;
-  
+
   if (localStorage["settings"] == undefined || localStorage == null) {
     parsedSettings = defaultSettings;
   } else {
     parsedSettings = JSON.parse(localStorage["settings"]);
   }
   return parsedSettings;
+}
+
+function importOptions() {
+  var inandout = document.getElementById("inandout");
+  var dirtySettings = inandout.value;
+  var importSettings;
+  try {
+    importSettings = JSON.parse(dirtySettings);
+  } catch (e) {
+    alert("Those are settings are corrupt, I'm sorry but I can't use them.");
+    return;
+  }
+
+  localStorage["settings"] = JSON.stringify(importSettings);
+  
+  // We need to trash the existing blacklist and whitelist
+  var listsDiv = document.getElementById('listsDiv');
+  var listsInputs = lists.getElementByTagName("input");
+  for (i in listsInputs) {
+    removeInput(listsInputs[i]);
+  }
+  
+  loadOptions();
 }
 
 function loadOptions() {
@@ -127,6 +217,9 @@ function loadOptions() {
     var browser_span = document.getElementById("browser_span");
     browser_span.innerHTML = "for Safari&trade;";
   }
+  
+  var inandout = document.getElementById("inandout");
+  inandout.innerHTML = JSON.stringify(loadSettings);
 }
 
 function addInput(whichList, itemValue) {
@@ -142,7 +235,6 @@ function addInput(whichList, itemValue) {
   optionInput.id = "option"+whichList+currentLength;
   optionAdd = document.createElement("a");
   optionAdd.href = "#";
-//  optionAdd.setAttribute("onclick", "removeInput(\"option"+whichList+currentLength+"\"); return false;");
   optionAdd.addEventListener(
     "click",
     function (e) {
@@ -260,7 +352,7 @@ function saveOptions() {
 
   localStorage["settings"] = JSON.stringify(newSettings);
   notifyBrowsers(newSettings);
-  location.reload();
+  //location.reload();
 }
 
 function eraseOptions() {
