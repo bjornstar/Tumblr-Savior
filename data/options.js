@@ -1,6 +1,8 @@
 var inputLast = 0;
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", contentLoaded);
+
+function contentLoaded() {
   var save_btn = document.getElementById("save_btn");
   var reset_btn = document.getElementById("reset_btn");
   var load_btn = document.getElementById("load_btn");
@@ -52,20 +54,24 @@ document.addEventListener("DOMContentLoaded", function () {
   }, false);
 
   loadOptions();
-});
+}
 
 function tabClick(whichTab) {
   var tabs = document.getElementById("tabs");
-  for (tab in tabs.children) {
-    if (tabs.children[tab].id != whichTab.id) {
-      tabs.children[tab].className = "";
-    } else {
-      tabs.children[tab].className = "selected";
+  for (var tab in tabs.children) {
+    var currentTab = tabs.children[tab];
+    if (typeof currentTab === "object") {
+      if (currentTab.id != whichTab.id) {
+        currentTab.className = "";
+      } else {
+        currentTab.className = "selected";
+      }
     }
   }
 
   var foregroundDiv = document.getElementById('foregroundDiv');
   var backgroundDiv = document.getElementById('backgroundDiv');
+  var load_btn = document.getElementById('load_btn');
   var save_btn = document.getElementById('save_btn');
   var reset_btn = document.getElementById('reset_btn');
   var spacerDiv = document.getElementById('spacer');
@@ -123,14 +129,9 @@ function importOptions() {
 
   localStorage["settings"] = JSON.stringify(importSettings);
   
-  // We need to trash the existing blacklist and whitelist
-  var listsDiv = document.getElementById('listsDiv');
-  var listsInputs = lists.getElementByTagName("input");
-  for (i in listsInputs) {
-    removeInput(listsInputs[i]);
-  }
-  
+  resetLists();
   loadOptions();
+  notifyBrowsers(importSettings);
 }
 
 function loadOptions() {
@@ -144,7 +145,7 @@ function loadOptions() {
   var show_notice_cb = document.getElementById("show_notice_cb");
   show_notice_cb.checked = loadSettings["show_notice"];
   
-  var show_Words_cb = document.getElementById("show_words_cb");
+  var show_words_cb = document.getElementById("show_words_cb");
   show_words_cb.checked = loadSettings["show_words"];
   
   var pagetracker_cb = document.getElementById("pagetracker_cb");
@@ -156,7 +157,7 @@ function loadOptions() {
   var promoted_tags_cb = document.getElementById("promoted_tags_cb");
   promoted_tags_cb.checked = loadSettings["promoted_tags"];
   
-  var promoted_posts_db = document.getElementById("promoted_posts_cb");
+  var promoted_posts_cb = document.getElementById("promoted_posts_cb");
   promoted_posts_cb.checked = loadSettings["promoted_posts"];
   
   var context_menu_cb = document.getElementById("context_menu_cb");
@@ -197,25 +198,22 @@ function loadOptions() {
   var version_div = document.getElementById("version_div");
   version_div.innerHTML = "v"+defaultSettings["version"]; //use default so we're always showing current version regardless of what people have saved.
 
+  var browser_span = document.getElementById("browser_span");
+
   if (typeof opera != "undefined") {
     var context_menu_div = document.getElementById("context_menu_div");
     context_menu_div.setAttribute("style", "display:none;");
     
-    var browser_span = document.getElementById("browser_span");
     browser_span.innerHTML = "for Opera&trade;";
-  }
-  
-  if (typeof chrome != "undefined" || typeof safari != "undefined") {
+  } else if (typeof chrome != "undefined" || typeof safari != "undefined") {
     var toolbar_butt_div = document.getElementById("toolbar_butt_div");
     toolbar_butt_div.setAttribute("style", "display:none;");
     
-    var browser_span = document.getElementById("browser_span");
     browser_span.innerHTML = "for Chrome&trade;";          
-  }
-  
-  if (typeof safari != "undefined") {
-    var browser_span = document.getElementById("browser_span");
+  } else if (typeof safari != "undefined") {
     browser_span.innerHTML = "for Safari&trade;";
+  } else { // You must be firefox.
+    browser_span.innerHTML = "for Firefox&trade;";
   }
   
   var inandout = document.getElementById("inandout");
@@ -228,25 +226,31 @@ function addInput(whichList, itemValue) {
   }
   var listDiv = document.getElementById("list"+whichList);
   var listAdd = document.getElementById("list"+whichList+"Add");
-  optionInput = document.createElement("input");
+  var optionInput = document.createElement("input");
   optionInput.value = itemValue;
   optionInput.name = "option"+whichList;
-  currentLength = inputLast++;
+  var currentLength = inputLast++;
   optionInput.id = "option"+whichList+currentLength;
-  optionAdd = document.createElement("a");
+  var optionAdd = document.createElement("a");
   optionAdd.href = "#";
   optionAdd.addEventListener(
     "click",
     function (e) {
-      removeInput(e.target.parentNode);
+      var removeThis = e.target;
+      while (removeThis.tagName !== "DIV") {
+        removeThis = removeThis.parentNode;
+      }
+      if (removeThis.id.indexOf("_div") >= 0) {
+        removeInput(removeThis.id);
+      }
       e.preventDefault();
       e.stopPropagation();
     },
     false
   );
   optionAdd.innerHTML = "<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGFJREFUeNpiXLVmfTwDA8MEIHYICwm8COTrA9kHgLiAEch5D2QIAPEHkABUIZjPBNIBlQAJLEBS6MAEMgqqAxkUgMQZkewQQJKE6ESSAAkkIFlxgAlq5AeoaxciuaEAIMAAiDAi7M96B5wAAAAASUVORK5CYII=\" />&nbsp;";
-  optionLinebreak = document.createElement("br");
-  optionDiv = document.createElement("div");
+  var optionLinebreak = document.createElement("br");
+  var optionDiv = document.createElement("div");
   optionDiv.id = "option"+whichList+currentLength+"_div";
   optionDiv.appendChild(optionAdd);
   optionDiv.appendChild(optionInput);
@@ -255,8 +259,8 @@ function addInput(whichList, itemValue) {
 }
 
 function removeInput(optionWhich) {
-  var optionInput = optionWhich.parentNode;
-  if (optionInput.id.indexOf("_div") <= 0) {
+  var optionInput = document.getElementById(optionWhich);
+  if (typeof optionInput == "undefined") {
     return;
   }
   optionInput.parentNode.removeChild(optionInput);
@@ -352,24 +356,42 @@ function saveOptions() {
 
   localStorage["settings"] = JSON.stringify(newSettings);
   notifyBrowsers(newSettings);
-  //location.reload();
+  resetLists();
+  loadOptions();
 }
 
 function eraseOptions() {
   localStorage["settings"] = JSON.stringify(defaultSettings);
   notifyBrowsers(defaultSettings);
-  location.reload();
+  resetLists();
+  loadOptions();
+}
+
+function resetLists() {
+  var listsDiv = document.getElementById('listsDiv');
+  var listsInputs = listsDiv.getElementsByTagName("input");
+
+  var arrayRemove = new Array(); // put stuff in an array because firefox is dumb.
+
+  for (var i=0;i<listsInputs.length;i++) {
+    arrayRemove.push(listsInputs[i].id+"_div");
+  }
+  
+  while (arrayRemove.length>0) {
+    var toRemove = arrayRemove.pop();
+    removeInput(toRemove);
+  }
 }
 
 function notifyBrowsers(newSettings) {
   if (typeof chrome != "undefined") {
     chrome.tabs.getAllInWindow(null, chromeNotifyTumblr);
-  }
-  if (typeof opera != "undefined") {
+  } else if (typeof opera != "undefined") {
     opera.extension.postMessage("refreshSettings");
-  }
-  if (typeof safari != "undefined") {
+  } else if (typeof safari != "undefined") {
     safari.self.tab.dispatchMessage("refreshSettings", newSettings);
+  } else { // You must be Firefox.
+    addon.postMessage(JSON.stringify(newSettings));
   }
 }
 
@@ -422,6 +444,11 @@ function safariMessageHandler(event) {
   }
 }
 
+function firefoxMessageHandler(data) {
+  addon.postMessage(localStorage["settings"]);
+}
+
+
 function checkurl(url, filter) {
   for (var f in filter) {
     var filterRegex;
@@ -436,4 +463,6 @@ function checkurl(url, filter) {
 
 if (typeof safari != "undefined") {
   safari.self.addEventListener("message", safariMessageHandler, false);
+} else if (typeof chrome == "undefined" && typeof opera == "undefined") {
+  addon.on("message", firefoxMessageHandler);
 }
