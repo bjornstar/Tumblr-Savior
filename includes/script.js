@@ -1,5 +1,13 @@
+// ==UserScript==
+// @include        http://www.tumblr.com/*
+// @exclude        http://www.tumblr.com/blog/*
+// @exclude        http://www.tumblr.com/upload/*
+// @exclude        http://www.tumblr.com/inbox/*
+// @exclude        http://www.tumblr.com/inbox
+// ==/UserScript==
+
 var defaultSettings = {
-  'version': '0.4',
+  'version': '0.4.1',
   'listBlack': ['iphone', 'ipad'],
   'listWhite': ['bjorn', 'octopus'],
   'hide_source': true,
@@ -39,7 +47,7 @@ function needstobesaved(theStr){
   if (settings['match_words']) {
     for(var i=0;i<whiteList.length;i++) {
       var filterRegex;
-      filterRegex='(^|\\W)('+whiteList[i].toLowerCase().replace(/\x2a/g, "(\\w*?)")+')(\\W|$)';
+      filterRegex='(^|\\W)('+whiteList[i].toLowerCase().replace(/\x2a/g, "(\\w*?)").replace(/\)/g, "\\)").replace(/\(/g, "\\(").replace(/\[/g, "\\[")+')(\\W|$)';
       var re = new RegExp(filterRegex);
       if (theStr.match(re)) {
         rO.wL.push(whiteList[i]);
@@ -55,7 +63,7 @@ function needstobesaved(theStr){
 
   if (settings['match_words']) {
     for(var i=0;i<blackList.length;i++) {
-      var filterRegex = '(^|\\W)('+blackList[i].toLowerCase().replace(/\x2a/g, "(\\w*?)")+')(\\W|$)';
+      var filterRegex = '(^|\\W)('+blackList[i].toLowerCase().replace(/\x2a/g, "(\\w*?)").replace(/\)/g, "\\)").replace(/\(/g, "\\(").replace(/\[/g, "\\[")+')(\\W|$)';
       var re = new RegExp(filterRegex);
       if (theStr.match(re)) {
         rO.bL.push(blackList[i]);
