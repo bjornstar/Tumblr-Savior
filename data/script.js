@@ -7,7 +7,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-  'version': '0.4.1',
+  'version': '0.4.2',
   'listBlack': ['iphone', 'ipad'],
   'listWhite': ['bjorn', 'octopus'],
   'hide_source': true,
@@ -47,7 +47,7 @@ function needstobesaved(theStr){
   if (settings['match_words']) {
     for(var i=0;i<whiteList.length;i++) {
       var filterRegex;
-      filterRegex='(^|\\W)('+whiteList[i].toLowerCase().replace(/\x2a/g, "(\\w*?)").replace(/\)/g, "\\)").replace(/\(/g, "\\(").replace(/\[/g, "\\[")+')(\\W|$)';
+      filterRegex='(^|\\W)('+whiteList[i].toLowerCase().replace(/\)/g, "\\)").replace(/\(/g, "\\(").replace(/\[/g, "\\[").replace(/\x2a/g, "(\\w*?)")+')(\\W|$)';
       var re = new RegExp(filterRegex);
       if (theStr.match(re)) {
         rO.wL.push(whiteList[i]);
@@ -63,7 +63,7 @@ function needstobesaved(theStr){
 
   if (settings['match_words']) {
     for(var i=0;i<blackList.length;i++) {
-      var filterRegex = '(^|\\W)('+blackList[i].toLowerCase().replace(/\x2a/g, "(\\w*?)").replace(/\)/g, "\\)").replace(/\(/g, "\\(").replace(/\[/g, "\\[")+')(\\W|$)';
+      var filterRegex = '(^|\\W)('+blackList[i].toLowerCase().replace(/\)/g, "\\)").replace(/\(/g, "\\(").replace(/\[/g, "\\[").replace(/\x2a/g, "(\\w*?)")+')(\\W|$)';
       var re = new RegExp(filterRegex);
       if (theStr.match(re)) {
         rO.bL.push(blackList[i]);
