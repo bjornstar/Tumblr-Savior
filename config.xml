@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets"
-  version="0.4.2">
+  version="0.4.3">
 	<name short="Tumblr Savior">Tumblr Savior for Opera</name>
 	<description>Tired of iPad posts filling up your dashboard? Hate hearing about an athlete's latest blunders? Tumblr Savior is here to save you!</description>
 	<author href="http://bjornstar.com"

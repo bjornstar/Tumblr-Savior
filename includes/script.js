@@ -7,7 +7,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-  'version': '0.4.2',
+  'version': '0.4.3',
   'listBlack': ['iphone', 'ipad'],
   'listWhite': ['bjorn', 'octopus'],
   'hide_source': true,
@@ -28,6 +28,8 @@ var defaultSettings = {
 }; //initialize default values.
 
 var settings = new Object();
+var gotSettings = false;
+var manuallyShown = new Object();
 var liBuffer = [];
 var divBuffer = [];
 var isTumblrSaviorRunning = false;
@@ -80,86 +82,174 @@ function needstobesaved(theStr){
   return rO;
 }
 
-function addGlobalStyle(styleID, css) {
-  var cStyle = document.getElementById(styleID);
+function addGlobalStyle(styleID, cssRules) {
+  var cStyle, elmHead;
+  cStyle = document.getElementById(styleID);
+  elmHead = document.getElementsByTagName('head')[0];
+
+  if (elmHead == undefined) {
+    return false;
+  }
+
   if (cStyle == undefined) {
-    var elmHead, elmStyle;
-    elmHead = document.getElementsByTagName('head')[0];
-    elmStyle = document.createElement('style');
+    var elmStyle = document.createElement('style');
     elmStyle.type = 'text/css';
-    elmStyle.innerHTML = css;
     elmStyle.id = styleID;
+    while (cssRules.length > 0) {
+      var cssRule = cssRules.pop();
+      if (elmStyle.sheet != undefined && elmStyle.sheet.cssRules[0] != null) {
+        elmStyle.sheet.insertRule(cssRule,0);
+      } else {
+        elmStyle.appendChild(document.createTextNode(cssRule));
+      }
+    }
     elmHead.appendChild(elmStyle);
+    return true;
   } else {
-    cStyle.innerHTML = css;
+    while (cStyle.sheet.cssRules.length > 0) {
+      cStyle.sheet.deleteRule(0);
+    }
+    while (cssRules.length > 0) {
+      var cssRule = cssRules.pop();
+      if (cStyle.sheet != undefined && cStyle.sheet.cssRules[0] != null) {
+        cStyle.sheet.insertRule(cssRule,0);
+      } else {
+        cStyle.appendChild(document.createTextNode(cssRule));
+      }
+    }
+    return true;
   }
 }
 
 function show_tags() {
-  var notice_tags_css = ".tumblr_savior a.tag {";
-  notice_tags_css += "font-weight: normal !important;";
-  notice_tags_css += "}";
-  addGlobalStyle("notice_tags_css",notice_tags_css);
+  var cssRules = new Array();
+  cssRules[0]  = ".tumblr_savior a.tag {";
+  cssRules[0] += "font-weight: normal !important;";
+  cssRules[0] += "}";
+  addGlobalStyle("notice_tags_css",cssRules);
 }
 
 function hide_tags() {
-//  addGlobalStyle("notice_tags_css", "");
+  var cssRules = new Array();
+  cssRules[0]  = ".tumblr_savior a.tag {}";
+//  addGlobalStyle("notice_tags_css", cssRules);
 }
 
 function show_white_notice() {
-  var cssRatings = ".whitelisted {";
-  cssRatings += "background: #57b787;";
+  var cssRules = new Array();
+  cssRules[0]  = ".whitelisted {";
+  cssRules[0] += "background: #57b787;";
   if (settings['black_notice']) {
-    cssRatings += "top: 50px;";
+    cssRules[0] += "top: 50px;";
   } else {
-    cssRatings += "top: 20px;";
+    cssRules[0] += "top: 20px;";
   }
-  cssRatings += "}";
-  addGlobalStyle("white_notice_style",cssRatings);
+  cssRules[0] += "}";
+  addGlobalStyle("white_notice_style",cssRules);
 }
 
 function show_black_notice() { 
-  var cssRatings = ".blacklisted {";
-  cssRatings += "background: #d93023;";
-  cssRatings += "top: 20px;";
-  cssRatings += "}";
-  addGlobalStyle("black_notice_style",cssRatings);
+  var cssRules = new Array();
+  cssRules[0]  = ".blacklisted {";
+  cssRules[0] += "background: #d93023;";
+  cssRules[0] += "top: 20px;";
+  cssRules[0] += "}";
+  addGlobalStyle("black_notice_style",cssRules);
 }
 
 function hide_white_notice() {
-  var cssRatings = ".whitelisted {";
-  cssRatings += "display: none;";
-  cssRatings += "}";
-  addGlobalStyle("white_notice_style", cssRatings);
+  var cssRules = new Array();
+  cssRules[0]  = ".whitelisted {";
+  cssRules[0] += "display: none;";
+  cssRules[0] += "}";
+  addGlobalStyle("white_notice_style", cssRules);
 }
 
 function hide_black_notice() {
-  var cssRatings = ".blacklisted {";
-  cssRatings += "display: none;";
-  cssRatings += "}";
-  addGlobalStyle("black_notice_style", cssRatings);
+  var cssRules = new Array();
+  cssRules[0]  = ".blacklisted {";
+  cssRules[0] += "display: none;";
+  cssRules[0] += "}";
+  addGlobalStyle("black_notice_style", cssRules);
 }
 
 function hide_premium() {
-  var cssPremium = "#tumblr_radar.premium {";
-  cssPremium += "display: none;";
-  cssPremium += "}";
-  addGlobalStyle("premium_style", cssPremium);
+  var cssRules = new Array();
+  cssRules[0]  = "#tumblr_radar.premium {";
+  cssRules[0] += "display: none;";
+  cssRules[0] += "}";
+  addGlobalStyle("premium_style", cssRules);
 }
 
 function show_premium() {
-  addGlobalStyle("premium_style", "");
+  var cssRules = new Array();
+  cssRules[0]  = "#tumblr_radar.premium {}";
+  addGlobalStyle("premium_style", cssRules);
 }
 
 function hide_pinned() {
-  var cssPinned = ".promotion_pinned {";
-  cssPinned += "display: none;";
-  cssPinned += "}";
-  addGlobalStyle("pinned_style", cssPinned);
+  var cssRules = new Array();
+  cssRules[0]  = ".promotion_pinned {";
+  cssRules[0] += "display: none;";
+  cssRules[0] += "}";
+  addGlobalStyle("pinned_style", cssRules);
 }
 
 function show_pinned() {
-  addGlobalStyle("pinned_style", "");
+  var cssRules = new Array();
+  cssRules[0]  = ".promotion_pinned {}";
+  addGlobalStyle("pinned_style", cssRules);
+}
+
+function hide_ratings() {
+  var cssRules = new Array();
+  cssRules[0]  = ".savior_rating {";
+  cssRules[0] += "display: none;";
+  cssRules[0] += "}";
+  addGlobalStyle("savior_rating_style",cssRules);
+}
+
+function show_ratings() {
+  var cssRules = new Array();
+  cssRules[0]  = ".savior_rating {";
+  cssRules[0] += "position: absolute;";
+  cssRules[0] += "left: 532px;";
+  cssRules[0] += "width: 20px;";
+  cssRules[0] += "height: 20px;";
+  cssRules[0] += "-webkit-border-radius: 4px;";
+  cssRules[0] += "-webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, .46);";
+  cssRules[0] += "border-radius: 4px;";
+  cssRules[0] += "}";
+  cssRules[1]  = ".savior_rating:hover {";
+  cssRules[1] += "overflow: hidden;";
+  cssRules[1] += "white-space: nowrap;";
+  cssRules[1] += "width: 200px;";
+  cssRules[1] += "}";
+  cssRules[2]  = ".savior_rating:hover span{";
+  cssRules[2] += "display: inline;";
+  cssRules[2] += "}";
+  cssRules[3]  = ".savior_rating img {";
+  cssRules[3] += "margin: 2px 0px 0px 2px;";
+  cssRules[3] += "}";
+  cssRules[4]  = ".savior_rating span{";
+  cssRules[4] += "display: none;";
+  cssRules[4] += "line-height:20px;";
+  cssRules[4] += "margin-left:2px;";
+  cssRules[4] += "vertical-align: top;";
+  cssRules[4] += "}";
+  addGlobalStyle("savior_rating_style",cssRules);
+}
+
+function hide_source() {
+  var cssRules = new Array();
+  cssRules[0]  = '.source_url {display:none!important;}';
+  addGlobalStyle("source_url_style",cssRules);
+}
+
+function show_source() {
+  var cssRules = new Array();
+  cssRules[0]  = '.source_url {}';
+  addGlobalStyle("source_url_style",cssRules);
 }
 
 function unpin(thepost) {
@@ -170,52 +260,6 @@ function unpin(thepost) {
   if (pin != undefined) {
     pin.dispatchEvent(clickUnpin);
   }
-}
-
-function hide_ratings() {
-  var cssRatings = ".savior_rating {";
-  cssRatings += "display: none;";
-  cssRatings += "}";
-  addGlobalStyle("savior_rating_style",cssRatings);
-}
-
-function show_ratings() {
-  var cssRatings = ".savior_rating {";
-  cssRatings += "position: absolute;";
-  cssRatings += "left: 532px;";
-  cssRatings += "width: 20px;";
-  cssRatings += "height: 20px;";
-  cssRatings += "-webkit-border-radius: 4px;";
-  cssRatings += "-webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, .46);";
-  cssRatings += "border-radius: 4px;";
-  cssRatings += "}";
-  cssRatings += ".savior_rating:hover {";
-  cssRatings += "overflow: hidden;";
-  cssRatings += "white-space: nowrap;";
-  cssRatings += "width: 200px;";
-  cssRatings += "}";
-  cssRatings += ".savior_rating:hover span{";
-  cssRatings += "display: inline;";
-  cssRatings += "}";
-  cssRatings += ".savior_rating img {";
-  cssRatings += "margin: 2px 0px 0px 2px;";
-  cssRatings += "}";
-  cssRatings += ".savior_rating span{";
-  cssRatings += "display: none;";
-  cssRatings += "line-height:20px;";
-  cssRatings += "margin-left:2px;";
-  cssRatings += "vertical-align: top;";
-  cssRatings += "}";
-  addGlobalStyle("savior_rating_style",cssRatings);
-}
-
-function hide_source() {
-  var better_rule = '.source_url {display:none!important;}';
-  addGlobalStyle("source_url_style",better_rule);
-}
-
-function show_source() {
-  addGlobalStyle("source_url_style",'');
 }
 
 function safariMessageHandler(event) {
@@ -267,11 +311,13 @@ function firefoxMessageHandler(data) {
 }
 
 function WaitForPosts() {
+  gotSettings = true;
   var olPosts = document.getElementById('posts');
   if (olPosts === null && !isTumblrSaviorRunning) {
     setTimeout(WaitForPosts, 10);
   } else if (!isTumblrSaviorRunning) {
-    olPosts.addEventListener("DOMNodeInserted", handlePostInserted, false);
+    wireupnodes();
+    //olPosts.addEventListener("DOMNodeInserted", handlePostInserted, false);
     isTumblrSaviorRunning = true;
     setTimeout(Diaper, 200);
   } else {
@@ -291,7 +337,7 @@ function Diaper() {
       inProgress[liPost.id] = new Object();
     }
   }
-  reconcileBuffer();
+  checkPosts();
 }
 
 function handlePostInserted(argPost) {
@@ -302,7 +348,12 @@ function handlePostInserted(argPost) {
   if (inProgress[liPost.id] != undefined) {
     return;
   }
-  if(liPost.id.indexOf("post")==0) {
+  if (liPost.id.indexOf("post") != 0) {
+    return
+  }
+  if (gotSettings) {
+    checkPost(liPost);
+  } else {
     inProgress[liPost.id] = new Object();
   }
 }
@@ -312,15 +363,7 @@ function checkPosts() {
     checkPost(document.getElementById(liPost));
     delete inProgress[liPost]
   }
-  reconcileBuffer();
-  while (promoted.length) {
-    var remove = promoted.pop();
-    document.getElementById(remove).className = document.getElementById(remove).className.replace(/promotion_highlighted/gm, "");
-    var ribbon_right = document.getElementById("highlight_ribbon_right_"+remove.replace("post_",""));
-    var ribbon_left = document.getElementById("highlight_ribbon_left_"+remove.replace("post_",""));
-    ribbon_right.parentNode.removeChild(ribbon_right);
-    ribbon_left.parentNode.removeChild(ribbon_left);
-  }
+  //reconcileBuffer();
 }
 
 function reconcileBuffer() {
@@ -396,6 +439,55 @@ function applySettings() {
   }
 }
 
+function wireupnodes() {
+  document.addEventListener('animationstart', handlePostInserted, false);
+  document.addEventListener('MSAnimationStart', handlePostInserted, false);
+  document.addEventListener('webkitAnimationStart', handlePostInserted, false);
+  document.addEventListener('OAnimationStart', handlePostInserted, false);
+
+  var cssRules = new Array();
+
+  cssRules[0]  = "@keyframes nodeInserted {";
+  cssRules[0] += "    from { clip: rect(1px, auto, auto, auto); }";
+  cssRules[0] += "    to { clip: rect(0px, auto, auto, auto); }";
+  cssRules[0] += "}";
+
+  cssRules[1]  = "@-moz-keyframes nodeInserted {";
+  cssRules[1] += "    from { clip: rect(1px, auto, auto, auto); }";
+  cssRules[1] += "    to { clip: rect(0px, auto, auto, auto); }";
+  cssRules[1] += "}";
+
+  cssRules[2]  = "@-webkit-keyframes nodeInserted {";
+  cssRules[2] += "    from { clip: rect(1px, auto, auto, auto); }";
+  cssRules[2] += "    to { clip: rect(0px, auto, auto, auto); }";
+  cssRules[2] += "}";
+
+  cssRules[3]  = "@-ms-keyframes nodeInserted {";
+  cssRules[3] += "    from { clip: rect(1px, auto, auto, auto); }";
+  cssRules[3] += "    to { clip: rect(0px, auto, auto, auto); }";
+  cssRules[3] += "}";
+
+  cssRules[4]  = "@-o-keyframes nodeInserted {";
+  cssRules[4] += "    from { clip: rect(1px, auto, auto, auto); }";
+  cssRules[4] += "    to { clip: rect(0px, auto, auto, auto); }";
+  cssRules[4] += "}";
+
+  cssRules[5]  = "ol#posts li {";
+  cssRules[5] += "    animation-duration: 1ms;";
+  cssRules[5] += "    -o-animation-duration: 1ms;";
+  cssRules[5] += "    -ms-animation-duration: 1ms;";
+  cssRules[5] += "    -moz-animation-duration: 1ms;";
+  cssRules[5] += "    -webkit-animation-duration: 1ms;";
+  cssRules[5] += "    animation-name: nodeInserted;";
+  cssRules[5] += "    -o-animation-name: nodeInserted;";
+  cssRules[5] += "    -ms-animation-name: nodeInserted;";     
+  cssRules[5] += "    -moz-animation-name: nodeInserted;";
+  cssRules[5] += "    -webkit-animation-name: nodeInserted;";
+  cssRules[5] += "}";
+
+  addGlobalStyle("wires",cssRules);
+}
+
 function initializeTumblrSavior() {
   if (typeof chrome != 'undefined') {
 /*  if (typeof chrome.extension.onMessage != "undefined") {
@@ -433,7 +525,7 @@ var whiteListed = new Object();
 var blackListed = new Object();
 var promoted = new Array();
 
-var checkPostInterval = setInterval(checkPosts, 500);
+//var checkPostInterval = setInterval(checkPosts, 500);
 
 function checkPost(liPost) {
   if (typeof liPost != 'object') {
@@ -450,6 +542,9 @@ function checkPost(liPost) {
     return;
   }
   if (liPost.className.indexOf('not_mine') < 0) {
+    return;
+  }
+  if (typeof manuallyShown[liPost.id] !== "undefined") {
     return;
   }
   if (settings['auto_unpin'] && liPost.className.indexOf('promotion_pinned') >=0) {
@@ -491,37 +586,89 @@ function checkPost(liPost) {
       var li_notice = document.createElement('li');
       li_notice.id = 'notification_'+liPost.id;
       li_notice.className = 'notification first_notification last_notification tumblr_savior';
-      li_notice.innerHTML = '<a href="http://'+author['name']+'.tumblr.com/" class="avatar_frame"><img alt class="avatar" src="'+author['avatar']+'" /></a>';
-      li_notice.innerHTML += '<div class="nipple border"></div>';
-      li_notice.innerHTML += '<div class="nipple"></div>';
-      li_notice.innerHTML += '<b><a href="http://'+author['name']+'.tumblr.com/">'+author['name']+'</a> posted something';
+
+      var a_avatar = document.createElement('a');
+      a_avatar.href = "http://"+author['name']+".tumblr.com/";
+      a_avatar.className = "avatar_frame";
+      a_avatar.title = author['name'];
+
+      var img_avatar = document.createElement('img');
+      img_avatar.src = author['avatar'];
+      img_avatar.className = "avatar";
+      img_avatar.title = author['name'];
+
+      a_avatar.appendChild(img_avatar);
+      
+      li_notice.appendChild(a_avatar);
+
+      var nipple_border = document.createElement('div');
+      nipple_border.className = "nipple border";
+      li_notice.appendChild(nipple_border);
+      
+      var nipple = document.createElement('div');
+      nipple.className = "nipple";
+      li_notice.appendChild(nipple);
+
+      var a_author = document.createElement('a');
+      a_author.href = "http://"+author['name']+".tumblr.com/";
+      a_author.textContent = author['name'];
+      
+      li_notice.appendChild(a_author);
+      
+      var txtPosted = document.createTextNode(" posted something");
+      li_notice.appendChild(txtPosted);
       
       if (settings['show_words']) {
-        li_notice.innerHTML += ' with';
+        var txtContents = " with";
         for (var j=0;j<savedfrom.bL.length;j++) {
           if (savedfrom.bL.length>2&&j!=0&&j<savedfrom.bL.length-1){
-            li_notice.innerHTML += ',';
+            txtContents += ',';
           }
           if (savedfrom.bL.length>1&&j==savedfrom.bL.length-1) {
-            li_notice.innerHTML += ' and';
+            txtContents += ' and';
           }
-          li_notice.innerHTML += ' \''+savedfrom.bL[j]+'\'';
+          txtContents += ' \''+savedfrom.bL[j]+'\'';
         }
-        li_notice.innerHTML += ' in it';
+        txtContents += ' in it.';
+        li_notice.appendChild(document.createTextNode(txtContents));
       } else {
-        li_notice.innerHTML += ' you probably didn\'t want to see';
+        li_notice.appendChild(document.createTextNode(' you probably didn\'t want to see.'));
       }
-      li_notice.innerHTML += '.</b><br /><a onclick="this.parentNode.previousSibling.style.display=\'list-item\'; this.parentNode.style.display=\'none\'; return false;" href="#"><i>If you cannot resist the temptation, click here...</i></a>';
+      
+      var br = document.createElement("br");
+      li_notice.appendChild(br);
+
+      var a_reveal = document.createElement("a");
+      a_reveal.href="#";
+
+      var i_reveal = document.createElement("i");
+      i_reveal.appendChild(document.createTextNode("If you cannot resist the temptation, click here..."));
+
+      a_reveal.addEventListener("click", handleReveal, false);
+
+      a_reveal.appendChild(i_reveal);
+
+      li_notice.appendChild(a_reveal);
       
       if (settings['show_tags']) {
         var span_tags = document.getElementById(liPost.id.replace('post_','post_tags_'));
         if (span_tags != null) {
-          li_notice.innerHTML += '<br /><br />';
-          li_notice.innerHTML += '<span>Tags: '+span_tags.innerHTML+'</span>';
+          li_notice.appendChild(document.createElement("br"));
+          li_notice.appendChild(document.createElement("br"));
+          var span_notice_tags = document.createElement("span");
+          span_notice_tags.appendChild(document.createTextNode("Tags: "));
+          span_notice_tags.appendChild(document.createTextNode(span_tags.innerText));
+          li_notice.appendChild(span_notice_tags);
         }
       }
 
-      liBuffer.push(li_notice); // We put it into a buffer so that we don't mess up the state of the posts as it's being iterated through. Gotta make sure we reconcile this after we're done.
+      if(liPost.nextSibling) {
+        olPosts.insertBefore(li_notice, liPost.nextSibling);
+      } else {
+        olPosts.appendChild(li_notice);
+      }
+
+      //liBuffer.push(li_notice); // We put it into a buffer so that we don't mess up the state of the posts as it's being iterated through. Gotta make sure we reconcile this after we're done.
     }
     liPost.style.display = 'none';
   } else {
@@ -549,7 +696,13 @@ function checkPost(liPost) {
     var divRating = document.createElement('div');
     divRating.id = 'white_rating_'+liPost.id;
     divRating.className = 'savior_rating whitelisted';
-    divRating.innerHTML = '<img src="data:image/png;base64,'+icon+'" title="'+whiteListed[liPost.id].join(", ")+'" /><span>'+whiteListed[liPost.id].join(', ')+'</span>';
+    var imgRating = document.createElement('img');
+    imgRating.src = 'data:image/png;base64,'+icon;
+    imgRating.title = whiteListed[liPost.id].join(", ");
+    divRating.appendChild(imgRating);
+    var spanWhitelisted = document.createElement('span');
+    spanWhitelisted.textContent = whiteListed[liPost.id].join(", ");
+    divRating.appendChild(spanWhitelisted);
     divBuffer.push(divRating);
   }
 
@@ -566,7 +719,13 @@ function checkPost(liPost) {
     var divRating = document.createElement('div');
     divRating.id = 'black_rating_'+liPost.id;
     divRating.className = 'savior_rating blacklisted';
-    divRating.innerHTML = '<img src="data:image/png;base64,'+icon+'" title="'+blackListed[liPost.id].join(", ")+'" /><span>'+blackListed[liPost.id].join(', ')+'</span>';
+    var imgRating = document.createElement('img');
+    imgRating.src = 'data:image/png;base64,'+icon;
+    imgRating.title = blackListed[liPost.id].join(", ");
+    divRating.appendChild(imgRating);
+    var spanBlacklisted = document.createElement('span');
+    spanBlacklisted.textContent = blackListed[liPost.id].join(", ");
+    divRating.appendChild(spanBlacklisted);
     divBuffer.push(divRating);
   }
 
@@ -588,9 +747,29 @@ function checkPost(liPost) {
   }
   if (settings['promoted_posts']) {
     if (liPost.outerHTML.indexOf("promotion_highlighted")>=0) {
-      promoted.push(liPost.id);
+      var remove = liPost.id;
+      document.getElementById(remove).className = document.getElementById(remove).className.replace(/promotion_highlighted/gm, "");
+      var ribbon_right = document.getElementById("highlight_ribbon_right_"+remove.replace("post_",""));
+      var ribbon_left = document.getElementById("highlight_ribbon_left_"+remove.replace("post_",""));
+      ribbon_right.parentNode.removeChild(ribbon_right);
+      ribbon_left.parentNode.removeChild(ribbon_left);
     }
   }
+}
+
+function handleReveal(e) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  var searchUp = e.target;
+
+  while (searchUp.tagName != "LI") {
+    searchUp = searchUp.parentNode;
+  }
+
+  searchUp.previousSibling.style.display = "list-item";
+  searchUp.style.display = "none";
+  manuallyShown[searchUp.previousSibling.id] = new Object();
 }
 
 function getAuthor(liPost) {
