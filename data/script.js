@@ -458,7 +458,16 @@ function checkPost(liPost) {
 
 			li_notice = document.createElement('li');
 			li_notice.id = 'notification_' + liPost.id;
-			li_notice.className = 'notification first_notification last_notification tumblr_savior';
+			li_notice.className = 'notification single_notification tumblr_savior';
+
+			div_inner = document.createElement('DIV');
+			div_inner.className = "notification_inner clearfix";
+
+			div_sentence = document.createElement('DIV');
+			div_sentence.className = "notification_sentence";
+
+			div_inner.appendChild(div_sentence);
+			li_notice.appendChild(div_inner);
 
 			a_avatar = document.createElement('a');
 			a_avatar.href = "http://" + author.name + ".tumblr.com/";
@@ -470,29 +479,22 @@ function checkPost(liPost) {
 			img_avatar.className = "avatar";
 			img_avatar.title = author.name;
 
-			nipple_border = document.createElement('div');
-			nipple_border.className = "nipple border";
-
-			nipple = document.createElement('div');
-			nipple.className = "nipple";
-
 			a_author = document.createElement('a');
 			a_author.href = "http://" + author.name + ".tumblr.com/";
+			a_author.className = "username";
 			a_author.textContent = author.name;
 
 			a_avatar.appendChild(img_avatar);
 
 			li_notice.appendChild(a_avatar);
-			li_notice.appendChild(nipple_border);
-			li_notice.appendChild(nipple);
-			li_notice.appendChild(a_author);
+			div_sentence.appendChild(a_author);
 
-			txtPosted = document.createTextNode(" posted something");
-			li_notice.appendChild(txtPosted);
+			txtPosted = document.createTextNode(" made a post containing");
+			div_sentence.appendChild(txtPosted);
 
 			if (settings.show_words) {
 
-				txtContents = " with";
+				txtContents = ":";
 
 				for (j = 0; j < savedfrom.bL.length; j++) {
 					if (savedfrom.bL.length > 2 && j !== 0 && j < savedfrom.bL.length - 1) {
@@ -504,41 +506,36 @@ function checkPost(liPost) {
 					txtContents += ' \'' + savedfrom.bL[j] + '\'';
 				}
 
-				txtContents += ' in it.';
-
-				li_notice.appendChild(document.createTextNode(txtContents));
+				div_sentence.appendChild(document.createTextNode(txtContents));
 			} else {
-				li_notice.appendChild(document.createTextNode(' you probably didn\'t want to see.'));
+				div_sentence.appendChild(document.createTextNode(' something from your blacklist.'));
 			}
-
-			br = document.createElement("br");
-			li_notice.appendChild(br);
 
 			a_reveal = document.createElement("a");
 			a_reveal.href = "#";
 
 			i_reveal = document.createElement("i");
-			i_reveal.appendChild(document.createTextNode("If you cannot resist the temptation, click here..."));
+			i_reveal.appendChild(document.createTextNode(" -- click to show."));
 
-			a_reveal.addEventListener("click", handleReveal, false);
+			li_notice.addEventListener("click", handleReveal, false);
 
 			a_reveal.appendChild(i_reveal);
 
-			li_notice.appendChild(a_reveal);
+			div_sentence.appendChild(a_reveal);
 
 			if (settings.show_tags) {
 
 				span_tags = document.getElementById(liPost.id.replace('post_', 'post_tags_'));
 
 				if (span_tags !== null) {
-					li_notice.appendChild(document.createElement("br"));
-					li_notice.appendChild(document.createElement("br"));
+					div_sentence.appendChild(document.createElement("br"));
+					div_sentence.appendChild(document.createElement("br"));
 
 					span_notice_tags = document.createElement("span");
 					span_notice_tags.appendChild(document.createTextNode("Tags: "));
 					span_notice_tags.appendChild(document.createTextNode(span_tags.innerText));
 
-					li_notice.appendChild(span_notice_tags);
+					div_sentence.appendChild(span_notice_tags);
 				}
 			}
 
