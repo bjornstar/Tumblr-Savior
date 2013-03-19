@@ -1,3 +1,21 @@
+function getBrowser() {
+	if (window.chrome) {
+		return 'Chrome';
+	}
+	if (window.safari) {
+		return 'Safari';
+	}
+	if (window.opera) {
+		return 'Opera';
+	}
+	if (navigator.userAgent.indexOf('Firefox') >= 0) {
+		return 'Firefox';
+	}
+	return 'Undetected Browser';
+}
+
+var browser = getBrowser();
+
 var inputLast, settingsInputs;
 
 inputLast = 0; //our unique ids for list items
@@ -181,7 +199,7 @@ function loadOptions() {
 	}
 
 	inandout = document.getElementById("inandout");
-	inandout.innerHTML = JSON.stringify(loadSettings);
+	inandout.textContent = JSON.stringify(loadSettings);
 }
 
 function checkurl(url, filter) {
@@ -202,9 +220,9 @@ function chromeNotifyTumblr(tabs) {
 	var tab;
 	for (tab in tabs) {
 		if (tabs.hasOwnProperty(tab) && checkurl(tabs[tab].url, ["http://*.tumblr.com/*"])) {
-			if (chrome.tabs.sendMessage !== undefined) {
+			if (chrome.tabs.sendMessage) {
 				chrome.tabs.sendMessage(tabs[tab].id, "refreshSettings");
-			} else if (chrome.tabs.sendRequest !== undefined) {
+			} else if (chrome.tabs.sendRequest) {
 				chrome.tabs.sendRequest(tabs[tab].id, "refreshSettings");
 			}
 		}
@@ -212,14 +230,19 @@ function chromeNotifyTumblr(tabs) {
 }
 
 function notifyBrowsers(newSettings) {
-	if (window.chrome !== undefined) {
+	switch (browser) {
+	case 'Chrome':
 		chrome.tabs.getAllInWindow(null, chromeNotifyTumblr);
-	} else if (window.opera !== undefined) {
+		break;
+	case 'Opera':
 		opera.extension.postMessage("refreshSettings");
-	} else if (window.safari !== undefined) {
+		break;
+	case 'Safari':
 		safari.self.tab.dispatchMessage("refreshSettings", newSettings);
-	} else { // You must be Firefox.
+		break;
+	case 'Firefox':
 		addon.postMessage(JSON.stringify(newSettings));
+		brea;
 	}
 }
 
@@ -247,9 +270,9 @@ function chromeAddToBlackList(info, tab) {
 		}
 	}
 
-	if (chrome.tabs.sendMessage !== undefined) {
+	if (chrome.tabs.sendMessage) {
 		chrome.tabs.sendMessage(tab.id, "refreshSettings");
-	} else if (chrome.tabs.sendRequest !== undefined) {
+	} else if (chrome.tabs.sendRequest) {
 		chrome.tabs.sendRequest(tab.id, "refreshSettings");
 	}
 }
@@ -304,7 +327,7 @@ function saveOptions() {
 
 	if (newSettings.context_menu) {
 		if (!oldSettings.context_menu) {
-			if (window.chrome !== undefined) {
+			if (browser === 'Chrome') {
 				cmAddToBlackList = chrome.contextMenus.create({
 					"type": "normal",
 					"title": "Add '%s' to Tumblr Savior black list",
@@ -315,13 +338,13 @@ function saveOptions() {
 			}
 		}
 	} else {
-		if (window.chrome !== undefined) {
+		if (browser === 'Chrome') {
 			chrome.contextMenus.removeAll();
 		}
 	}
 
 	if (newSettings.toolbar_butt !== oldSettings.toolbar_butt) {
-		if (window.opera !== undefined) {
+		if (browser === 'Opera') {
 			opera.extension.postMessage("toolbar");
 		}
 	}
@@ -443,30 +466,29 @@ function contentLoaded() {
 	version_div = document.getElementById("version_div");
 	version_div.textContent = "v" + defaultSettings.version; //use default so we're always showing current version regardless of what people have saved.
 
-	browser_span = document.getElementById("browser_span");
-
-	if (window.opera !== undefined) {
+	if (browser === 'Opera') {
 		context_menu_div = document.getElementById("context_menu_div");
 		context_menu_div.setAttribute("style", "display:none;");
+	}
 
-		browser_span.textContent = "for Opera\u2122";
-	} else if (window.chrome !== undefined || window.safari !== undefined) {
+	if (browser === 'Chrome' || browser === 'Safari') {
 		toolbar_butt_div = document.getElementById("toolbar_butt_div");
 		toolbar_butt_div.setAttribute("style", "display:none;");
+	}
 
-		browser_span.textContent = "for Chrome\u2122";
-	} else if (window.safari !== undefined) {
-		browser_span.textContent = "for Safari\u2122";
-	} else { // You must be firefox.
-		browser_span.textContent = "for Firefox\u2122";
+	if (browser !== 'Undetected') {
+		browser_span = document.getElementById("browser_span");
+		browser_span.textContent = 'for ' + browser + '\u2122';
 	}
 
 	loadOptions();
 }
 
-if (window.safari !== undefined) {
+if (browser === 'Safari') {
 	safari.self.addEventListener("message", safariMessageHandler, false);
-} else if (window.chrome === undefined && window.opera === undefined) {
+}
+
+if (browser === 'Firefox') {
 	addon.on("message", firefoxMessageHandler);
 }
 
