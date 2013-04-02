@@ -1,16 +1,17 @@
 function getBrowser() {
-	if (window.chrome) {
+	if (window && window.chrome) {
 		return 'Chrome';
 	}
-	if (window.safari) {
+	if (window && window.safari) {
 		return 'Safari';
 	}
-	if (window.opera) {
+	if (window && window.opera) {
 		return 'Opera';
 	}
 	if (navigator.userAgent.indexOf('Firefox') >= 0) {
 		return 'Firefox';
 	}
+	console.log('Tumblr Savior could not detect your browser.');
 	return 'Undetected Browser';
 }
 
