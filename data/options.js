@@ -243,7 +243,7 @@ function notifyBrowsers(newSettings) {
 		break;
 	case 'Firefox':
 		addon.postMessage(JSON.stringify(newSettings));
-		brea;
+		break;
 	}
 }
 

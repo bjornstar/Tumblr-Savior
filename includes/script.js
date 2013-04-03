@@ -7,7 +7,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.4',
+	'version': '0.4.5',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -143,7 +143,7 @@ function hide_tags() {
 	var cssRules = [];
 
 	cssRules[0]  = ".tumblr_savior a.tag {}";
-//	addGlobalStyle("notice_tags_css", cssRules);
+	addGlobalStyle("notice_tags_css", cssRules);
 }
 
 function show_white_notice() {
@@ -360,7 +360,7 @@ function getAuthor(liPost) {
 		pPost = pPost.previousSibling;
 	}
 
-	author.name = pPost.getElementsByClassName("post_info").item(0).getElementsByTagName("A").item(0).innerHTML;
+	author.name = pPost.getElementsByClassName("post_info").item(0).getElementsByTagName("A").item(0).textContent
 
 	avatar = document.getElementById(pPost.id.replace('_', '_avatar_'));
 
@@ -533,7 +533,7 @@ function checkPost(liPost) {
 
 					span_notice_tags = document.createElement("span");
 					span_notice_tags.appendChild(document.createTextNode("Tags: "));
-					span_notice_tags.appendChild(document.createTextNode(span_tags.innerText));
+					span_notice_tags.appendChild(document.createTextNode(span_tags.textContent));
 
 					div_sentence.appendChild(span_notice_tags);
 				}
@@ -786,6 +786,10 @@ function safariContextMenuHandler(event) {
 }
 
 function chromeHandleMessage(event) {
+	if (!event) {
+		return console.error('There seems to be something wrong with Tumblr Savior.');
+	}
+
 	var savedSettings;
 
 	savedSettings = event.data;
