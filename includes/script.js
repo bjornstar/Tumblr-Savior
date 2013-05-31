@@ -7,7 +7,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.6',
+	'version': '0.4.7',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -343,12 +343,12 @@ function parseSettings(savedSettings) {
 	return parsedSettings;
 }
 
-function getAuthor(divPost) {
+function getAuthor(post) {
 	var author = {
-		name: divPost.dataset.tumblelogName
+		name: post.dataset.tumblelogName
 	};
 
-	var avatar = document.getElementById(divPost.id.replace('_', '_avatar_'));
+	var avatar = document.getElementById(post.id.replace('_', '_avatar_'));
 
 	if (avatar) {
 		author.avatar = avatar.getAttribute("style").replace('background-image:url(\'', '').replace('_64.', '_40.').replace('\')', '');
@@ -375,40 +375,32 @@ function handleReveal(e) {
 }
 
 
-function checkPost(divPost) {
+function checkPost(post) {
 	var olPosts, liPost, bln, wln, liRemove, n, savedfrom, author, li_notice, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, imgRating, spanWhitelisted, spanBlacklisted, anchors, a, remove, ribbon_right, ribbon_left;
 
-	if (typeof divPost !== 'object') {
+	if (post.className.indexOf('not_mine') < 0) {
 		return;
 	}
 
-	if (!divPost.id) {
+	if (manuallyShown[post.id]) {
 		return;
 	}
 
-	if (divPost.id.substring(0, 4) !== 'post') {
-		return;
-	}
-
-	if (divPost.className.indexOf('not_mine') < 0) {
-		return;
-	}
-
-	if (manuallyShown[divPost.id]) {
-		return;
-	}
-
-	if (settings.auto_unpin && divPost.className.indexOf('promotion_pinned') >= 0) {
-		unpin(divPost);
+	if (settings.auto_unpin && post.className.indexOf('promotion_pinned') >= 0) {
+		unpin(post);
 	}
 
 	olPosts = document.getElementById('posts');
 
-	liPost = divPost.parentNode;
+	if (post.tagName === 'DIV') {
+		liPost = post.parentNode;
+	} else {
+		liPost = post;
+	}
 
-	bln = divPost.getElementsByClassName("blacklisted");
-	wln = divPost.getElementsByClassName("whitelisted");
-	liRemove = document.getElementById('notification_' + divPost.id);
+	bln = post.getElementsByClassName("blacklisted");
+	wln = post.getElementsByClassName("whitelisted");
+	liRemove = document.getElementById('notification_' + post.id);
 
 	if (liRemove) {
 		liRemove.parentNode.removeChild(liRemove);
@@ -430,14 +422,14 @@ function checkPost(divPost) {
 		}
 	}
 
-	savedfrom = needstobesaved(divPost.innerHTML);
+	savedfrom = needstobesaved(post.innerHTML);
 
 	if (savedfrom.bL.length && savedfrom.wL.length === 0) {
 		if (settings.show_notice) {
-			author = getAuthor(divPost);
+			author = getAuthor(post);
 
 			li_notice = document.createElement('li');
-			li_notice.id = 'notification_' + divPost.id;
+			li_notice.id = 'notification_' + post.id;
 			li_notice.className = 'notification single_notification tumblr_savior';
 
 			div_inner = document.createElement('DIV');
@@ -505,7 +497,7 @@ function checkPost(divPost) {
 
 			if (settings.show_tags) {
 
-				span_tags = divPost.getElementsByClassName('post_tags');
+				span_tags = post.getElementsByClassName('post_tags');
 
 				if (span_tags.length) {
 					div_sentence.appendChild(document.createElement("br"));
@@ -529,74 +521,74 @@ function checkPost(divPost) {
 	} else if (liPost.style.display === 'none' && liPost.className.indexOf('tumblr_hate') < 0) {
 		liPost.style.display = 'list-item';
 		if (settings.show_notice) {
-			liRemove = document.getElementById('notification_' + divPost.id);
+			liRemove = document.getElementById('notification_' + post.id);
 			if (liRemove) {
 				olPosts.removeChild(liRemove);
 			}
 		}
 	}
 
-	divRating = document.getElementById('white_rating_' + divPost.id);
+	divRating = document.getElementById('white_rating_' + post.id);
 
 	if (divRating) {
 		divRating.parentNode.removeChild(divRating);
 	}
 
 	if (savedfrom.wL.length > 0 && settings.white_notice) {
-		whiteListed[divPost.id] = [];
+		whiteListed[post.id] = [];
 
 		while (savedfrom.wL.length > 0) {
-			whiteListed[divPost.id].push(savedfrom.wL.pop());
+			whiteListed[post.id].push(savedfrom.wL.pop());
 		}
 
 		divRating = document.createElement('div');
-		divRating.id = 'white_rating_' + divPost.id;
+		divRating.id = 'white_rating_' + post.id;
 		divRating.className = 'savior_rating whitelisted';
 
 		imgRating = document.createElement('img');
 		imgRating.src = 'data:image/png;base64,' + icon;
-		imgRating.title = whiteListed[divPost.id].join(", ");
+		imgRating.title = whiteListed[post.id].join(", ");
 
 		divRating.appendChild(imgRating);
 
 		spanWhitelisted = document.createElement('span');
-		spanWhitelisted.textContent = whiteListed[divPost.id].join(", ");
+		spanWhitelisted.textContent = whiteListed[post.id].join(", ");
 
 		divRating.appendChild(spanWhitelisted);
-		divPost.appendChild(divRating);
+		post.appendChild(divRating);
 	}
 
-	divRating = document.getElementById('black_rating_' + divPost.id);
+	divRating = document.getElementById('black_rating_' + post.id);
 
 	if (divRating) {
 		divRating.parentNode.removeChild(divRating);
 	}
 
 	if (savedfrom.bL.length > 0 && settings.black_notice) {
-		blackListed[divPost.id] = [];
+		blackListed[post.id] = [];
 
 		while (savedfrom.bL.length > 0) {
-			blackListed[divPost.id].push(savedfrom.bL.pop());
+			blackListed[post.id].push(savedfrom.bL.pop());
 		}
 
 		divRating = document.createElement('div');
-		divRating.id = 'black_rating_' + divPost.id;
+		divRating.id = 'black_rating_' + post.id;
 		divRating.className = 'savior_rating blacklisted';
 
 		imgRating = document.createElement('img');
 		imgRating.src = 'data:image/png;base64,' + icon;
-		imgRating.title = blackListed[divPost.id].join(", ");
+		imgRating.title = blackListed[post.id].join(", ");
 
 		divRating.appendChild(imgRating);
 
 		spanBlacklisted = document.createElement('span');
-		spanBlacklisted.textContent = blackListed[divPost.id].join(", ");
+		spanBlacklisted.textContent = blackListed[post.id].join(", ");
 
 		divRating.appendChild(spanBlacklisted);
-		divPost.appendChild(divRating);
+		post.appendChild(divRating);
 	}
 
-	anchors = divPost.getElementsByTagName('a');
+	anchors = post.getElementsByTagName('a');
 
 	if (settings.promoted_tags) {
 		for (a = 0; a < anchors.length; a++) {
@@ -607,8 +599,8 @@ function checkPost(divPost) {
 	}
 
 	if (settings.promoted_posts) {
-		if (divPost.outerHTML.indexOf("promotion_highlighted") >= 0) {
-			remove = divPost.id;
+		if (post.outerHTML.indexOf("promotion_highlighted") >= 0) {
+			remove = post.id;
 			document.getElementById(remove).className = document.getElementById(remove).className.replace(/promotion_highlighted/gm, "");
 			ribbon_right = document.getElementById("highlight_ribbon_right_" + remove.replace("post_", ""));
 			ribbon_left = document.getElementById("highlight_ribbon_left_" + remove.replace("post_", ""));
@@ -619,21 +611,21 @@ function checkPost(divPost) {
 }
 
 function handlePostInserted(argPost) {
-	var divPost = argPost.target;
+	var post = argPost.target;
 
-	if (!divPost.id || divPost.id.indexOf('post_') !== 0) {
+	if (!post.id || post.id.indexOf('post_') !== 0) {
 		return;
 	}
 
-	if (inProgress[divPost.id]) {
+	if (inProgress[post.id]) {
 		return;
 	}
 
 	if (!gotSettings) {
-		return inProgress[divPost.id] = true;
+		return inProgress[post.id] = true;
 	}
 
-	checkPost(divPost);
+	checkPost(post);
 }
 
 function wireupnodes() {
@@ -669,7 +661,7 @@ function wireupnodes() {
 	cssRules[4] += "    to { clip: rect(0px, auto, auto, auto); }";
 	cssRules[4] += "}";
 
-	cssRules[5]  = "li.post_container div.post {";
+	cssRules[5]  = "li.post_container div.post, li.post {";
 	cssRules[5] += "    animation-duration: 1ms;";
 	cssRules[5] += "    -o-animation-duration: 1ms;";
 	cssRules[5] += "    -ms-animation-duration: 1ms;";
@@ -695,9 +687,9 @@ function checkPosts() {
 function diaper() {
 	var posts = document.getElementsByClassName('post');
 	for (var i = 0; i < posts.length; i += 1) {
-		var divPost = posts[i];
-		if (divPost.id && divPost.id.indexOf("post") === 0) {
-			inProgress[divPost.id] = true;
+		var post = posts[i];
+		if (post.id && post.id.indexOf("post") === 0) {
+			inProgress[post.id] = true;
 		}
 	}
 	checkPosts();
@@ -728,7 +720,7 @@ function safariMessageHandler(event) {
 		return;
 	}
 
-	savedSettings = event.message.data;
+	savedSettings = event.message;
 	settings = parseSettings(savedSettings);
 	applySettings();
 	waitForPosts();
@@ -737,7 +729,7 @@ function safariMessageHandler(event) {
 function safariContextMenuHandler(event) {
 	var sel;
 
-	sel = window.parent.getSelection();
+	sel = window.parent.getSelection().toString();
 	sel = sel.replace(/[\r\n]/g, ' ');
 	sel = sel.replace(/^\s+|\s+$/g, '');
 
@@ -763,8 +755,13 @@ function chromeHandleMessage(event) {
 function operaHandleMessage(event) {
 	var savedSettings;
 
-	if (event.data === "refreshSettings") {
+	if (event.data === "refreshSettings" || event.data === "addToBlackList") {
 		opera.extension.postMessage("getSettings");
+		return;
+	}
+
+	if (event.data.topic === 'duplicate') {
+		alert(event.data.data + ' is already on your black list.');
 		return;
 	}
 

@@ -108,6 +108,7 @@ function parseSettings() {
 			parsedSettings = JSON.parse(localStorage.settings);
 		} catch (e) {
 			alert("Your stored settings are corrupt, Tumblr Savior has been reset back to the default settings.");
+			console.log(JSON.stringify(localStorage.settings));
 			parsedSettings = defaultSettings;
 		}
 	}
@@ -344,9 +345,12 @@ function saveOptions() {
 		}
 	}
 
-	if (newSettings.toolbar_butt !== oldSettings.toolbar_butt) {
-		if (browser === 'Opera') {
-			opera.extension.postMessage("toolbar");
+	if (browser === 'Opera') {
+		if (newSettings.context_menu !== oldSettings.context_menu) {
+			opera.extension.postMessage('contextmenu');
+		}
+		if (newSettings.toolbar_butt !== oldSettings.toolbar_butt) {
+			opera.extension.postMessage('toolbar');
 		}
 	}
 
@@ -368,15 +372,24 @@ function safariMessageHandler(event) {
 	case "reload":
 		location.reload();
 		break;
-	case "updateSettings":
+	case "settings":
 		localStorage.settings = event.message;
-		location.reload();
+		resetLists();
+		loadOptions();
 		break;
 	}
 }
 
 function firefoxMessageHandler() {
 	addon.postMessage(localStorage.settings);
+}
+
+function operaMessageHandler(event) {
+	switch (event.data) {
+	case 'addToBlackList':
+		location.reload();
+		break;
+	}
 }
 
 function importOptions() {
@@ -467,7 +480,7 @@ function contentLoaded() {
 	version_div = document.getElementById("version_div");
 	version_div.textContent = "v" + defaultSettings.version; //use default so we're always showing current version regardless of what people have saved.
 
-	if (browser === 'Opera') {
+	if (browser === 'Firefox') {
 		context_menu_div = document.getElementById("context_menu_div");
 		context_menu_div.setAttribute("style", "display:none;");
 	}
@@ -485,12 +498,17 @@ function contentLoaded() {
 	loadOptions();
 }
 
-if (browser === 'Safari') {
+switch (browser) {
+case 'Opera':
+	opera.extension.onmessage = operaMessageHandler;
+	break;
+case 'Safari':
 	safari.self.addEventListener("message", safariMessageHandler, false);
-}
-
-if (browser === 'Firefox') {
+	safari.self.tab.dispatchMessage('getSettings');
+	break;
+case 'Firefox':
 	addon.on("message", firefoxMessageHandler);
+	break;
 }
 
 document.addEventListener("DOMContentLoaded", contentLoaded);

@@ -34,10 +34,14 @@ function chromeMessageHandler(message, sender, sendResponse) {
 function parseSettings() {
 	var parsedSettings;
 
-	if (localStorage === undefined || localStorage.settings === undefined || localStorage.settings === null) {
+	if (!localStorage || !localStorage.settings) {
 		parsedSettings = defaultSettings;
 	} else {
-		parsedSettings = JSON.parse(localStorage.settings);
+		try {
+			parsedSettings = JSON.parse(localStorage.settings);
+		} catch (e) {
+			parsedSettings = defaultSettings;
+		}
 	}
 
 	return parsedSettings;
@@ -79,24 +83,20 @@ function addToBlackList(theword) {
 }
 
 function chromeAddToBlackList(info, tab) {
-	var theword, success, chromeViews, chromeView;
+	var theword, chromeViews, chromeView;
 	theword = info.selectionText;
 
-	if (theword !== undefined) {
-		success = addToBlackList(theword);
-
-		if (success) {
-			chromeViews = chrome.extension.getViews();
-			for (chromeView = 0; chromeView < chromeViews.length; chromeView++) {
-				if (chromeViews[chromeView].location === chrome.extension.getURL('data/options.html')) {
-					chromeViews[chromeView].location.reload();
-				}
+	if (theword && addToBlackList(theword)) {
+		chromeViews = chrome.extension.getViews();
+		for (chromeView = 0; chromeView < chromeViews.length; chromeView++) {
+			if (chromeViews[chromeView].location === chrome.extension.getURL('data/options.html')) {
+				chromeViews[chromeView].location.reload();
 			}
-			if (chrome.tabs.sendMessage !== undefined) {
-				chrome.tabs.sendMessage(tab.id, 'refreshSettings');
-			} else if (chrome.tabs.sendRequest !== undefined) {
-				chrome.tabs.sendRequest(tab.id, 'refreshSettings');
-			}
+		}
+		if (chrome.tabs.sendMessage !== undefined) {
+			chrome.tabs.sendMessage(tab.id, 'refreshSettings');
+		} else if (chrome.tabs.sendRequest !== undefined) {
+			chrome.tabs.sendRequest(tab.id, 'refreshSettings');
 		}
 	}
 }
@@ -122,6 +122,37 @@ function operaToolbar() {
 	}
 }
 
+function operaAddToBlackList(event) {
+	var theword = event.selectionText;
+	if (theword && addToBlackList(theword)) {
+		opera.extension.broadcastMessage('addToBlackList');
+	} else {
+		opera.extension.broadcastMessage({ topic: 'duplicate', data: theword });
+	}
+}
+
+function operaContextMenu() {
+	if (!opera.contexts.menu) {
+		// no permissions
+		return;
+	}
+
+	var settings = parseSettings();
+	var menu = opera.contexts.menu;
+
+	if (settings.context_menu) {
+		var itemProps = {
+			contexts: [ 'selection' ],
+			title: 'Add to Tumblr Savior black list',
+			onclick: operaAddToBlackList
+		}
+		var item = menu.createItem(itemProps);
+		menu.addItem(item);
+	} else {
+		menu.removeItem(0);
+	}
+}
+
 function operaMessageHandler(event) {
 	switch (event.data) {
 	case 'getSettings':
@@ -132,6 +163,9 @@ function operaMessageHandler(event) {
 		break;
 	case 'toolbar':
 		operaToolbar();
+		break;
+	case 'contextmenu':
+		operaContextMenu();
 		break;
 	default:
 		event.source.postMessage({}); // send a blank reply.
@@ -144,7 +178,7 @@ function safariMessageHandler(event) {
 
 	switch (event.name) {
 	case 'getSettings':
-		event.target.page.dispatchMessage('settings', {data: localStorage.settings});
+		event.target.page.dispatchMessage('settings', localStorage.settings);
 		break;
 	case 'refreshSettings':
 		localStorage.settings = JSON.stringify(event.message);
@@ -161,7 +195,7 @@ function safariMessageHandler(event) {
 }
 
 function safariCommandHandler(event) {
-	var tabAlreadyOpened, tab, newTab, theword, success;
+	var tabAlreadyOpened, tab, newTab, theword;
 
 	switch (event.command) {
 	case 'options':
@@ -179,15 +213,13 @@ function safariCommandHandler(event) {
 		break;
 	case 'addToBlackList':
 		theword = event.userInfo;
-		if (theword !== undefined) {
-			success = addToBlackList(theword);
-			if (success) {
-				for (tab = 0; tab < safari.application.activeBrowserWindow.tabs; tab++) {
-					if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://*.tumblr.com/*'])) {
-						safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage('refreshSettings');
-					} else if (safari.application.activeBrowserWindow.tabs[tab].url === safari.extension.baseURI + 'data/options.html') {
-						safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage('updateSettings', localStorage.settings);
-					}
+		if (theword && addToBlackList(theword)) {
+			for (tab = 0; tab < safari.application.activeBrowserWindow.tabs.length; tab++) {
+				if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://*.tumblr.com/*'])) {
+					safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage('refreshSettings');
+				}
+				if (safari.application.activeBrowserWindow.tabs[tab].url === safari.extension.baseURI + 'data/options.html') {
+					safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage('settings', localStorage.settings);
 				}
 			}
 		}
@@ -201,7 +233,7 @@ function safariContextMenuHandler(event) {
 	wordBlack = event.userInfo;
 	settings = parseSettings();
 
-	if (settings.context_menu && wordBlack !== undefined && wordBlack !== null) {
+	if (settings.context_menu && wordBlack) {
 		if (wordBlack.length > 25) {
 			wordBlack = wordBlack.substr(0, 25);
 			wordBlack = wordBlack.replace(/^\s+|\s+$/g, '');
@@ -294,6 +326,7 @@ case 'Opera':
 	console.log('Setting up the',browser,'backend.');
 	opera.extension.onmessage = operaMessageHandler;
 	operaToolbar();
+	operaContextMenu();
 	break;
 case 'Safari':
 	console.log('Setting up the',browser,'backend.');

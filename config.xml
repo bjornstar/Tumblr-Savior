@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets"
-  version="0.4.6">
+  version="0.4.7">
 	<name short="Tumblr Savior">Tumblr Savior for Opera</name>
 	<description>Tired of iPad posts filling up your dashboard? Hate hearing about an athlete's latest blunders? Tumblr Savior is here to save you!</description>
 	<author href="http://bjornstar.com"
     email="bjorn@bjornstar.com">Bjorn Stromberg (@bjornstar)</author>
-  <icon src="data/Icon-64.png"/>
-  <update-description href="http://tumblr-savior.bjornstar.com/update.xml"/>
+	<icon src="data/Icon-64.png" />
+	<feature name="opera:contextmenus" required="false" />
+	<update-description href="http://tumblr-savior.bjornstar.com/update.xml" />
 </widget>

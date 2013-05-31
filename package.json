@@ -2,10 +2,12 @@
 	"name": "tumblr-savior",
 	"license": "MPL 2.0",
 	"author": "Bjorn Stromberg",
-	"version": "0.4.6",
+	"version": "0.4.7",
 	"fullName": "Tumblr Savior",
 	"id": "jid1-W5guVoyeUR0uBg",
 	"description": "Tired of iPad posts filling up your dashboard? Hate hearing about an athlete's latest blunders? Tumblr Savior is here to save you!",
+	"homepage": "http://tumblr-savior.bjornstar.com",
 	"icon": "data/Icon-48.png",
-	"icon64": "data/Icon-64.png"
+	"icon64": "data/Icon-64.png",
+	"lib": "data"
 }
