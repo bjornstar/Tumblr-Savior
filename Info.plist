@@ -51,7 +51,10 @@
 	<dict>
 		<key>Blacklist</key>
 		<array>
-			<string>http://www.tumblr.com/tumblelog/*</string>
+			<string>http://www.tumblr.com/blog/*</string>
+			<string>http://www.tumblr.com/uploads/*</string>
+			<string>http://www.tumblr.com/inbox</string>
+			<string>http://www.tumblr.com/inbox/*</string>
 		</array>
 		<key>Scripts</key>
 		<dict>
