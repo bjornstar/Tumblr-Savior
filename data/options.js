@@ -5,13 +5,13 @@ function getBrowser() {
 	if (window && window.safari) {
 		return 'Safari';
 	}
-	if (window && window.opera) {
+	if (navigator.userAgent.indexOf('OPR') >= 0) {
 		return 'Opera';
 	}
 	if (navigator.userAgent.indexOf('Firefox') >= 0) {
 		return 'Firefox';
 	}
-	console.log('Tumblr Savior could not detect your browser.');
+	console.error('Tumblr Savior could not detect your browser.');
 	return 'Undetected Browser';
 }
 
@@ -234,10 +234,8 @@ function chromeNotifyTumblr(tabs) {
 function notifyBrowsers(newSettings) {
 	switch (browser) {
 	case 'Chrome':
-		chrome.tabs.getAllInWindow(null, chromeNotifyTumblr);
-		break;
 	case 'Opera':
-		opera.extension.postMessage("refreshSettings");
+		chrome.tabs.getAllInWindow(null, chromeNotifyTumblr);
 		break;
 	case 'Safari':
 		safari.self.tab.dispatchMessage("refreshSettings", newSettings);
@@ -329,7 +327,7 @@ function saveOptions() {
 
 	if (newSettings.context_menu) {
 		if (!oldSettings.context_menu) {
-			if (browser === 'Chrome') {
+			if (browser === 'Chrome' || browser === 'Opera') {
 				cmAddToBlackList = chrome.contextMenus.create({
 					"type": "normal",
 					"title": "Add '%s' to Tumblr Savior black list",
@@ -340,17 +338,8 @@ function saveOptions() {
 			}
 		}
 	} else {
-		if (browser === 'Chrome') {
+		if (browser === 'Chrome' || browser === 'Opera') {
 			chrome.contextMenus.removeAll();
-		}
-	}
-
-	if (browser === 'Opera') {
-		if (newSettings.context_menu !== oldSettings.context_menu) {
-			opera.extension.postMessage('contextmenu');
-		}
-		if (newSettings.toolbar_butt !== oldSettings.toolbar_butt) {
-			opera.extension.postMessage('toolbar');
 		}
 	}
 
@@ -382,14 +371,6 @@ function safariMessageHandler(event) {
 
 function firefoxMessageHandler() {
 	addon.postMessage(localStorage.settings);
-}
-
-function operaMessageHandler(event) {
-	switch (event.data) {
-	case 'addToBlackList':
-		location.reload();
-		break;
-	}
 }
 
 function importOptions() {

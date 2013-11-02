@@ -7,22 +7,22 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.7',
+	'version': '0.4.9',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
 	'show_notice': true,
 	'show_words': true,
-	'match_words': false,
+	'match_words': true,
 	'promoted_tags': false,
 	'promoted_posts': false,
 	'context_menu': true,
 	'toolbar_butt': true,
-	'white_notice': false,
-	'black_notice': false,
+	'white_notice': true,
+	'black_notice': true,
 	'hide_pinned': false,
 	'auto_unpin': true,
-	'show_tags': false,
+	'show_tags': true,
 	'hide_premium': true
 }; //initialize default values.
 
@@ -33,53 +33,64 @@ var invalidTumblrURLs = [
 	'http://www.tumblr.com/inbox/*'
 ]; // Don't run tumblr savior on these pages.
 
-var settings = {};
+var settings = defaultSettings;
 var gotSettings = false;
 var manuallyShown = {};
 var isTumblrSaviorRunning = false;
 var inProgress = {};
-var icon = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAnNJREFUeNqMU09M02AU/8awC5vJsu2g4ExwkDgJQzfCEsWEgQxI1CVLvHDadYNE9IAm84KJ3EBPBjGe0ETw6AXmwRBPXhjTkjCTicvC+FPKZC1tt7brs1/JcIMY92val+977/3e7/v6HgIAVAtMJpPR4XA463Q6XeV+/f8SbTbbWY/bfT0QCAQpitI/m5wMV/p1WEElqcFgQFc7Ojq9Xm+Pt6vL53K5blxqbraZrVb0ZXk529Pbaz+loLHx/LmhwaHbnk5Pj/ua+2ZrS4vDpiYoiqKRK6AgmqJQU1OTiSCIelEU5WMGrODR+HhUtcCzLGxns3CYz4PAccCp63dzc/Di+TTs03s4BG719Q1UKqjDH5qmD7Cl9igE6rMUi6GJpxPoTuAu+pVOI5Ik0T5NawmRcHi06pKwgra2K66SLIEsiZBYjcOTaBRez87i3wNrJKlVpnZ3oAy73X6xigDjW2I1hZ07W1vAq/IxfD4fDA8Pw0m8mpl5c4pgdGTk/snAT7EYGI1GyGQy2rpQLGpWkiSwWiyWKgK9Xt/AsuwhDiiVSsckOMTv90OhUABeEIA5CoEHY2MPjy8R56tJwvTU1Eu8KBZFbTOZTKJgMIi6u7sRw7JIEiXE87zm6x8YvKcW1ZcVELipzGZzq8ALJVmW4fdBHtbXkyAIBa2irIqSlb/HI8m1PbW9G8qtLGEV+Xw+tfBh4XMoFOo/QxDI6bx8dEz1XY2vbDMMQ8Xj8ZVEIv41lfr5g+M4oUyAY7Tu+q4CK0xvbDCbm5sbuVxua37+/dulxcWPoiTxp4bl5DS2t7d3RcKRx1ar5UItU6qrdZz/hT8CDADaR5pMovP3DQAAAABJRU5ErkJggg==";
+var icon = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYW"
+ + "R5ccllPAAAAnNJREFUeNqMU09M02AU/8awC5vJsu2g4ExwkDgJQzfCEsWEgQxI1CVLvHDadYNE9IAm84KJ3EBPBjGe0ETw"
+ + "6AXmwRBPXhjTkjCTicvC+FPKZC1tt7brs1/JcIMY92val+977/3e7/v6HgIAVAtMJpPR4XA463Q6XeV+/f8SbTbbWY/bfT"
+ + "0QCAQpitI/m5wMV/p1WEElqcFgQFc7Ojq9Xm+Pt6vL53K5blxqbraZrVb0ZXk529Pbaz+loLHx/LmhwaHbnk5Pj/ua+2Zr"
+ + "S4vDpiYoiqKRK6AgmqJQU1OTiSCIelEU5WMGrODR+HhUtcCzLGxns3CYz4PAccCp63dzc/Di+TTs03s4BG719Q1UKqjDH5"
+ + "qmD7Cl9igE6rMUi6GJpxPoTuAu+pVOI5Ik0T5NawmRcHi06pKwgra2K66SLIEsiZBYjcOTaBRez87i3wNrJKlVpnZ3oAy7"
+ + "3X6xigDjW2I1hZ07W1vAq/IxfD4fDA8Pw0m8mpl5c4pgdGTk/snAT7EYGI1GyGQy2rpQLGpWkiSwWiyWKgK9Xt/AsuwhDi"
+ + "iVSsckOMTv90OhUABeEIA5CoEHY2MPjy8R56tJwvTU1Eu8KBZFbTOZTKJgMIi6u7sRw7JIEiXE87zm6x8YvKcW1ZcVELip"
+ + "zGZzq8ALJVmW4fdBHtbXkyAIBa2irIqSlb/HI8m1PbW9G8qtLGEV+Xw+tfBh4XMoFOo/QxDI6bx8dEz1XY2vbDMMQ8Xj8Z"
+ + "VEIv41lfr5g+M4oUyAY7Tu+q4CK0xvbDCbm5sbuVxua37+/dulxcWPoiTxp4bl5DS2t7d3RcKRx1ar5UItU6qrdZz/hT8C"
+ + "DADaR5pMovP3DQAAAABJRU5ErkJggg==";
+
 var whiteListed = {};
 var blackListed = {};
 
+var filters = {};
+
+function detectBrowser() {
+	if (window && window.chrome) {
+		return 'Chrome';
+	}
+	if (window && window.safari) {
+		return 'Safari';
+	}
+	if (navigator.userAgent.indexOf('OPR') >= 0) {
+		return 'Opera';
+	}
+	if (navigator.userAgent.indexOf('Firefox') >= 0) {
+		return 'Firefox';
+	}
+	console.error('Tumblr Savior could not detect your browser.');
+	return 'Undetected Browser';
+}
+
+var browser = detectBrowser();
+
 function needstobesaved(theStr) {
-	var blackList, whiteList, rO, i, filterRegex, re;
+	var blackList, whiteList, rO, i;
 	blackList = settings.listBlack;
 	whiteList = settings.listWhite;
 
-	rO = {}; //returnObject
-	rO.bL = []; //returnObject.blackListed
-	rO.wL = []; //returnObject.whiteListed
+	rO = { bL: [], wL: [] }; //returnObject
 
 	theStr = theStr.toLowerCase();
 
-	if (settings.match_words) {
-		for (i = 0; i < whiteList.length; i++) {
-			filterRegex = '(^|\\W)(' + whiteList[i].toLowerCase().replace(/\?/g, "\\?").replace(/\)/g, "\\)").replace(/\(/g, "\\(").replace(/\[/g, "\\[").replace(/\x2a/g, "(\\w*?)") + ')(\\W|$)';
-			re = new RegExp(filterRegex);
-			if (theStr.match(re)) {
-				rO.wL.push(whiteList[i]);
-			}
+	for (i = 0; i < blackList.length; i += 1) {
+		if (filters.black[i](theStr)) {
+			rO.bL.push(blackList[i]);
 		}
-
-		for (i = 0; i < blackList.length; i++) {
-			filterRegex = '(^|\\W)(' + blackList[i].toLowerCase().replace(/\?/g, "\\?").replace(/\)/g, "\\)").replace(/\(/g, "\\(").replace(/\[/g, "\\[").replace(/\x2a/g, "(\\w*?)") + ')(\\W|$)';
-			re = new RegExp(filterRegex);
-			if (theStr.match(re)) {
-				rO.bL.push(blackList[i]);
-			}
-		}
-	} else {
-		for (i = 0; i < whiteList.length; i++) {
-			if (theStr.indexOf(whiteList[i].toLowerCase()) >= 0) {
-				rO.wL.push(whiteList[i]);
-			}
-		}
-
-		for (i = 0; i < blackList.length; i++) {
-			if (theStr.indexOf(blackList[i].toLowerCase()) >= 0) {
-				rO.bL.push(blackList[i]);
-			}
+	}
+	for (i = 0; i < whiteList.length; i += 1) {
+		if (filters.white[i](theStr)) {
+			rO.wL.push(whiteList[i]);
 		}
 	}
 
@@ -328,19 +339,60 @@ function applySettings() {
 }
 
 function parseSettings(savedSettings) {
-	var parsedSettings = {};
+	// This parses the settings received from the options page and stashes them in the global
+	// settings object. If there is a parse error, we get a warning and default values. We also
+	// take this opportunity to pre-compile our blacklist and whitelist filters so we are not
+	// wasting time repeatedly building them while filtering.
 
-	if (savedSettings === undefined || savedSettings === null || savedSettings === '' || savedSettings === '{}') {
-		parsedSettings = defaultSettings;
-	} else {
-		try {
-			parsedSettings = JSON.parse(savedSettings);
-		} catch (err) {
-			parsedSettings = defaultSettings;
+	var i;
+
+	try {
+		settings = JSON.parse(savedSettings);
+	} catch (err) {
+		console.warn('Tumblr Savior: Error parsing settings, using defaults.');
+		settings = defaultSettings;
+	}
+
+	function buildRegex(entry) {
+		var str = '(^|\\W)(' + entry.replace(/\?/g, "\\?").replace(/\)/g, "\\)").replace(/\(/g, "\\(").replace(/\[/g, "\\[").replace(/\x2a/g, "(\\w*?)") + ')(\\W|$)';
+		var re = new RegExp(str);
+		return function testRegex(content) {
+			return content.match(re);
 		}
 	}
 
-	return parsedSettings;
+	function buildIndexOf(entry) {
+		return function testIndexOf(content) {
+			return content.indexOf(entry) !== -1;
+		}
+	}
+
+	filters.black = [];
+	filters.white = [];
+
+	if (settings.match_words) {
+		for (i = 0; i < settings.listBlack.length; i += 1) {
+			var entry = settings.listBlack[i].toLowerCase();
+			var test = buildRegex(entry);
+			filters.black.push(test);
+		}
+		for (i = 0; i < settings.listWhite.length; i += 1) {
+			var entry = settings.listWhite[i].toLowerCase();
+			var test = buildRegex(entry);
+			filters.white.push(test);
+		}
+	} else {
+		for (i = 0; i < settings.listBlack.length; i += 1) {
+			var entry = settings.listBlack[i].toLowerCase();
+			var test = buildIndexOf(entry);
+			filters.black.push(test);
+		}
+		for (i = 0; i < settings.listWhite.length; i += 1) {
+			var entry = settings.listWhite[i].toLowerCase();
+			var test = buildIndexOf(entry);
+			filters.white.push(test);
+		}
+	}
 }
 
 function getAuthor(post) {
@@ -379,6 +431,10 @@ function checkPost(post) {
 	var olPosts, liPost, bln, wln, liRemove, n, savedfrom, author, li_notice, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, imgRating, spanWhitelisted, spanBlacklisted, anchors, a, remove, ribbon_right, ribbon_left;
 
 	if (post.className.indexOf('not_mine') < 0) {
+		return;
+	}
+
+	if (post.className.indexOf('post_micro') !== -1) {
 		return;
 	}
 
@@ -422,7 +478,8 @@ function checkPost(post) {
 		}
 	}
 
-	savedfrom = needstobesaved(post.innerHTML);
+	var postText = post.innerHTML.substring(0,post.innerHTML.indexOf('<div class="post_notes">'));
+	savedfrom = needstobesaved(postText);
 
 	if (savedfrom.bL.length && savedfrom.wL.length === 0) {
 		if (settings.show_notice) {
@@ -713,15 +770,12 @@ function waitForPosts() {
 
 
 function safariMessageHandler(event) {
-	var savedSettings;
-
 	if (event.name === "refreshSettings") {
 		safari.self.tab.dispatchMessage("getSettings");
 		return;
 	}
 
-	savedSettings = event.message;
-	settings = parseSettings(savedSettings);
+	parseSettings(event.message);
 	applySettings();
 	waitForPosts();
 }
@@ -743,49 +797,23 @@ function chromeHandleMessage(event) {
 		return console.error('There seems to be something wrong with Tumblr Savior.');
 	}
 
-	var savedSettings;
-
-	savedSettings = event.data;
-	settings = parseSettings(savedSettings);
-
-	applySettings();
-	waitForPosts();
-}
-
-function operaHandleMessage(event) {
-	var savedSettings;
-
-	if (event.data === "refreshSettings" || event.data === "addToBlackList") {
-		opera.extension.postMessage("getSettings");
-		return;
-	}
-
-	if (event.data.topic === 'duplicate') {
-		alert(event.data.data + ' is already on your black list.');
-		return;
-	}
-
-	if (event.data.topic === "settings") {
-		savedSettings = event.data.data;
-		settings = parseSettings(savedSettings);
-	}
+	parseSettings(event.data);
 
 	applySettings();
 	waitForPosts();
 }
 
 function firefoxMessageHandler(data) {
-	var savedSettings;
-
-	savedSettings = data;
-	settings = parseSettings(savedSettings);
+	parseSettings(data);
 
 	applySettings();
 	waitForPosts();
 }
 
 function initializeTumblrSavior() {
-	if (window.chrome !== undefined) {
+	switch (browser) {
+	case 'Chrome':
+	case 'Opera':
 		if (chrome.extension.onMessage !== undefined) {
 			chrome.extension.onMessage.addListener(
 				function (request) {
@@ -805,16 +833,18 @@ function initializeTumblrSavior() {
 			);
 			chrome.extension.sendRequest('getSettings', chromeHandleMessage);
 		}
-	} else if (window.opera !== undefined) {
-		opera.extension.onmessage = operaHandleMessage;
-		opera.extension.postMessage('getSettings');
-	} else if (window.safari !== undefined) {
+		break;
+	case 'Safari':
 		window.addEventListener("contextmenu", safariContextMenuHandler, false);
 		safari.self.addEventListener('message', safariMessageHandler, false);
 		safari.self.tab.dispatchMessage('getSettings');
-	} else { // We must be firefox.
+		break;
+	case 'Firefox':
 		self.on('message', firefoxMessageHandler);
 		self.postMessage('getSettings');
+		break;
+	default:
+		console.error('I\'m sorry, but Tumblr Savior could not detect which browser you are using.');
 	}
 }
 

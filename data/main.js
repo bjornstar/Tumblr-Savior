@@ -3,7 +3,7 @@ var settings;
 var firefoxWorkers = [];
 var firefoxOptionsPanel;
 
-function getBrowser() {
+function detectBrowser() {
 	try {
 		if (window && window.chrome) {
 			return 'Chrome';
@@ -11,17 +11,13 @@ function getBrowser() {
 		if (window && window.safari) {
 			return 'Safari';
 		}
-		if (window && window.opera) {
-			return 'Opera';
-		}
-		return 'Undetected Browser';
 	} catch (e) {
 		// I hate developing Firefox extensions.
 		return 'Firefox';
 	}
 }
 
-var browser = getBrowser();
+var browser = detectBrowser();
 
 function chromeMessageHandler(message, sender, sendResponse) {
 	if (message === 'getSettings') {
@@ -98,78 +94,6 @@ function chromeAddToBlackList(info, tab) {
 		} else if (chrome.tabs.sendRequest !== undefined) {
 			chrome.tabs.sendRequest(tab.id, 'refreshSettings');
 		}
-	}
-}
-
-function operaToolbar() {
-	var settings, button;
-
-	settings = parseSettings();
-
-	if (settings.toolbar_butt) {
-		button = opera.contexts.toolbar.createItem({
-			icon: 'data/Icon-16.png',
-			popup: {
-				href: 'data/options.html',
-				width: 940,
-				height: 610
-			},
-			title: 'Tumblr Savior'
-		});
-		opera.contexts.toolbar.addItem(button);
-	} else {
-		opera.contexts.toolbar.removeItem(opera.contexts.toolbar.item(0));
-	}
-}
-
-function operaAddToBlackList(event) {
-	var theword = event.selectionText;
-	if (theword && addToBlackList(theword)) {
-		opera.extension.broadcastMessage('addToBlackList');
-	} else {
-		opera.extension.broadcastMessage({ topic: 'duplicate', data: theword });
-	}
-}
-
-function operaContextMenu() {
-	if (!opera.contexts.menu) {
-		// no permissions
-		return;
-	}
-
-	var settings = parseSettings();
-	var menu = opera.contexts.menu;
-
-	if (settings.context_menu) {
-		var itemProps = {
-			contexts: [ 'selection' ],
-			title: 'Add to Tumblr Savior black list',
-			onclick: operaAddToBlackList
-		}
-		var item = menu.createItem(itemProps);
-		menu.addItem(item);
-	} else {
-		menu.removeItem(0);
-	}
-}
-
-function operaMessageHandler(event) {
-	switch (event.data) {
-	case 'getSettings':
-		event.source.postMessage({topic: 'settings', data: localStorage.settings});
-		break;
-	case 'refreshSettings':
-		opera.extension.broadcastMessage('refreshSettings');
-		break;
-	case 'toolbar':
-		operaToolbar();
-		break;
-	case 'contextmenu':
-		operaContextMenu();
-		break;
-	default:
-		event.source.postMessage({}); // send a blank reply.
-		break;
 	}
 }
 
@@ -322,12 +246,6 @@ case 'Chrome':
 		});
 	}
 	break;
-case 'Opera':
-	console.log('Setting up the',browser,'backend.');
-	opera.extension.onmessage = operaMessageHandler;
-	operaToolbar();
-	operaContextMenu();
-	break;
 case 'Safari':
 	console.log('Setting up the',browser,'backend.');
 	safari.application.addEventListener('message', safariMessageHandler, false);
@@ -340,5 +258,5 @@ case 'Firefox':
 	exports.main = firefoxMain;
 	break;
 default:
-	console.error('I\'m sorry, but your browser was not detected correctly.');
+	console.error('I\'m sorry, but your browser extension system was not detected correctly.');
 }
