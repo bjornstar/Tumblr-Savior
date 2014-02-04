@@ -107,7 +107,7 @@ function safariMessageHandler(event) {
 	case 'refreshSettings':
 		localStorage.settings = JSON.stringify(event.message);
 		for (tab = 0; tab < safari.application.activeBrowserWindow.tabs.length; tab++) {
-			if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://*.tumblr.com/*'])) {
+			if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
 				safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage('refreshSettings');
 			}
 		}
@@ -139,7 +139,7 @@ function safariCommandHandler(event) {
 		theword = event.userInfo;
 		if (theword && addToBlackList(theword)) {
 			for (tab = 0; tab < safari.application.activeBrowserWindow.tabs.length; tab++) {
-				if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://*.tumblr.com/*'])) {
+				if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
 					safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage('refreshSettings');
 				}
 				if (safari.application.activeBrowserWindow.tabs[tab].url === safari.extension.baseURI + 'data/options.html') {
@@ -197,7 +197,7 @@ function firefoxMain() {
 	var panels = require('panel');
 
 	pageMod.PageMod({
-		include: ['http://www.tumblr.com/*'],
+		include: ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'],
 		contentScriptFile: self.data.url('script.js'),
 		contentScriptWhen: 'ready',
 		onAttach: function onAttach(worker) {
@@ -241,7 +241,7 @@ case 'Chrome':
 			'type': 'normal',
 			'title': 'Add \'%s\' to Tumblr Savior black list',
 			'contexts': ['selection'],
-			'documentUrlPatterns': ['http://*.tumblr.com/*'],
+			'documentUrlPatterns': ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'],
 			'onclick': chromeAddToBlackList
 		});
 	}

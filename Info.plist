@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.4.9</string>
+	<string>0.4.10</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>Chrome</key>
@@ -51,10 +51,8 @@
 	<dict>
 		<key>Blacklist</key>
 		<array>
-			<string>http://www.tumblr.com/blog/*</string>
 			<string>http://www.tumblr.com/uploads/*</string>
-			<string>http://www.tumblr.com/inbox</string>
-			<string>http://www.tumblr.com/inbox/*</string>
+			<string>https://www.tumblr.com/uploads/*</string>
 		</array>
 		<key>Scripts</key>
 		<dict>
@@ -66,6 +64,7 @@
 		<key>Whitelist</key>
 		<array>
 			<string>http://www.tumblr.com/*</string>
+			<string>https://www.tumblr.com/*</string>
 			<string>safari-extension://com.bjornstar.safari.tumblr-savior-4GANG9K96D/*</string>
 		</array>
 	</dict>

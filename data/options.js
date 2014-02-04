@@ -1,14 +1,15 @@
 function getBrowser() {
+	if (navigator.userAgent.indexOf('OPR') !== -1) {
+		return 'Opera';
+	}
+	// Since Opera is just another version of chrome, it has window.chrome.
 	if (window && window.chrome) {
 		return 'Chrome';
 	}
 	if (window && window.safari) {
 		return 'Safari';
 	}
-	if (navigator.userAgent.indexOf('OPR') >= 0) {
-		return 'Opera';
-	}
-	if (navigator.userAgent.indexOf('Firefox') >= 0) {
+	if (navigator.userAgent.indexOf('Firefox') !== -1) {
 		return 'Firefox';
 	}
 	console.error('Tumblr Savior could not detect your browser.');
@@ -23,40 +24,40 @@ inputLast = 0; //our unique ids for list items
 
 settingsInputs = { //match up our settings object with our dom.
 	checkboxes: {
-		hide_source: "hide_source_cb",
-		show_notice: "show_notice_cb",
-		show_words: "show_words_cb",
-		match_words: "match_words_cb",
-		promoted_tags: "promoted_tags_cb",
-		context_menu: "context_menu_cb",
-		toolbar_butt: "toolbar_butt_cb",
-		promoted_posts: "promoted_posts_cb",
-		white_notice: "white_notice_cb",
-		black_notice: "black_notice_cb",
-		hide_pinned: "hide_pinned_cb",
-		auto_unpin: "auto_unpin_cb",
-		show_tags: "show_tags_cb",
-		hide_premium: "hide_premium_cb"
+		hide_source: 'hide_source_cb',
+		show_notice: 'show_notice_cb',
+		show_words: 'show_words_cb',
+		match_words: 'match_words_cb',
+		promoted_tags: 'promoted_tags_cb',
+		context_menu: 'context_menu_cb',
+		toolbar_butt: 'toolbar_butt_cb',
+		promoted_posts: 'promoted_posts_cb',
+		white_notice: 'white_notice_cb',
+		black_notice: 'black_notice_cb',
+		hide_pinned: 'hide_pinned_cb',
+		auto_unpin: 'auto_unpin_cb',
+		show_tags: 'show_tags_cb',
+		hide_premium: 'hide_premium_cb'
 	},
 	lists:  {
-		listBlack: "listBlack",
-		listWhite: "listWhite"
+		listBlack: 'listBlack',
+		listWhite: 'listWhite'
 	}
 };
 
 function tabClick(whichTab) {
 	var tabs, tab, currentTab, foregroundDiv, backgroundDiv, load_btn, save_btn, reset_btn, spacerDiv, switchto, switchfrom;
 
-	tabs = document.getElementById("tabs");
+	tabs = document.getElementById('tabs');
 
 	for (tab in tabs.children) {
 		if (tabs.children.hasOwnProperty(tab)) {
 			currentTab = tabs.children[tab];
-			if (typeof currentTab === "object") {
+			if (typeof currentTab === 'object') {
 				if (currentTab.id !== whichTab.id) {
-					currentTab.className = "";
+					currentTab.className = '';
 				} else {
-					currentTab.className = "selected";
+					currentTab.className = 'selected';
 				}
 			}
 		}
@@ -69,30 +70,30 @@ function tabClick(whichTab) {
 	reset_btn = document.getElementById('reset_btn');
 	spacerDiv = document.getElementById('spacer');
 
-	if (foregroundDiv.children[0].id !== whichTab.id.replace("Tab", "Div")) {
-		switchto = document.getElementById(whichTab.id.replace("Tab", "Div"));
+	if (foregroundDiv.children[0].id !== whichTab.id.replace('Tab', 'Div')) {
+		switchto = document.getElementById(whichTab.id.replace('Tab', 'Div'));
 		switchfrom = foregroundDiv.children[0];
 		backgroundDiv.appendChild(switchfrom);
 		foregroundDiv.appendChild(switchto);
 		switch (whichTab.id) {
-		case "aboutTab":
-			load_btn.style.display = "none";
-			save_btn.style.display = "none";
-			reset_btn.style.display = "none";
-			spacerDiv.style.display = "none";
+		case 'aboutTab':
+			load_btn.style.display = 'none';
+			save_btn.style.display = 'none';
+			reset_btn.style.display = 'none';
+			spacerDiv.style.display = 'none';
 			break;
-		case "saveloadTab":
-			load_btn.style.display = "";
-			save_btn.style.display = "none";
-			reset_btn.style.display = "";
-			spacerDiv.style.display = "none";
+		case 'saveloadTab':
+			load_btn.style.display = '';
+			save_btn.style.display = 'none';
+			reset_btn.style.display = '';
+			spacerDiv.style.display = 'none';
 			break;
-		case "listsTab":
-		case "settingsTab":
-			load_btn.style.display = "none";
-			save_btn.style.display = "";
-			reset_btn.style.display = "";
-			spacerDiv.style.display = "";
+		case 'listsTab':
+		case 'settingsTab':
+			load_btn.style.display = 'none';
+			save_btn.style.display = '';
+			reset_btn.style.display = '';
+			spacerDiv.style.display = '';
 			break;
 		}
 	}
@@ -101,13 +102,13 @@ function tabClick(whichTab) {
 function parseSettings() {
 	var parsedSettings;
 
-	if (localStorage.settings === undefined || localStorage === null) {
+	if (!localStorage || !localStorage.settings) {
 		parsedSettings = defaultSettings;
 	} else {
 		try {
 			parsedSettings = JSON.parse(localStorage.settings);
 		} catch (e) {
-			alert("Your stored settings are corrupt, Tumblr Savior has been reset back to the default settings.");
+			alert('Your stored settings are corrupt, Tumblr Savior has been reset back to the default settings.');
 			console.log(JSON.stringify(localStorage.settings));
 			parsedSettings = defaultSettings;
 		}
@@ -119,7 +120,7 @@ function parseSettings() {
 
 function removeInput(optionWhich) {
 	var optionInput = document.getElementById(optionWhich);
-	if (optionInput === undefined) {
+	if (!optionInput) {
 		return;
 	}
 	optionInput.parentNode.removeChild(optionInput);
@@ -129,44 +130,44 @@ function addInput(whichList, itemValue) {
 	var listDiv, listAdd, optionInput, currentLength, removeThis, optionAdd, optionImage, optionLinebreak, optionDiv;
 
 	if (itemValue === undefined) { //if we don't pass an itemValue, make it blank.
-		itemValue = "";
+		itemValue = '';
 	}
 
 	currentLength = inputLast++; //have unique DOM id's
 
 	listDiv = document.getElementById(whichList);
-	listAdd = document.getElementById(whichList + "Add");
+	listAdd = document.getElementById(whichList + 'Add');
 
-	optionInput = document.createElement("input");
+	optionInput = document.createElement('input');
 	optionInput.value = itemValue;
-	optionInput.name = "option" + whichList;
-	optionInput.id = "option" + whichList + currentLength;
+	optionInput.name = 'option' + whichList;
+	optionInput.id = 'option' + whichList + currentLength;
 
-	optionAdd = document.createElement("a");
-	optionAdd.href = "#";
-	optionAdd.addEventListener("click", function (e) {
+	optionAdd = document.createElement('a');
+	optionAdd.href = '#';
+	optionAdd.addEventListener('click', function (e) {
 		removeThis = e.target;
-		while (removeThis.tagName !== "DIV") {
+		while (removeThis.tagName !== 'DIV') {
 			removeThis = removeThis.parentNode;
 		}
-		if (removeThis.id.indexOf("_div") >= 0) {
+		if (removeThis.id.indexOf('_div') >= 0) {
 			removeInput(removeThis.id);
 		}
 		e.preventDefault();
 		e.stopPropagation();
 	}, false);
 
-	optionAdd.appendChild(document.createTextNode("\u00A0"));
+	optionAdd.appendChild(document.createTextNode('\u00A0'));
 
-	optionImage = document.createElement("img");
-	optionImage.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGFJREFUeNpiXLVmfTwDA8MEIHYICwm8COTrA9kHgLiAEch5D2QIAPEHkABUIZjPBNIBlQAJLEBS6MAEMgqqAxkUgMQZkewQQJKE6ESSAAkkIFlxgAlq5AeoaxciuaEAIMAAiDAi7M96B5wAAAAASUVORK5CYII=";
+	optionImage = document.createElement('img');
+	optionImage.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGFJREFUeNpiXLVmfTwDA8MEIHYICwm8COTrA9kHgLiAEch5D2QIAPEHkABUIZjPBNIBlQAJLEBS6MAEMgqqAxkUgMQZkewQQJKE6ESSAAkkIFlxgAlq5AeoaxciuaEAIMAAiDAi7M96B5wAAAAASUVORK5CYII=';
 	optionAdd.appendChild(optionImage);
 
-	optionAdd.appendChild(document.createTextNode("\u00A0"));
+	optionAdd.appendChild(document.createTextNode('\u00A0'));
 
-	optionLinebreak = document.createElement("br");
-	optionDiv = document.createElement("div");
-	optionDiv.id = "option" + whichList + currentLength + "_div";
+	optionLinebreak = document.createElement('br');
+	optionDiv = document.createElement('div');
+	optionDiv.id = 'option' + whichList + currentLength + '_div';
 	optionDiv.appendChild(optionAdd);
 	optionDiv.appendChild(optionInput);
 	optionDiv.appendChild(optionLinebreak);
@@ -200,7 +201,7 @@ function loadOptions() {
 		}
 	}
 
-	inandout = document.getElementById("inandout");
+	inandout = document.getElementById('inandout');
 	inandout.textContent = JSON.stringify(loadSettings);
 }
 
@@ -208,7 +209,7 @@ function checkurl(url, filter) {
 	var f, filterRegex, re;
 	for (f in filter) {
 		if (filter.hasOwnProperty(f)) {
-			filterRegex = filter[f].replace(/\x2a/g, "(.*?)");
+			filterRegex = filter[f].replace(/\x2a/g, '(.*?)');
 			re = new RegExp(filterRegex);
 			if (url.match(re)) {
 				return true;
@@ -221,11 +222,11 @@ function checkurl(url, filter) {
 function chromeNotifyTumblr(tabs) {
 	var tab;
 	for (tab in tabs) {
-		if (tabs.hasOwnProperty(tab) && checkurl(tabs[tab].url, ["http://*.tumblr.com/*"])) {
+		if (tabs.hasOwnProperty(tab) && checkurl(tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
 			if (chrome.tabs.sendMessage) {
-				chrome.tabs.sendMessage(tabs[tab].id, "refreshSettings");
+				chrome.tabs.sendMessage(tabs[tab].id, 'refreshSettings');
 			} else if (chrome.tabs.sendRequest) {
-				chrome.tabs.sendRequest(tabs[tab].id, "refreshSettings");
+				chrome.tabs.sendRequest(tabs[tab].id, 'refreshSettings');
 			}
 		}
 	}
@@ -238,7 +239,7 @@ function notifyBrowsers(newSettings) {
 		chrome.tabs.getAllInWindow(null, chromeNotifyTumblr);
 		break;
 	case 'Safari':
-		safari.self.tab.dispatchMessage("refreshSettings", newSettings);
+		safari.self.tab.dispatchMessage('refreshSettings', newSettings);
 		break;
 	case 'Firefox':
 		addon.postMessage(JSON.stringify(newSettings));
@@ -255,7 +256,7 @@ function chromeAddToBlackList(info, tab) {
 	if (info.selectionText) {
 		for (v = 0; v < oldSettings.listBlack.length; v++) {
 			if (oldSettings.listBlack[v].toLowerCase() === info.selectionText.toLowerCase()) {
-				alert("'" + info.selectionText + "' is already on your black list.");
+				alert('\'' + info.selectionText + '\' is already on your black list.');
 				return;
 			}
 		}
@@ -265,15 +266,15 @@ function chromeAddToBlackList(info, tab) {
 
 	chromeViews = chrome.extension.getViews();
 	for (chromeView in chromeViews) {
-		if (chromeViews.hasOwnProperty(chromeView) && chromeViews[chromeView].location === chrome.extension.getURL("options.html")) {
+		if (chromeViews.hasOwnProperty(chromeView) && chromeViews[chromeView].location === chrome.extension.getURL('options.html')) {
 			chromeViews[chromeView].location.reload();
 		}
 	}
 
 	if (chrome.tabs.sendMessage) {
-		chrome.tabs.sendMessage(tab.id, "refreshSettings");
+		chrome.tabs.sendMessage(tab.id, 'refreshSettings');
 	} else if (chrome.tabs.sendRequest) {
-		chrome.tabs.sendRequest(tab.id, "refreshSettings");
+		chrome.tabs.sendRequest(tab.id, 'refreshSettings');
 	}
 }
 
@@ -281,12 +282,12 @@ function resetLists() {
 	var listsDiv, listsInputs, arrayRemove, i, toRemove;
 
 	listsDiv = document.getElementById('listsDiv');
-	listsInputs = listsDiv.getElementsByTagName("input");
+	listsInputs = listsDiv.getElementsByTagName('input');
 
 	arrayRemove = []; // put stuff in an array because firefox is dumb.
 
 	for (i = 0; i < listsInputs.length; i++) {
-		arrayRemove.push(listsInputs[i].id + "_div");
+		arrayRemove.push(listsInputs[i].id + '_div');
 	}
 
 	while (arrayRemove.length > 0) {
@@ -304,7 +305,7 @@ function saveOptions() {
 	for (settingsValue in settingsInputs.checkboxes) {
 		if (settingsInputs.checkboxes.hasOwnProperty(settingsValue)) {
 			settingsInput = document.getElementById(settingsInputs.checkboxes[settingsValue]);
-			if (settingsInput !== undefined) {
+			if (settingsInput) {
 				newSettings[settingsValue] = settingsInput.checked;
 			}
 		}
@@ -314,9 +315,9 @@ function saveOptions() {
 		if (settingsInputs.lists.hasOwnProperty(settingsValue)) {
 			newSettings[settingsValue] = [];
 			settingsInput = document.getElementById(settingsInputs.lists[settingsValue]);
-			listInputs = settingsInput.getElementsByTagName("input");
+			listInputs = settingsInput.getElementsByTagName('input');
 			for (i = 0; i < listInputs.length; i++) {
-				if (listInputs[i].value !== "") {
+				if (listInputs[i].value !== '') {
 					newSettings[settingsValue].push(listInputs[i].value);
 				}
 			}
@@ -329,11 +330,11 @@ function saveOptions() {
 		if (!oldSettings.context_menu) {
 			if (browser === 'Chrome' || browser === 'Opera') {
 				cmAddToBlackList = chrome.contextMenus.create({
-					"type": "normal",
-					"title": "Add '%s' to Tumblr Savior black list",
-					"contexts": ["selection"],
-					"documentUrlPatterns": ["http://*.tumblr.com/*"],
-					"onclick": chromeAddToBlackList
+					type: 'normal',
+					title: 'Add \'%s\' to Tumblr Savior black list',
+					contexts: [ 'selection' ],
+					documentUrlPatterns: [ 'http://www.tumblr.com/*', 'https://www.tumblr.com/*' ],
+					onclick: chromeAddToBlackList
 				});
 			}
 		}
@@ -358,10 +359,10 @@ function eraseOptions() {
 
 function safariMessageHandler(event) {
 	switch (event.name) {
-	case "reload":
+	case 'reload':
 		location.reload();
 		break;
-	case "settings":
+	case 'settings':
 		localStorage.settings = event.message;
 		resetLists();
 		loadOptions();
@@ -376,13 +377,13 @@ function firefoxMessageHandler() {
 function importOptions() {
 	var inandout, dirtySettings, importSettings;
 
-	inandout = document.getElementById("inandout");
+	inandout = document.getElementById('inandout');
 	dirtySettings = inandout.value;
 
 	try {
 		importSettings = JSON.parse(dirtySettings);
 	} catch (e) {
-		alert("Those are settings are corrupt, I'm sorry but I can't use them.");
+		alert('Those are settings are corrupt, I\'m sorry but I can\'t use them.');
 		return;
 	}
 
@@ -402,77 +403,77 @@ function addInputClickHandler(e) {
 function contentLoaded() {
 	var save_btn, reset_btn, load_btn, listWhiteAdd, listBlackAdd, listsTab, settingsTab, saveloadTab, aboutTab, settingsValue, addButton, version_div, browser_span;
 
-	save_btn = document.getElementById("save_btn");
-	reset_btn = document.getElementById("reset_btn");
-	load_btn = document.getElementById("load_btn");
-	listWhiteAdd = document.getElementById("listWhiteAdd");
-	listBlackAdd = document.getElementById("listBlackAdd");
-	listsTab = document.getElementById("listsTab");
-	settingsTab = document.getElementById("settingsTab");
-	saveloadTab = document.getElementById("saveloadTab");
-	aboutTab = document.getElementById("aboutTab");
+	save_btn = document.getElementById('save_btn');
+	reset_btn = document.getElementById('reset_btn');
+	load_btn = document.getElementById('load_btn');
+	listWhiteAdd = document.getElementById('listWhiteAdd');
+	listBlackAdd = document.getElementById('listBlackAdd');
+	listsTab = document.getElementById('listsTab');
+	settingsTab = document.getElementById('settingsTab');
+	saveloadTab = document.getElementById('saveloadTab');
+	aboutTab = document.getElementById('aboutTab');
 
-	save_btn.addEventListener("click", saveOptions);
+	save_btn.addEventListener('click', saveOptions);
 
-	load_btn.addEventListener("click", function () {
-		if (confirm("Are you sure you want to load these settings?")) {
+	load_btn.addEventListener('click', function () {
+		if (confirm('Are you sure you want to load these settings?')) {
 			importOptions();
 		}
 	});
 
-	reset_btn.addEventListener("click", function () {
-		if (confirm("Are you sure you want to restore defaults?")) {
+	reset_btn.addEventListener('click', function () {
+		if (confirm('Are you sure you want to restore defaults?')) {
 			eraseOptions();
 		}
 	});
 
 	for (settingsValue in settingsInputs.lists) {
 		if (settingsInputs.lists.hasOwnProperty(settingsValue)) {
-			addButton = document.getElementById(settingsInputs.lists[settingsValue] + "Add");
-			addButton.addEventListener("click", addInputClickHandler, false);
+			addButton = document.getElementById(settingsInputs.lists[settingsValue] + 'Add');
+			addButton.addEventListener('click', addInputClickHandler, false);
 		}
 	}
 
-	listsTab.addEventListener("click", function (e) {
+	listsTab.addEventListener('click', function (e) {
 		tabClick(listsTab);
 		e.preventDefault();
 		e.stopPropagation();
 	}, false);
 
-	settingsTab.addEventListener("click", function (e) {
+	settingsTab.addEventListener('click', function (e) {
 		tabClick(settingsTab);
 		e.preventDefault();
 		e.stopPropagation();
 	}, false);
 
-	saveloadTab.addEventListener("click", function (e) {
+	saveloadTab.addEventListener('click', function (e) {
 		tabClick(saveloadTab);
 		e.preventDefault();
 		e.stopPropagation();
 	}, false);
 
-	aboutTab.addEventListener("click", function (e) {
+	aboutTab.addEventListener('click', function (e) {
 		tabClick(aboutTab);
 		e.preventDefault();
 		e.stopPropagation();
 	}, false);
 
 
-	version_div = document.getElementById("version_div");
-	version_div.textContent = "v" + defaultSettings.version; //use default so we're always showing current version regardless of what people have saved.
+	version_div = document.getElementById('version_div');
+	version_div.textContent = 'v' + defaultSettings.version; //use default so we're always showing current version regardless of what people have saved.
 
 	if (browser === 'Firefox') {
-		context_menu_div = document.getElementById("context_menu_div");
-		context_menu_div.setAttribute("style", "display:none;");
+		context_menu_div = document.getElementById('context_menu_div');
+		context_menu_div.setAttribute('style', 'display:none;');
 	}
 
 	if (browser === 'Chrome' || browser === 'Safari') {
-		toolbar_butt_div = document.getElementById("toolbar_butt_div");
-		toolbar_butt_div.setAttribute("style", "display:none;");
+		toolbar_butt_div = document.getElementById('toolbar_butt_div');
+		toolbar_butt_div.setAttribute('style', 'display:none;');
 	}
 
 	if (browser !== 'Undetected') {
-		browser_span = document.getElementById("browser_span");
+		browser_span = document.getElementById('browser_span');
 		browser_span.textContent = 'for ' + browser + '\u2122';
 	}
 
@@ -484,12 +485,12 @@ case 'Opera':
 	opera.extension.onmessage = operaMessageHandler;
 	break;
 case 'Safari':
-	safari.self.addEventListener("message", safariMessageHandler, false);
+	safari.self.addEventListener('message', safariMessageHandler, false);
 	safari.self.tab.dispatchMessage('getSettings');
 	break;
 case 'Firefox':
-	addon.on("message", firefoxMessageHandler);
+	addon.on('message', firefoxMessageHandler);
 	break;
 }
 
-document.addEventListener("DOMContentLoaded", contentLoaded);
+document.addEventListener('DOMContentLoaded', contentLoaded);
