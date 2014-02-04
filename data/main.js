@@ -190,11 +190,11 @@ function firefoxDetachWorker(worker) {
 }
 
 function firefoxMain() {
-	var pageMod = require('page-mod');
-	var self = require('self');
-	var ss = require('simple-storage');
-	var widgets = require('widget');
-	var panels = require('panel');
+	var pageMod = require('sdk/page-mod');
+	var self = require('sdk/self');
+	var ss = require('sdk/simple-storage');
+	var widgets = require('sdk/widget');
+	var panels = require('sdk/panel');
 
 	pageMod.PageMod({
 		include: ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'],

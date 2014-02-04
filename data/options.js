@@ -481,9 +481,6 @@ function contentLoaded() {
 }
 
 switch (browser) {
-case 'Opera':
-	opera.extension.onmessage = operaMessageHandler;
-	break;
 case 'Safari':
 	safari.self.addEventListener('message', safariMessageHandler, false);
 	safari.self.tab.dispatchMessage('getSettings');

@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Bjorn Stromberg</string>
 	<key>Builder Version</key>
-	<string>534.57.2</string>
+	<string>9537.73.11</string>
 	<key>CFBundleDisplayName</key>
 	<string>Tumblr Savior</string>
 	<key>CFBundleIdentifier</key>
@@ -81,6 +81,8 @@
 				<string>com.bjornstar.safari.tumblr-savior-4GANG9K96D</string>
 				<string>www.tumblr.com</string>
 			</array>
+			<key>Include Secure Pages</key>
+			<true/>
 			<key>Level</key>
 			<string>Some</string>
 		</dict>
@@ -88,6 +90,6 @@
 	<key>Update Manifest URL</key>
 	<string>http://tumblr-savior.bjornstar.com/update.plist</string>
 	<key>Website</key>
-	<string>http://bjornstar.com</string>
+	<string>http://tumblr-savior.bjornstar.com</string>
 </dict>
 </plist>
