@@ -1,13 +1,12 @@
 // ==UserScript==
 // @include        http://www.tumblr.com/*
-// @exclude        http://www.tumblr.com/blog/*
+// @include        https://www.tumblr.com/*
 // @exclude        http://www.tumblr.com/upload/*
-// @exclude        http://www.tumblr.com/inbox/*
-// @exclude        http://www.tumblr.com/inbox
+// @exclude        https://www.tumblr.com/upload/*
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.9',
+	'version': '0.4.10',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -28,9 +27,7 @@ var defaultSettings = {
 
 var invalidTumblrURLs = [
 	'http://www.tumblr.com/upload/*',
-	'http://www.tumblr.com/inbox',
-	'http://www.tumblr.com/blog/*',
-	'http://www.tumblr.com/inbox/*'
+	'https://www.tumblr.com/upload/*'
 ]; // Don't run tumblr savior on these pages.
 
 var settings = defaultSettings;
@@ -38,17 +35,17 @@ var gotSettings = false;
 var manuallyShown = {};
 var isTumblrSaviorRunning = false;
 var inProgress = {};
-var icon = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYW"
- + "R5ccllPAAAAnNJREFUeNqMU09M02AU/8awC5vJsu2g4ExwkDgJQzfCEsWEgQxI1CVLvHDadYNE9IAm84KJ3EBPBjGe0ETw"
- + "6AXmwRBPXhjTkjCTicvC+FPKZC1tt7brs1/JcIMY92val+977/3e7/v6HgIAVAtMJpPR4XA463Q6XeV+/f8SbTbbWY/bfT"
- + "0QCAQpitI/m5wMV/p1WEElqcFgQFc7Ojq9Xm+Pt6vL53K5blxqbraZrVb0ZXk529Pbaz+loLHx/LmhwaHbnk5Pj/ua+2Zr"
- + "S4vDpiYoiqKRK6AgmqJQU1OTiSCIelEU5WMGrODR+HhUtcCzLGxns3CYz4PAccCp63dzc/Di+TTs03s4BG719Q1UKqjDH5"
- + "qmD7Cl9igE6rMUi6GJpxPoTuAu+pVOI5Ik0T5NawmRcHi06pKwgra2K66SLIEsiZBYjcOTaBRez87i3wNrJKlVpnZ3oAy7"
- + "3X6xigDjW2I1hZ07W1vAq/IxfD4fDA8Pw0m8mpl5c4pgdGTk/snAT7EYGI1GyGQy2rpQLGpWkiSwWiyWKgK9Xt/AsuwhDi"
- + "iVSsckOMTv90OhUABeEIA5CoEHY2MPjy8R56tJwvTU1Eu8KBZFbTOZTKJgMIi6u7sRw7JIEiXE87zm6x8YvKcW1ZcVELip"
- + "zGZzq8ALJVmW4fdBHtbXkyAIBa2irIqSlb/HI8m1PbW9G8qtLGEV+Xw+tfBh4XMoFOo/QxDI6bx8dEz1XY2vbDMMQ8Xj8Z"
- + "VEIv41lfr5g+M4oUyAY7Tu+q4CK0xvbDCbm5sbuVxua37+/dulxcWPoiTxp4bl5DS2t7d3RcKRx1ar5UItU6qrdZz/hT8C"
- + "DADaR5pMovP3DQAAAABJRU5ErkJggg==";
+var icon = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYW'
+ + 'R5ccllPAAAAnNJREFUeNqMU09M02AU/8awC5vJsu2g4ExwkDgJQzfCEsWEgQxI1CVLvHDadYNE9IAm84KJ3EBPBjGe0ETw'
+ + '6AXmwRBPXhjTkjCTicvC+FPKZC1tt7brs1/JcIMY92val+977/3e7/v6HgIAVAtMJpPR4XA463Q6XeV+/f8SbTbbWY/bfT'
+ + '0QCAQpitI/m5wMV/p1WEElqcFgQFc7Ojq9Xm+Pt6vL53K5blxqbraZrVb0ZXk529Pbaz+loLHx/LmhwaHbnk5Pj/ua+2Zr'
+ + 'S4vDpiYoiqKRK6AgmqJQU1OTiSCIelEU5WMGrODR+HhUtcCzLGxns3CYz4PAccCp63dzc/Di+TTs03s4BG719Q1UKqjDH5'
+ + 'qmD7Cl9igE6rMUi6GJpxPoTuAu+pVOI5Ik0T5NawmRcHi06pKwgra2K66SLIEsiZBYjcOTaBRez87i3wNrJKlVpnZ3oAy7'
+ + '3X6xigDjW2I1hZ07W1vAq/IxfD4fDA8Pw0m8mpl5c4pgdGTk/snAT7EYGI1GyGQy2rpQLGpWkiSwWiyWKgK9Xt/AsuwhDi'
+ + 'iVSsckOMTv90OhUABeEIA5CoEHY2MPjy8R56tJwvTU1Eu8KBZFbTOZTKJgMIi6u7sRw7JIEiXE87zm6x8YvKcW1ZcVELip'
+ + 'zGZzq8ALJVmW4fdBHtbXkyAIBa2irIqSlb/HI8m1PbW9G8qtLGEV+Xw+tfBh4XMoFOo/QxDI6bx8dEz1XY2vbDMMQ8Xj8Z'
+ + 'VEIv41lfr5g+M4oUyAY7Tu+q4CK0xvbDCbm5sbuVxua37+/dulxcWPoiTxp4bl5DS2t7d3RcKRx1ar5UItU6qrdZz/hT8C'
+ + 'DADaR5pMovP3DQAAAABJRU5ErkJggg==';
 
 var whiteListed = {};
 var blackListed = {};
@@ -56,16 +53,16 @@ var blackListed = {};
 var filters = {};
 
 function detectBrowser() {
+	if (navigator.userAgent.indexOf('OPR') !== -1) {
+		return 'Opera';
+	}
 	if (window && window.chrome) {
 		return 'Chrome';
 	}
 	if (window && window.safari) {
 		return 'Safari';
 	}
-	if (navigator.userAgent.indexOf('OPR') >= 0) {
-		return 'Opera';
-	}
-	if (navigator.userAgent.indexOf('Firefox') >= 0) {
+	if (navigator.userAgent.indexOf('Firefox') !== -1) {
 		return 'Firefox';
 	}
 	console.error('Tumblr Savior could not detect your browser.');
@@ -103,17 +100,17 @@ function addGlobalStyle(styleID, newRules) {
 	cStyle = document.getElementById(styleID);
 	elmHead = document.getElementsByTagName('head')[0];
 
-	if (elmHead === undefined) {
-		return false;
+	if (!elmHead) {
+		return;
 	}
 
-	if (cStyle === undefined || cStyle === null) {
+	if (!cStyle) {
 		elmStyle = document.createElement('style');
 		elmStyle.type = 'text/css';
 		elmStyle.id = styleID;
 		while (newRules.length > 0) {
 			newRule = newRules.pop();
-			if (elmStyle.sheet !== undefined && elmStyle.sheet !== null && elmStyle.sheet.cssRules[0] !== null) {
+			if (elmStyle.sheet && elmStyle.sheet.cssRules[0]) {
 				elmStyle.sheet.insertRule(newRule, 0);
 			} else {
 				elmStyle.appendChild(document.createTextNode(newRule));
@@ -126,168 +123,166 @@ function addGlobalStyle(styleID, newRules) {
 		}
 		while (newRules.length > 0) {
 			newRule = newRules.pop();
-			if (cStyle.sheet !== undefined && cStyle.sheet.cssRules[0] !== null) {
+			if (cStyle.sheet && cStyle.sheet.cssRules[0]) {
 				cStyle.sheet.insertRule(newRule, 0);
 			} else {
 				cStyle.appendChild(document.createTextNode(newRule));
 			}
 		}
 	}
-
-	return true;
 }
 
 function show_tags() {
 	var cssRules = [];
 
-	cssRules[0]  = ".tumblr_savior a.tag {";
-	cssRules[0] += "font-weight: normal !important;";
-	cssRules[0] += "}";
-	addGlobalStyle("notice_tags_css", cssRules);
+	cssRules[0]  = '.tumblr_savior a.tag {';
+	cssRules[0] += 'font-weight: normal !important;';
+	cssRules[0] += '}';
+	addGlobalStyle('notice_tags_css', cssRules);
 }
 
 function hide_tags() {
 	var cssRules = [];
 
-	cssRules[0]  = ".tumblr_savior a.tag {}";
-	addGlobalStyle("notice_tags_css", cssRules);
+	cssRules[0]  = '.tumblr_savior a.tag {}';
+	addGlobalStyle('notice_tags_css', cssRules);
 }
 
 function show_white_notice() {
 	var cssRules = [];
 
-	cssRules[0]  = ".whitelisted {";
-	cssRules[0] += "background: #57b787;";
+	cssRules[0]  = '.whitelisted {';
+	cssRules[0] += 'background: #57b787;';
 	if (settings.black_notice) {
-		cssRules[0] += "top: 50px;";
+		cssRules[0] += 'top: 50px;';
 	} else {
-		cssRules[0] += "top: 20px;";
+		cssRules[0] += 'top: 20px;';
 	}
-	cssRules[0] += "}";
-	addGlobalStyle("white_notice_style", cssRules);
+	cssRules[0] += '}';
+	addGlobalStyle('white_notice_style', cssRules);
 }
 
 function show_black_notice() {
 	var cssRules = [];
 
-	cssRules[0]  = ".blacklisted {";
-	cssRules[0] += "background: #d93023;";
-	cssRules[0] += "top: 20px;";
-	cssRules[0] += "}";
-	addGlobalStyle("black_notice_style", cssRules);
+	cssRules[0]  = '.blacklisted {';
+	cssRules[0] += 'background: #d93023;';
+	cssRules[0] += 'top: 20px;';
+	cssRules[0] += '}';
+	addGlobalStyle('black_notice_style', cssRules);
 }
 
 function hide_white_notice() {
 	var cssRules = [];
 
-	cssRules[0]  = ".whitelisted {";
-	cssRules[0] += "display: none;";
-	cssRules[0] += "}";
-	addGlobalStyle("white_notice_style", cssRules);
+	cssRules[0]  = '.whitelisted {';
+	cssRules[0] += 'display: none;';
+	cssRules[0] += '}';
+	addGlobalStyle('white_notice_style', cssRules);
 }
 
 function hide_black_notice() {
 	var cssRules = [];
 
-	cssRules[0]  = ".blacklisted {";
-	cssRules[0] += "display: none;";
-	cssRules[0] += "}";
-	addGlobalStyle("black_notice_style", cssRules);
+	cssRules[0]  = '.blacklisted {';
+	cssRules[0] += 'display: none;';
+	cssRules[0] += '}';
+	addGlobalStyle('black_notice_style', cssRules);
 }
 
 function hide_premium() {
 	var cssRules = [];
 
-	cssRules[0]  = "#tumblr_radar.premium {";
-	cssRules[0] += "display: none;";
-	cssRules[0] += "}";
-	addGlobalStyle("premium_style", cssRules);
+	cssRules[0]  = '#tumblr_radar.premium {';
+	cssRules[0] += 'display: none;';
+	cssRules[0] += '}';
+	addGlobalStyle('premium_style', cssRules);
 }
 
 function show_premium() {
 	var cssRules = [];
 
-	cssRules[0]  = "#tumblr_radar.premium {}";
-	addGlobalStyle("premium_style", cssRules);
+	cssRules[0]  = '#tumblr_radar.premium {}';
+	addGlobalStyle('premium_style', cssRules);
 }
 
 function hide_pinned() {
 	var cssRules = [];
 
-	cssRules[0]  = ".promotion_pinned {";
-	cssRules[0] += "display: none;";
-	cssRules[0] += "}";
-	addGlobalStyle("pinned_style", cssRules);
+	cssRules[0]  = '.promotion_pinned {';
+	cssRules[0] += 'display: none;';
+	cssRules[0] += '}';
+	addGlobalStyle('pinned_style', cssRules);
 }
 
 function show_pinned() {
 	var cssRules = [];
 
-	cssRules[0]  = ".promotion_pinned {}";
-	addGlobalStyle("pinned_style", cssRules);
+	cssRules[0]  = '.promotion_pinned {}';
+	addGlobalStyle('pinned_style', cssRules);
 }
 
 function hide_ratings() {
 	var cssRules = [];
 
-	cssRules[0]  = ".savior_rating {";
-	cssRules[0] += "display: none;";
-	cssRules[0] += "}";
-	addGlobalStyle("savior_rating_style", cssRules);
+	cssRules[0]  = '.savior_rating {';
+	cssRules[0] += 'display: none;';
+	cssRules[0] += '}';
+	addGlobalStyle('savior_rating_style', cssRules);
 }
 
 function show_ratings() {
 	var cssRules = [];
 
-	cssRules[0]  = ".savior_rating {";
-	cssRules[0] += "position: absolute;";
-	cssRules[0] += "left: 532px;";
-	cssRules[0] += "width: 20px;";
-	cssRules[0] += "height: 20px;";
-	cssRules[0] += "-webkit-border-radius: 4px;";
-	cssRules[0] += "-webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, .46);";
-	cssRules[0] += "border-radius: 4px;";
-	cssRules[0] += "}";
-	cssRules[1]  = ".savior_rating:hover {";
-	cssRules[1] += "overflow: hidden;";
-	cssRules[1] += "white-space: nowrap;";
-	cssRules[1] += "width: 200px;";
-	cssRules[1] += "}";
-	cssRules[2]  = ".savior_rating:hover span{";
-	cssRules[2] += "display: inline;";
-	cssRules[2] += "}";
-	cssRules[3]  = ".savior_rating img {";
-	cssRules[3] += "margin: 2px 0px 0px 2px;";
-	cssRules[3] += "}";
-	cssRules[4]  = ".savior_rating span{";
-	cssRules[4] += "display: none;";
-	cssRules[4] += "line-height:20px;";
-	cssRules[4] += "margin-left:2px;";
-	cssRules[4] += "vertical-align: top;";
-	cssRules[4] += "}";
-	addGlobalStyle("savior_rating_style", cssRules);
+	cssRules[0]  = '.savior_rating {';
+	cssRules[0] += 'position: absolute;';
+	cssRules[0] += 'left: 532px;';
+	cssRules[0] += 'width: 20px;';
+	cssRules[0] += 'height: 20px;';
+	cssRules[0] += '-webkit-border-radius: 4px;';
+	cssRules[0] += '-webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, .46);';
+	cssRules[0] += 'border-radius: 4px;';
+	cssRules[0] += '}';
+	cssRules[1]  = '.savior_rating:hover {';
+	cssRules[1] += 'overflow: hidden;';
+	cssRules[1] += 'white-space: nowrap;';
+	cssRules[1] += 'width: 200px;';
+	cssRules[1] += '}';
+	cssRules[2]  = '.savior_rating:hover span{';
+	cssRules[2] += 'display: inline;';
+	cssRules[2] += '}';
+	cssRules[3]  = '.savior_rating img {';
+	cssRules[3] += 'margin: 2px 0px 0px 2px;';
+	cssRules[3] += '}';
+	cssRules[4]  = '.savior_rating span{';
+	cssRules[4] += 'display: none;';
+	cssRules[4] += 'line-height:20px;';
+	cssRules[4] += 'margin-left:2px;';
+	cssRules[4] += 'vertical-align: top;';
+	cssRules[4] += '}';
+	addGlobalStyle('savior_rating_style', cssRules);
 }
 
 function hide_source() {
 	var cssRules = [];
 
 	cssRules[0]  = 'div.post_source {display:none!important;}';
-	addGlobalStyle("source_url_style", cssRules);
+	addGlobalStyle('source_url_style', cssRules);
 }
 
 function show_source() {
 	var cssRules = [];
 
 	cssRules[0]  = 'div.post_source {}';
-	addGlobalStyle("source_url_style", cssRules);
+	addGlobalStyle('source_url_style', cssRules);
 }
 
 function unpin(thepost) {
 	var clickUnpin, pins, pin;
 
-	clickUnpin = document.createEvent("MouseEvents");
-	clickUnpin.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-	pins = thepost.getElementsByClassName("pin");
+	clickUnpin = document.createEvent('MouseEvents');
+	clickUnpin.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+	pins = thepost.getElementsByClassName('pin');
 	pin = pins[0];
 	if (pin !== undefined) {
 		pin.dispatchEvent(clickUnpin);
@@ -354,7 +349,7 @@ function parseSettings(savedSettings) {
 	}
 
 	function buildRegex(entry) {
-		var str = '(^|\\W)(' + entry.replace(/\?/g, "\\?").replace(/\)/g, "\\)").replace(/\(/g, "\\(").replace(/\[/g, "\\[").replace(/\x2a/g, "(\\w*?)") + ')(\\W|$)';
+		var str = '(^|\\W)(' + entry.replace(/\?/g, '\\?').replace(/\)/g, '\\)').replace(/\(/g, '\\(').replace(/\[/g, '\\[').replace(/\x2a/g, '(\\w*?)') + ')(\\W|$)';
 		var re = new RegExp(str);
 		return function testRegex(content) {
 			return content.match(re);
@@ -403,7 +398,7 @@ function getAuthor(post) {
 	var avatar = document.getElementById(post.id.replace('_', '_avatar_'));
 
 	if (avatar) {
-		author.avatar = avatar.getAttribute("style").replace('background-image:url(\'', '').replace('_64.', '_40.').replace('\')', '');
+		author.avatar = avatar.getAttribute('style').replace('background-image:url(\'', '').replace('_64.', '_40.').replace('\')', '');
 	}
 
 	return author;
@@ -417,12 +412,12 @@ function handleReveal(e) {
 
 	searchUp = e.target;
 
-	while (searchUp.tagName !== "LI") {
+	while (searchUp.tagName !== 'LI') {
 		searchUp = searchUp.parentNode;
 	}
 
-	searchUp.previousSibling.style.display = "list-item";
-	searchUp.style.display = "none";
+	searchUp.previousSibling.style.display = 'list-item';
+	searchUp.style.display = 'none';
 	manuallyShown[searchUp.id.replace('notification_','')] = true;
 }
 
@@ -454,8 +449,8 @@ function checkPost(post) {
 		liPost = post;
 	}
 
-	bln = post.getElementsByClassName("blacklisted");
-	wln = post.getElementsByClassName("whitelisted");
+	bln = post.getElementsByClassName('blacklisted');
+	wln = post.getElementsByClassName('whitelisted');
 	liRemove = document.getElementById('notification_' + post.id);
 
 	if (liRemove) {
@@ -490,27 +485,27 @@ function checkPost(post) {
 			li_notice.className = 'notification single_notification tumblr_savior';
 
 			div_inner = document.createElement('DIV');
-			div_inner.className = "notification_inner clearfix";
+			div_inner.className = 'notification_inner clearfix';
 
 			div_sentence = document.createElement('DIV');
-			div_sentence.className = "notification_sentence";
+			div_sentence.className = 'notification_sentence';
 
 			div_inner.appendChild(div_sentence);
 			li_notice.appendChild(div_inner);
 
 			a_avatar = document.createElement('a');
-			a_avatar.href = "http://" + author.name + ".tumblr.com/";
-			a_avatar.className = "avatar_frame";
+			a_avatar.href = 'http://' + author.name + '.tumblr.com/';
+			a_avatar.className = 'avatar_frame';
 			a_avatar.title = author.name;
 
 			img_avatar = document.createElement('img');
 			img_avatar.src = author.avatar;
-			img_avatar.className = "avatar";
+			img_avatar.className = 'avatar';
 			img_avatar.title = author.name;
 
 			a_author = document.createElement('a');
-			a_author.href = "http://" + author.name + ".tumblr.com/";
-			a_author.className = "username";
+			a_author.href = 'http://' + author.name + '.tumblr.com/';
+			a_author.className = 'username';
 			a_author.textContent = author.name;
 
 			a_avatar.appendChild(img_avatar);
@@ -518,12 +513,12 @@ function checkPost(post) {
 			li_notice.appendChild(a_avatar);
 			div_sentence.appendChild(a_author);
 
-			txtPosted = document.createTextNode(" made a post containing");
+			txtPosted = document.createTextNode(' made a post containing');
 			div_sentence.appendChild(txtPosted);
 
 			if (settings.show_words) {
 
-				txtContents = ":";
+				txtContents = ':';
 
 				for (j = 0; j < savedfrom.bL.length; j++) {
 					if (savedfrom.bL.length > 2 && j !== 0 && j < savedfrom.bL.length - 1) {
@@ -540,13 +535,13 @@ function checkPost(post) {
 				div_sentence.appendChild(document.createTextNode(' something from your blacklist.'));
 			}
 
-			a_reveal = document.createElement("a");
-			a_reveal.href = "#";
+			a_reveal = document.createElement('a');
+			a_reveal.href = '#';
 
-			i_reveal = document.createElement("i");
-			i_reveal.appendChild(document.createTextNode(" -- click to show."));
+			i_reveal = document.createElement('i');
+			i_reveal.appendChild(document.createTextNode(' -- click to show.'));
 
-			li_notice.addEventListener("click", handleReveal, false);
+			li_notice.addEventListener('click', handleReveal, false);
 
 			a_reveal.appendChild(i_reveal);
 
@@ -557,11 +552,11 @@ function checkPost(post) {
 				span_tags = post.getElementsByClassName('post_tags');
 
 				if (span_tags.length) {
-					div_sentence.appendChild(document.createElement("br"));
-					div_sentence.appendChild(document.createElement("br"));
+					div_sentence.appendChild(document.createElement('br'));
+					div_sentence.appendChild(document.createElement('br'));
 
-					span_notice_tags = document.createElement("span");
-					span_notice_tags.appendChild(document.createTextNode("Tags: "));
+					span_notice_tags = document.createElement('span');
+					span_notice_tags.appendChild(document.createTextNode('Tags: '));
 					span_notice_tags.appendChild(document.createTextNode(span_tags[0].textContent));
 
 					div_sentence.appendChild(span_notice_tags);
@@ -604,12 +599,12 @@ function checkPost(post) {
 
 		imgRating = document.createElement('img');
 		imgRating.src = 'data:image/png;base64,' + icon;
-		imgRating.title = whiteListed[post.id].join(", ");
+		imgRating.title = whiteListed[post.id].join(', ');
 
 		divRating.appendChild(imgRating);
 
 		spanWhitelisted = document.createElement('span');
-		spanWhitelisted.textContent = whiteListed[post.id].join(", ");
+		spanWhitelisted.textContent = whiteListed[post.id].join(', ');
 
 		divRating.appendChild(spanWhitelisted);
 		post.appendChild(divRating);
@@ -634,12 +629,12 @@ function checkPost(post) {
 
 		imgRating = document.createElement('img');
 		imgRating.src = 'data:image/png;base64,' + icon;
-		imgRating.title = blackListed[post.id].join(", ");
+		imgRating.title = blackListed[post.id].join(', ');
 
 		divRating.appendChild(imgRating);
 
 		spanBlacklisted = document.createElement('span');
-		spanBlacklisted.textContent = blackListed[post.id].join(", ");
+		spanBlacklisted.textContent = blackListed[post.id].join(', ');
 
 		divRating.appendChild(spanBlacklisted);
 		post.appendChild(divRating);
@@ -650,17 +645,17 @@ function checkPost(post) {
 	if (settings.promoted_tags) {
 		for (a = 0; a < anchors.length; a++) {
 			if (anchors[a].outerHTML && anchors[a].outerHTML.indexOf('blingy blue') >= 0) {
-				anchors[a].outerHTML = anchors[a].outerHTML.replace(/blingy blue/gm, " ");
+				anchors[a].outerHTML = anchors[a].outerHTML.replace(/blingy blue/gm, ' ');
 			}
 		}
 	}
 
 	if (settings.promoted_posts) {
-		if (post.outerHTML.indexOf("promotion_highlighted") >= 0) {
+		if (post.outerHTML.indexOf('promotion_highlighted') >= 0) {
 			remove = post.id;
-			document.getElementById(remove).className = document.getElementById(remove).className.replace(/promotion_highlighted/gm, "");
-			ribbon_right = document.getElementById("highlight_ribbon_right_" + remove.replace("post_", ""));
-			ribbon_left = document.getElementById("highlight_ribbon_left_" + remove.replace("post_", ""));
+			document.getElementById(remove).className = document.getElementById(remove).className.replace(/promotion_highlighted/gm, '');
+			ribbon_right = document.getElementById('highlight_ribbon_right_' + remove.replace('post_', ''));
+			ribbon_left = document.getElementById('highlight_ribbon_left_' + remove.replace('post_', ''));
 			ribbon_right.parentNode.removeChild(ribbon_right);
 			ribbon_left.parentNode.removeChild(ribbon_left);
 		}
@@ -693,45 +688,45 @@ function wireupnodes() {
 	document.addEventListener('webkitAnimationStart', handlePostInserted, false);
 	document.addEventListener('OAnimationStart', handlePostInserted, false);
 
-	cssRules[0]  = "@keyframes nodeInserted {";
-	cssRules[0] += "    from { clip: rect(1px, auto, auto, auto); }";
-	cssRules[0] += "    to { clip: rect(0px, auto, auto, auto); }";
-	cssRules[0] += "}";
+	cssRules[0]  = '@keyframes nodeInserted {';
+	cssRules[0] += '    from { clip: rect(1px, auto, auto, auto); }';
+	cssRules[0] += '    to { clip: rect(0px, auto, auto, auto); }';
+	cssRules[0] += '}';
 
-	cssRules[1]  = "@-moz-keyframes nodeInserted {";
-	cssRules[1] += "    from { clip: rect(1px, auto, auto, auto); }";
-	cssRules[1] += "    to { clip: rect(0px, auto, auto, auto); }";
-	cssRules[1] += "}";
+	cssRules[1]  = '@-moz-keyframes nodeInserted {';
+	cssRules[1] += '    from { clip: rect(1px, auto, auto, auto); }';
+	cssRules[1] += '    to { clip: rect(0px, auto, auto, auto); }';
+	cssRules[1] += '}';
 
-	cssRules[2]  = "@-webkit-keyframes nodeInserted {";
-	cssRules[2] += "    from { clip: rect(1px, auto, auto, auto); }";
-	cssRules[2] += "    to { clip: rect(0px, auto, auto, auto); }";
-	cssRules[2] += "}";
+	cssRules[2]  = '@-webkit-keyframes nodeInserted {';
+	cssRules[2] += '    from { clip: rect(1px, auto, auto, auto); }';
+	cssRules[2] += '    to { clip: rect(0px, auto, auto, auto); }';
+	cssRules[2] += '}';
 
-	cssRules[3]  = "@-ms-keyframes nodeInserted {";
-	cssRules[3] += "    from { clip: rect(1px, auto, auto, auto); }";
-	cssRules[3] += "    to { clip: rect(0px, auto, auto, auto); }";
-	cssRules[3] += "}";
+	cssRules[3]  = '@-ms-keyframes nodeInserted {';
+	cssRules[3] += '    from { clip: rect(1px, auto, auto, auto); }';
+	cssRules[3] += '    to { clip: rect(0px, auto, auto, auto); }';
+	cssRules[3] += '}';
 
-	cssRules[4]  = "@-o-keyframes nodeInserted {";
-	cssRules[4] += "    from { clip: rect(1px, auto, auto, auto); }";
-	cssRules[4] += "    to { clip: rect(0px, auto, auto, auto); }";
-	cssRules[4] += "}";
+	cssRules[4]  = '@-o-keyframes nodeInserted {';
+	cssRules[4] += '    from { clip: rect(1px, auto, auto, auto); }';
+	cssRules[4] += '    to { clip: rect(0px, auto, auto, auto); }';
+	cssRules[4] += '}';
 
-	cssRules[5]  = "li.post_container div.post, li.post {";
-	cssRules[5] += "    animation-duration: 1ms;";
-	cssRules[5] += "    -o-animation-duration: 1ms;";
-	cssRules[5] += "    -ms-animation-duration: 1ms;";
-	cssRules[5] += "    -moz-animation-duration: 1ms;";
-	cssRules[5] += "    -webkit-animation-duration: 1ms;";
-	cssRules[5] += "    animation-name: nodeInserted;";
-	cssRules[5] += "    -o-animation-name: nodeInserted;";
-	cssRules[5] += "    -ms-animation-name: nodeInserted;";
-	cssRules[5] += "    -moz-animation-name: nodeInserted;";
-	cssRules[5] += "    -webkit-animation-name: nodeInserted;";
-	cssRules[5] += "}";
+	cssRules[5]  = 'li.post_container div.post, li.post {';
+	cssRules[5] += '    animation-duration: 1ms;';
+	cssRules[5] += '    -o-animation-duration: 1ms;';
+	cssRules[5] += '    -ms-animation-duration: 1ms;';
+	cssRules[5] += '    -moz-animation-duration: 1ms;';
+	cssRules[5] += '    -webkit-animation-duration: 1ms;';
+	cssRules[5] += '    animation-name: nodeInserted;';
+	cssRules[5] += '    -o-animation-name: nodeInserted;';
+	cssRules[5] += '    -ms-animation-name: nodeInserted;';
+	cssRules[5] += '    -moz-animation-name: nodeInserted;';
+	cssRules[5] += '    -webkit-animation-name: nodeInserted;';
+	cssRules[5] += '}';
 
-	addGlobalStyle("wires", cssRules);
+	addGlobalStyle('wires', cssRules);
 }
 
 function checkPosts() {
@@ -745,7 +740,7 @@ function diaper() {
 	var posts = document.getElementsByClassName('post');
 	for (var i = 0; i < posts.length; i += 1) {
 		var post = posts[i];
-		if (post.id && post.id.indexOf("post") === 0) {
+		if (post.id && post.id.indexOf('post') === 0) {
 			inProgress[post.id] = true;
 		}
 	}
@@ -770,8 +765,8 @@ function waitForPosts() {
 
 
 function safariMessageHandler(event) {
-	if (event.name === "refreshSettings") {
-		safari.self.tab.dispatchMessage("getSettings");
+	if (event.name === 'refreshSettings') {
+		safari.self.tab.dispatchMessage('getSettings');
 		return;
 	}
 
@@ -817,7 +812,7 @@ function initializeTumblrSavior() {
 		if (chrome.extension.onMessage !== undefined) {
 			chrome.extension.onMessage.addListener(
 				function (request) {
-					if (request === "refreshSettings") {
+					if (request === 'refreshSettings') {
 						chrome.extension.sendMessage(null, 'getSettings', chromeHandleMessage);
 					}
 				}
@@ -826,7 +821,7 @@ function initializeTumblrSavior() {
 		} else if (chrome.extension.onRequest !== undefined) {
 			chrome.extension.onRequest.addListener(
 				function (request) {
-					if (request === "refreshSettings") {
+					if (request === 'refreshSettings') {
 						chrome.extension.sendRequest('getSettings', chromeHandleMessage);
 					}
 				}
@@ -835,7 +830,7 @@ function initializeTumblrSavior() {
 		}
 		break;
 	case 'Safari':
-		window.addEventListener("contextmenu", safariContextMenuHandler, false);
+		window.addEventListener('contextmenu', safariContextMenuHandler, false);
 		safari.self.addEventListener('message', safariMessageHandler, false);
 		safari.self.tab.dispatchMessage('getSettings');
 		break;
@@ -852,7 +847,7 @@ function checkurl(url, filter) {
 	var filterRegex, re, f;
 
 	for (f = 0; f < filter.length; f++) {
-		filterRegex = filter[f].replace(/\x2a/g, "(.*?)");
+		filterRegex = filter[f].replace(/\x2a/g, '(.*?)');
 		re = new RegExp(filterRegex);
 		if (url.match(re)) {
 			return true;

@@ -107,7 +107,7 @@ function safariMessageHandler(event) {
 	case 'refreshSettings':
 		localStorage.settings = JSON.stringify(event.message);
 		for (tab = 0; tab < safari.application.activeBrowserWindow.tabs.length; tab++) {
-			if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://*.tumblr.com/*'])) {
+			if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
 				safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage('refreshSettings');
 			}
 		}
@@ -139,7 +139,7 @@ function safariCommandHandler(event) {
 		theword = event.userInfo;
 		if (theword && addToBlackList(theword)) {
 			for (tab = 0; tab < safari.application.activeBrowserWindow.tabs.length; tab++) {
-				if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://*.tumblr.com/*'])) {
+				if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
 					safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage('refreshSettings');
 				}
 				if (safari.application.activeBrowserWindow.tabs[tab].url === safari.extension.baseURI + 'data/options.html') {
@@ -190,14 +190,14 @@ function firefoxDetachWorker(worker) {
 }
 
 function firefoxMain() {
-	var pageMod = require('page-mod');
-	var self = require('self');
-	var ss = require('simple-storage');
-	var widgets = require('widget');
-	var panels = require('panel');
+	var pageMod = require('sdk/page-mod');
+	var self = require('sdk/self');
+	var ss = require('sdk/simple-storage');
+	var widgets = require('sdk/widget');
+	var panels = require('sdk/panel');
 
 	pageMod.PageMod({
-		include: ['http://www.tumblr.com/*'],
+		include: ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'],
 		contentScriptFile: self.data.url('script.js'),
 		contentScriptWhen: 'ready',
 		onAttach: function onAttach(worker) {
@@ -241,7 +241,7 @@ case 'Chrome':
 			'type': 'normal',
 			'title': 'Add \'%s\' to Tumblr Savior black list',
 			'contexts': ['selection'],
-			'documentUrlPatterns': ['http://*.tumblr.com/*'],
+			'documentUrlPatterns': ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'],
 			'onclick': chromeAddToBlackList
 		});
 	}
