@@ -6,15 +6,13 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.10',
+	'version': '0.4.11',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
 	'show_notice': true,
 	'show_words': true,
 	'match_words': true,
-	'promoted_tags': false,
-	'promoted_posts': false,
 	'context_menu': true,
 	'toolbar_butt': true,
 	'white_notice': true,
@@ -46,6 +44,8 @@ var icon = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBB
  + 'zGZzq8ALJVmW4fdBHtbXkyAIBa2irIqSlb/HI8m1PbW9G8qtLGEV+Xw+tfBh4XMoFOo/QxDI6bx8dEz1XY2vbDMMQ8Xj8Z'
  + 'VEIv41lfr5g+M4oUyAY7Tu+q4CK0xvbDCbm5sbuVxua37+/dulxcWPoiTxp4bl5DS2t7d3RcKRx1ar5UItU6qrdZz/hT8C'
  + 'DADaR5pMovP3DQAAAABJRU5ErkJggg==';
+
+var noTags = /<[^>]*>/g;
 
 var whiteListed = {};
 var blackListed = {};
@@ -423,7 +423,7 @@ function handleReveal(e) {
 
 
 function checkPost(post) {
-	var olPosts, liPost, bln, wln, liRemove, n, savedfrom, author, li_notice, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, imgRating, spanWhitelisted, spanBlacklisted, anchors, a, remove, ribbon_right, ribbon_left;
+	var olPosts, liPost, bln, wln, liRemove, n, savedfrom, author, li_notice, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, imgRating, spanWhitelisted, spanBlacklisted;
 
 	if (post.className.indexOf('not_mine') < 0) {
 		return;
@@ -473,7 +473,14 @@ function checkPost(post) {
 		}
 	}
 
-	var postText = post.innerHTML.substring(0,post.innerHTML.indexOf('<div class="post_notes">'));
+	var postText = '';
+	postText += post.querySelector('.post_header').innerHTML.replace(noTags, ' ');
+	postText += post.querySelector('.post_content').innerHTML;
+
+	if (post.querySelector('.post_tags')) {
+		postText += post.querySelector('.post_tags').innerHTML.replace(noTags, ' ');
+	}
+
 	savedfrom = needstobesaved(postText);
 
 	if (savedfrom.bL.length && savedfrom.wL.length === 0) {
@@ -638,27 +645,6 @@ function checkPost(post) {
 
 		divRating.appendChild(spanBlacklisted);
 		post.appendChild(divRating);
-	}
-
-	anchors = post.getElementsByTagName('a');
-
-	if (settings.promoted_tags) {
-		for (a = 0; a < anchors.length; a++) {
-			if (anchors[a].outerHTML && anchors[a].outerHTML.indexOf('blingy blue') >= 0) {
-				anchors[a].outerHTML = anchors[a].outerHTML.replace(/blingy blue/gm, ' ');
-			}
-		}
-	}
-
-	if (settings.promoted_posts) {
-		if (post.outerHTML.indexOf('promotion_highlighted') >= 0) {
-			remove = post.id;
-			document.getElementById(remove).className = document.getElementById(remove).className.replace(/promotion_highlighted/gm, '');
-			ribbon_right = document.getElementById('highlight_ribbon_right_' + remove.replace('post_', ''));
-			ribbon_left = document.getElementById('highlight_ribbon_left_' + remove.replace('post_', ''));
-			ribbon_right.parentNode.removeChild(ribbon_right);
-			ribbon_left.parentNode.removeChild(ribbon_left);
-		}
 	}
 }
 
