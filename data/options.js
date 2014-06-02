@@ -35,7 +35,8 @@ settingsInputs = { //match up our settings object with our dom.
 		hide_pinned: 'hide_pinned_cb',
 		auto_unpin: 'auto_unpin_cb',
 		show_tags: 'show_tags_cb',
-		hide_premium: 'hide_premium_cb'
+		hide_premium: 'hide_premium_cb',
+		hide_recommended: 'hide_recommended_cb'
 	},
 	lists:  {
 		listBlack: 'listBlack',
