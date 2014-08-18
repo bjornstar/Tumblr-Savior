@@ -1,8 +1,5 @@
 var settings;
 
-var firefoxWorkers = [];
-var firefoxOptionsPanel;
-
 function detectBrowser() {
 	try {
 		if (window && window.chrome) {
@@ -167,64 +164,6 @@ function safariContextMenuHandler(event) {
 	}
 }
 
-function firefoxMessageHandler(data) {
-	firefoxOptionsPanel.postMessage('getSettings');
-}
-
-function firefoxOptionsMessageHandler(data) {
-	var worker;
-
-	for (worker = 0; worker < firefoxWorkers.length; worker++) {
-		firefoxWorkers[worker].postMessage(data);
-	}
-}
-
-function firefoxDetachWorker(worker) {
-	var index;
-
-	index = firefoxWorkers.indexOf(worker);
-
-	if (index !== -1) {
-		firefoxWorkers.splice(index, 1);
-	}
-}
-
-function firefoxMain() {
-	var pageMod = require('sdk/page-mod');
-	var self = require('sdk/self');
-	var ss = require('sdk/simple-storage');
-	var widgets = require('sdk/widget');
-	var panels = require('sdk/panel');
-
-	pageMod.PageMod({
-		include: ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'],
-		contentScriptFile: self.data.url('script.js'),
-		contentScriptWhen: 'ready',
-		onAttach: function onAttach(worker) {
-			firefoxWorkers.push(worker);
-			worker.on('message', firefoxMessageHandler);
-			worker.on('detach', function () {
-				firefoxDetachWorker(this);
-			});
-		}
-	});
-
-	firefoxOptionsPanel = panels.Panel({
-		width: 720,
-		height: 600,
-		contentURL: self.data.url('options.html')
-	});
-
-	firefoxOptionsPanel.on('message', firefoxOptionsMessageHandler);
-
-	var optionsWidget = widgets.Widget({
-		id: 'optionsWidget',
-		label: 'Tumblr Savior Options',
-		panel: firefoxOptionsPanel,
-		content: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAnNJREFUeNqMU09M02AU/8awC5vJsu2g4ExwkDgJQzfCEsWEgQxI1CVLvHDadYNE9IAm84KJ3EBPBjGe0ETw6AXmwRBPXhjTkjCTicvC+FPKZC1tt7brs1/JcIMY92val+977/3e7/v6HgIAVAtMJpPR4XA463Q6XeV+/f8SbTbbWY/bfT0QCAQpitI/m5wMV/p1WEElqcFgQFc7Ojq9Xm+Pt6vL53K5blxqbraZrVb0ZXk529Pbaz+loLHx/LmhwaHbnk5Pj/ua+2ZrS4vDpiYoiqKRK6AgmqJQU1OTiSCIelEU5WMGrODR+HhUtcCzLGxns3CYz4PAccCp63dzc/Di+TTs03s4BG719Q1UKqjDH5qmD7Cl9igE6rMUi6GJpxPoTuAu+pVOI5Ik0T5NawmRcHi06pKwgra2K66SLIEsiZBYjcOTaBRez87i3wNrJKlVpnZ3oAy73X6xigDjW2I1hZ07W1vAq/IxfD4fDA8Pw0m8mpl5c4pgdGTk/snAT7EYGI1GyGQy2rpQLGpWkiSwWiyWKgK9Xt/AsuwhDiiVSsckOMTv90OhUABeEIA5CoEHY2MPjy8R56tJwvTU1Eu8KBZFbTOZTKJgMIi6u7sRw7JIEiXE87zm6x8YvKcW1ZcVELipzGZzq8ALJVmW4fdBHtbXkyAIBa2irIqSlb/HI8m1PbW9G8qtLGEV+Xw+tfBh4XMoFOo/QxDI6bx8dEz1XY2vbDMMQ8Xj8ZVEIv41lfr5g+M4oUyAY7Tu+q4CK0xvbDCbm5sbuVxua37+/dulxcWPoiTxp4bl5DS2t7d3RcKRx1ar5UItU6qrdZz/hT8CDADaR5pMovP3DQAAAABJRU5ErkJggg==" />'
-	});
-}
-
 switch (browser) {
 case 'Chrome':
 	console.log('Setting up the',browser,'backend.');
@@ -255,7 +194,7 @@ case 'Safari':
 case 'Firefox':
 	console.log('Setting up the',browser,'backend.');
 	// Developing extensions for this browser sucks...
-	exports.main = firefoxMain;
+	exports.main = require('./firefox.js');
 	break;
 default:
 	console.error('I\'m sorry, but your browser extension system was not detected correctly.');

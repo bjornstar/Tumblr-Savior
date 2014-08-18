@@ -29,14 +29,14 @@ settingsInputs = { //match up our settings object with our dom.
 		show_words: 'show_words_cb',
 		match_words: 'match_words_cb',
 		context_menu: 'context_menu_cb',
-		toolbar_butt: 'toolbar_butt_cb',
 		white_notice: 'white_notice_cb',
 		black_notice: 'black_notice_cb',
 		hide_pinned: 'hide_pinned_cb',
 		auto_unpin: 'auto_unpin_cb',
 		show_tags: 'show_tags_cb',
 		hide_premium: 'hide_premium_cb',
-		hide_recommended: 'hide_recommended_cb'
+		hide_recommended: 'hide_recommended_cb',
+		hide_sponsored: 'hide_sponsored_cb'
 	},
 	lists:  {
 		listBlack: 'listBlack',
@@ -175,7 +175,7 @@ function addInput(whichList, itemValue) {
 }
 
 function loadOptions() {
-	var loadSettings, settingsInput, settingsValue, listEntry, version_div, browser_span, context_menu_div, toolbar_butt_div, inandout;
+	var loadSettings, settingsInput, settingsValue, listEntry, version_div, browser_span, context_menu_div, inandout;
 
 	loadSettings = parseSettings();
 
@@ -464,11 +464,6 @@ function contentLoaded() {
 	if (browser === 'Firefox') {
 		context_menu_div = document.getElementById('context_menu_div');
 		context_menu_div.setAttribute('style', 'display:none;');
-	}
-
-	if (browser === 'Chrome' || browser === 'Safari') {
-		toolbar_butt_div = document.getElementById('toolbar_butt_div');
-		toolbar_butt_div.setAttribute('style', 'display:none;');
 	}
 
 	if (browser !== 'Undetected') {

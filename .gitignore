@@ -2,4 +2,4 @@
 *.xpi
 *.safariextz
 .DS_Store
-
+src.safariextension

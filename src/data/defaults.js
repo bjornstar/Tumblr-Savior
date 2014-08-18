@@ -1,5 +1,5 @@
 var defaultSettings = {
-	'version': '0.4.11',
+	'version': '0.4.12',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -7,11 +7,12 @@ var defaultSettings = {
 	'show_words': true,
 	'match_words': true,
 	'context_menu': true,
-	'toolbar_butt': true,
 	'white_notice': true,
 	'black_notice': true,
 	'hide_pinned': false,
 	'auto_unpin': true,
 	'show_tags': true,
-	'hide_premium': true
+	'hide_premium': true,
+	'hide_recommended': true,
+	'hide_sponsored': true
 }; //initialize default values.

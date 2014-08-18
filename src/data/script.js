@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.11',
+	'version': '0.4.12',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -14,13 +14,14 @@ var defaultSettings = {
 	'show_words': true,
 	'match_words': true,
 	'context_menu': true,
-	'toolbar_butt': true,
 	'white_notice': true,
 	'black_notice': true,
 	'hide_pinned': false,
 	'auto_unpin': true,
 	'show_tags': true,
-	'hide_premium': true
+	'hide_premium': true,
+	'hide_recommended': true,
+	'hide_sponsored': true
 }; //initialize default values.
 
 var invalidTumblrURLs = [
@@ -333,13 +334,30 @@ function applySettings() {
 	}
 }
 
+function buildRegex(entry) {
+	entry = entry.replace(/\?/g, '\\?').replace(/\+/g, '\\+').replace(/\)/g, '\\)').replace(/\(/g, '\\(').replace(/\[/g, '\\[').replace(/\x2a/g, '(\\w*?)');
+
+	var str = '(^|\\W)(' + entry + ')(\\W|$)';
+	var re = new RegExp(str);
+
+	return function testRegex(content) {
+		return content.match(re);
+	};
+}
+
+function buildIndexOf(entry) {
+	return function testIndexOf(content) {
+		return content.indexOf(entry) !== -1;
+	};
+}
+
 function parseSettings(savedSettings) {
 	// This parses the settings received from the options page and stashes them in the global
 	// settings object. If there is a parse error, we get a warning and default values. We also
 	// take this opportunity to pre-compile our blacklist and whitelist filters so we are not
 	// wasting time repeatedly building them while filtering.
 
-	var i;
+	var i, entry, test;
 
 	try {
 		settings = JSON.parse(savedSettings);
@@ -348,43 +366,29 @@ function parseSettings(savedSettings) {
 		settings = defaultSettings;
 	}
 
-	function buildRegex(entry) {
-		var str = '(^|\\W)(' + entry.replace(/\?/g, '\\?').replace(/\)/g, '\\)').replace(/\(/g, '\\(').replace(/\[/g, '\\[').replace(/\x2a/g, '(\\w*?)') + ')(\\W|$)';
-		var re = new RegExp(str);
-		return function testRegex(content) {
-			return content.match(re);
-		}
-	}
-
-	function buildIndexOf(entry) {
-		return function testIndexOf(content) {
-			return content.indexOf(entry) !== -1;
-		}
-	}
-
 	filters.black = [];
 	filters.white = [];
 
 	if (settings.match_words) {
 		for (i = 0; i < settings.listBlack.length; i += 1) {
-			var entry = settings.listBlack[i].toLowerCase();
-			var test = buildRegex(entry);
+			entry = settings.listBlack[i].toLowerCase();
+			test = buildRegex(entry);
 			filters.black.push(test);
 		}
 		for (i = 0; i < settings.listWhite.length; i += 1) {
-			var entry = settings.listWhite[i].toLowerCase();
-			var test = buildRegex(entry);
+			entry = settings.listWhite[i].toLowerCase();
+			test = buildRegex(entry);
 			filters.white.push(test);
 		}
 	} else {
 		for (i = 0; i < settings.listBlack.length; i += 1) {
-			var entry = settings.listBlack[i].toLowerCase();
-			var test = buildIndexOf(entry);
+			entry = settings.listBlack[i].toLowerCase();
+			test = buildIndexOf(entry);
 			filters.black.push(test);
 		}
 		for (i = 0; i < settings.listWhite.length; i += 1) {
-			var entry = settings.listWhite[i].toLowerCase();
-			var test = buildIndexOf(entry);
+			entry = settings.listWhite[i].toLowerCase();
+			test = buildIndexOf(entry);
 			filters.white.push(test);
 		}
 	}
@@ -437,12 +441,13 @@ function checkPost(post) {
 		return;
 	}
 
-	if (settings.auto_unpin && post.className.indexOf('promotion_pinned') >= 0) {
+	if (settings.auto_unpin && post.className.indexOf('promotion_pinned') !== -1) {
 		unpin(post);
 	}
 
-	if (settings.hide_recommended && post.className.indexOf('is_recommended') >= 0) {
-			post.parentNode.removeChild(post);
+	if ((settings.hide_recommended && post.className.indexOf('is_recommended') !== -1) ||
+		(settings.hide_sponsored && post.className.indexOf('sponsored_post') !== -1)) {
+		return post.parentNode.removeChild(post);
 	}
 
 	olPosts = document.getElementById('posts');
@@ -664,7 +669,8 @@ function handlePostInserted(argPost) {
 	}
 
 	if (!gotSettings) {
-		return inProgress[post.id] = true;
+		inProgress[post.id] = true;
+		return;
 	}
 
 	checkPost(post);
