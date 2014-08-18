@@ -441,6 +441,10 @@ function checkPost(post) {
 		unpin(post);
 	}
 
+	if (settings.hide_recommended && post.className.indexOf('is_recommended') >= 0) {
+			post.parentNode.removeChild(post);
+	}
+
 	olPosts = document.getElementById('posts');
 
 	if (post.tagName === 'DIV') {
