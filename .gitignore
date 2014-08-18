@@ -1,5 +1,8 @@
-*.zip
-*.xpi
+*.nex
+*.pem
 *.safariextz
+*.xpi
+*.zip
 .DS_Store
 src.safariextension
+
