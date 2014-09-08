@@ -164,6 +164,17 @@ function safariContextMenuHandler(event) {
 	}
 }
 
+function safariValidateHandler(event) {
+	var settings;
+
+	if (event.command === 'addToBlackList') {
+		settings = parseSettings();
+		if (!settings.context_menu || event.userInfo === null) {
+			event.target.disabled = true
+		}
+	}
+}
+
 switch (browser) {
 case 'Chrome':
 	console.log('Setting up the',browser,'backend.');
@@ -190,6 +201,7 @@ case 'Safari':
 	safari.application.addEventListener('message', safariMessageHandler, false);
 	safari.application.addEventListener('command', safariCommandHandler, false);
 	safari.application.addEventListener('contextmenu', safariContextMenuHandler, false);
+	safari.application.addEventListener('validate', safariValidateHandler, false);
 	break;
 case 'Firefox':
 	console.log('Setting up the',browser,'backend.');
