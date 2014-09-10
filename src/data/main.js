@@ -160,7 +160,7 @@ function safariContextMenuHandler(event) {
 			wordBlack = wordBlack.replace(/^\s+|\s+$/g, '');
 			wordBlack = wordBlack + '...';
 		}
-		event.contextMenu.appendContextMenuItem('addToBlackList', 'Add \'' + wordBlack + '\' to Tumblr Savior black list');
+		event.contextMenu.appendContextMenuItem('addToBlackList', 'Add \u201c' + wordBlack + '\u201d to Tumblr Savior black list');
 	}
 }
 
