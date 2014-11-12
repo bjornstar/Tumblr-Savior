@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.12',
+	'version': '0.4.13',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -54,6 +54,7 @@ var blackListed = {};
 var filters = {};
 
 function detectBrowser() {
+	// Since Opera is just another version of chrome, we check the userAgent.
 	if (navigator.userAgent.indexOf('OPR') !== -1) {
 		return 'Opera';
 	}
@@ -452,6 +453,14 @@ function checkPost(post) {
 
 	olPosts = document.getElementById('posts');
 
+	if (olPosts.tagName !== 'OL') {
+		olPosts = document.getElementById('search_posts');
+	}
+
+	if (!olPosts) {
+		return console.error('Tumblr Savior doesn\'t know how to handle this page.');
+	}
+
 	if (post.tagName === 'DIV') {
 		liPost = post.parentNode;
 	} else {
@@ -573,7 +582,7 @@ function checkPost(post) {
 
 					span_notice_tags = document.createElement('span');
 					span_notice_tags.appendChild(document.createTextNode('Tags: '));
-					span_notice_tags.appendChild(document.createTextNode(span_tags[0].textContent));
+					span_notice_tags.appendChild(document.createTextNode(span_tags[0].textContent.replace(/#/g, ' #')));
 
 					div_sentence.appendChild(span_notice_tags);
 				}

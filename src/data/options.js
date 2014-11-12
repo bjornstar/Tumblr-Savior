@@ -1,8 +1,8 @@
 function getBrowser() {
+	// Since Opera is just another version of chrome, we check the userAgent.
 	if (navigator.userAgent.indexOf('OPR') !== -1) {
 		return 'Opera';
 	}
-	// Since Opera is just another version of chrome, it has window.chrome.
 	if (window && window.chrome) {
 		return 'Chrome';
 	}
