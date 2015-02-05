@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.13',
+	'version': '0.4.14',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -430,7 +430,8 @@ function handleReveal(e) {
 function checkPost(post) {
 	var olPosts, liPost, bln, wln, liRemove, n, savedfrom, author, li_notice, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, imgRating, spanWhitelisted, spanBlacklisted;
 
-	if (post.className.indexOf('not_mine') < 0) {
+	// We don't filter our own posts
+	if (post.className.indexOf('not_mine') === -1) {
 		return;
 	}
 
@@ -444,11 +445,6 @@ function checkPost(post) {
 
 	if (settings.auto_unpin && post.className.indexOf('promotion_pinned') !== -1) {
 		unpin(post);
-	}
-
-	if ((settings.hide_recommended && post.className.indexOf('is_recommended') !== -1) ||
-		(settings.hide_sponsored && post.className.indexOf('sponsored_post') !== -1)) {
-		return post.parentNode.removeChild(post);
 	}
 
 	olPosts = document.getElementById('posts');
@@ -669,6 +665,25 @@ function checkPost(post) {
 function handlePostInserted(argPost) {
 	var post = argPost.target;
 
+	if (settings.remove_tracking && !post.className) {
+		return post.parentNode.removeChild(post);
+	}
+
+	if (settings.hide_recommended && post.className &&
+		post.className.indexOf('is_recommended') !== -1) {
+
+		return post.parentNode.removeChild(post);
+	}
+
+	if (settings.hide_sponsored && post.className &&
+		(post.className.indexOf('remnantUnitContainer') !== -1 ||
+			post.className.indexOf('sponsored_post') !== -1)) {
+
+		return post.parentNode.removeChild(post);
+	}
+
+	// If there's no post id, we don't need to scan the contents.
+
 	if (!post.id || post.id.indexOf('post_') !== 0) {
 		return;
 	}
@@ -718,7 +733,7 @@ function wireupnodes() {
 	cssRules[4] += '    to { clip: rect(0px, auto, auto, auto); }';
 	cssRules[4] += '}';
 
-	cssRules[5]  = 'li.post_container div.post, li.post {';
+	cssRules[5]  = 'li.post_container div.post, li.post, li.remnantUnitContainer {';
 	cssRules[5] += '    animation-duration: 1ms;';
 	cssRules[5] += '    -o-animation-duration: 1ms;';
 	cssRules[5] += '    -ms-animation-duration: 1ms;';
