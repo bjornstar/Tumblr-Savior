@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.14',
+	'version': '0.4.15',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -665,10 +665,6 @@ function checkPost(post) {
 function handlePostInserted(argPost) {
 	var post = argPost.target;
 
-	if (settings.remove_tracking && !post.className) {
-		return post.parentNode.removeChild(post);
-	}
-
 	if (settings.hide_recommended && post.className &&
 		post.className.indexOf('is_recommended') !== -1) {
 
@@ -676,13 +672,15 @@ function handlePostInserted(argPost) {
 	}
 
 	if (settings.hide_sponsored && post.className &&
-		(post.className.indexOf('remnantUnitContainer') !== -1 ||
-			post.className.indexOf('sponsored_post') !== -1)) {
+		// Originally it was 'remnantUnitContainer' later it changed to 'remnant-unit-container'
+		// let's just block posts that contain remnant or sponsored and be done with it.
+		(post.className.indexOf('remnant') !== -1 ||
+			post.className.indexOf('sponsored') !== -1)) {
 
 		return post.parentNode.removeChild(post);
 	}
 
-	// If there's no post id, we don't need to scan the contents.
+	// If there's no post id, we don't scan the contents.
 
 	if (!post.id || post.id.indexOf('post_') !== 0) {
 		return;
@@ -733,7 +731,7 @@ function wireupnodes() {
 	cssRules[4] += '    to { clip: rect(0px, auto, auto, auto); }';
 	cssRules[4] += '}';
 
-	cssRules[5]  = 'li.post_container div.post, li.post, li.remnantUnitContainer {';
+	cssRules[5]  = 'li.post_container div.post, li.post, ol.posts li {';
 	cssRules[5] += '    animation-duration: 1ms;';
 	cssRules[5] += '    -o-animation-duration: 1ms;';
 	cssRules[5] += '    -ms-animation-duration: 1ms;';
