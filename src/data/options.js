@@ -31,12 +31,11 @@ settingsInputs = { //match up our settings object with our dom.
 		context_menu: 'context_menu_cb',
 		white_notice: 'white_notice_cb',
 		black_notice: 'black_notice_cb',
-		hide_pinned: 'hide_pinned_cb',
-		auto_unpin: 'auto_unpin_cb',
 		show_tags: 'show_tags_cb',
 		hide_premium: 'hide_premium_cb',
 		hide_recommended: 'hide_recommended_cb',
-		hide_sponsored: 'hide_sponsored_cb'
+		hide_sponsored: 'hide_sponsored_cb',
+		hide_some_more_blogs: 'hide_some_more_blogs_cb'
 	},
 	lists:  {
 		listBlack: 'listBlack',

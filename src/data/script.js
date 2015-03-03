@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.14',
+	'version': '0.4.16',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -16,12 +16,11 @@ var defaultSettings = {
 	'context_menu': true,
 	'white_notice': true,
 	'black_notice': true,
-	'hide_pinned': false,
-	'auto_unpin': true,
 	'show_tags': true,
 	'hide_premium': true,
 	'hide_recommended': true,
-	'hide_sponsored': true
+	'hide_sponsored': true,
+	'hide_some_more_blogs': true
 }; //initialize default values.
 
 var invalidTumblrURLs = [
@@ -192,38 +191,6 @@ function hide_black_notice() {
 	addGlobalStyle('black_notice_style', cssRules);
 }
 
-function hide_premium() {
-	var cssRules = [];
-
-	cssRules[0]  = '#tumblr_radar.premium {';
-	cssRules[0] += 'display: none;';
-	cssRules[0] += '}';
-	addGlobalStyle('premium_style', cssRules);
-}
-
-function show_premium() {
-	var cssRules = [];
-
-	cssRules[0]  = '#tumblr_radar.premium {}';
-	addGlobalStyle('premium_style', cssRules);
-}
-
-function hide_pinned() {
-	var cssRules = [];
-
-	cssRules[0]  = '.promotion_pinned {';
-	cssRules[0] += 'display: none;';
-	cssRules[0] += '}';
-	addGlobalStyle('pinned_style', cssRules);
-}
-
-function show_pinned() {
-	var cssRules = [];
-
-	cssRules[0]  = '.promotion_pinned {}';
-	addGlobalStyle('pinned_style', cssRules);
-}
-
 function hide_ratings() {
 	var cssRules = [];
 
@@ -265,39 +232,53 @@ function show_ratings() {
 	addGlobalStyle('savior_rating_style', cssRules);
 }
 
-function hide_source() {
+function toggleHidePremium(hide) {
 	var cssRules = [];
 
-	cssRules[0]  = 'div.post_source {display:none!important;}';
-	addGlobalStyle('source_url_style', cssRules);
-}
-
-function show_source() {
-	var cssRules = [];
-
-	cssRules[0]  = 'div.post_source {}';
-	addGlobalStyle('source_url_style', cssRules);
-}
-
-function unpin(thepost) {
-	var clickUnpin, pins, pin;
-
-	clickUnpin = document.createEvent('MouseEvents');
-	clickUnpin.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-	pins = thepost.getElementsByClassName('pin');
-	pin = pins[0];
-	if (pin !== undefined) {
-		pin.dispatchEvent(clickUnpin);
+	if (hide) {
+		cssRules.push('#tumblr_radar.premium {display:none!important;}');
 	}
+	addGlobalStyle('premium_style', cssRules);
+}
+
+function toggleHideRecommended(hide) {
+	var cssRules = [];
+
+	if (hide) {
+		cssRules.push('li.is_recommended {display:none!important;}');
+		cssRules.push('div.recommended_tumblelogs {display:none!important;}');
+	}
+	addGlobalStyle('recommended_style', cssRules);
+}
+
+function toggleHideSomeMoreBlogs(hide) {
+	var cssRules = [];
+
+	if (hide) {
+		cssRules.push('li.recommended-unit-container {display:none!important;}');
+	}
+	addGlobalStyle('some_more_blogs_style', cssRules);
+}
+
+function toggleHideSource(hide) {
+	var cssRules = [];
+
+	if (hide) {
+		cssRules.push('div.post_source {display:none!important;}');
+	}
+	addGlobalStyle('source_url_style', cssRules);
+}
+
+function toggleHideSponsored(hide) {
+	var cssRules = [];
+
+	if (hide) {
+		cssRules.push('li.remnantUnitContainer, li.remnant-unit-container, li.sponsored_post {display:none!important;}');
+	}
+	addGlobalStyle('sponsored_style', cssRules);
 }
 
 function applySettings() {
-	if (settings.hide_source) {
-		hide_source();
-	} else {
-		show_source();
-	}
-
 	if (settings.white_notice || settings.black_notice) {
 		show_ratings();
 	} else {
@@ -316,23 +297,17 @@ function applySettings() {
 		hide_white_notice();
 	}
 
-	if (settings.hide_pinned) {
-		hide_pinned();
-	} else {
-		show_pinned();
-	}
-
 	if (settings.show_tags) {
 		show_tags();
 	} else {
 		hide_tags();
 	}
 
-	if (settings.hide_premium) {
-		hide_premium();
-	} else {
-		show_premium();
-	}
+	toggleHidePremium(settings.hide_premium);
+	toggleHideRecommended(settings.hide_recommended);
+	toggleHideSource(settings.hide_source);
+	toggleHideSponsored(settings.hide_sponsored);
+	toggleHideSomeMoreBlogs(settings.hide_some_more_blogs);
 }
 
 function buildRegex(entry) {
@@ -441,10 +416,6 @@ function checkPost(post) {
 
 	if (manuallyShown[post.id]) {
 		return;
-	}
-
-	if (settings.auto_unpin && post.className.indexOf('promotion_pinned') !== -1) {
-		unpin(post);
 	}
 
 	olPosts = document.getElementById('posts');
@@ -665,23 +636,6 @@ function checkPost(post) {
 function handlePostInserted(argPost) {
 	var post = argPost.target;
 
-	if (settings.remove_tracking && !post.className) {
-		return post.parentNode.removeChild(post);
-	}
-
-	if (settings.hide_recommended && post.className &&
-		post.className.indexOf('is_recommended') !== -1) {
-
-		return post.parentNode.removeChild(post);
-	}
-
-	if (settings.hide_sponsored && post.className &&
-		(post.className.indexOf('remnantUnitContainer') !== -1 ||
-			post.className.indexOf('sponsored_post') !== -1)) {
-
-		return post.parentNode.removeChild(post);
-	}
-
 	// If there's no post id, we don't need to scan the contents.
 
 	if (!post.id || post.id.indexOf('post_') !== 0) {
@@ -733,7 +687,7 @@ function wireupnodes() {
 	cssRules[4] += '    to { clip: rect(0px, auto, auto, auto); }';
 	cssRules[4] += '}';
 
-	cssRules[5]  = 'li.post_container div.post, li.post, li.remnantUnitContainer {';
+	cssRules[5]  = 'li.post_container div.post, li.post, ol.posts li {';
 	cssRules[5] += '    animation-duration: 1ms;';
 	cssRules[5] += '    -o-animation-duration: 1ms;';
 	cssRules[5] += '    -ms-animation-duration: 1ms;';
