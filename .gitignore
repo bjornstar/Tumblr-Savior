@@ -5,4 +5,5 @@
 *.zip
 .DS_Store
 src.safariextension
-
+*.key
+*.cs
