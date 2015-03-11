@@ -35,7 +35,9 @@ settingsInputs = { //match up our settings object with our dom.
 		hide_premium: 'hide_premium_cb',
 		hide_recommended: 'hide_recommended_cb',
 		hide_sponsored: 'hide_sponsored_cb',
-		hide_some_more_blogs: 'hide_some_more_blogs_cb'
+		hide_some_more_blogs: 'hide_some_more_blogs_cb',
+		hide_radar: 'hide_radar_cb',
+		hide_recommended_blogs: 'hide_recommended_blogs_cb'
 	},
 	lists:  {
 		listBlack: 'listBlack',

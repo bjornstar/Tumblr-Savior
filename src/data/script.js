@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.16',
+	'version': '0.4.17',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -18,9 +18,11 @@ var defaultSettings = {
 	'black_notice': true,
 	'show_tags': true,
 	'hide_premium': true,
+	'hide_radar': true,
 	'hide_recommended': true,
-	'hide_sponsored': true,
-	'hide_some_more_blogs': true
+	'hide_recommended_blogs': true,
+	'hide_some_more_blogs': true,
+	'hide_sponsored': true
 }; //initialize default values.
 
 var invalidTumblrURLs = [
@@ -136,16 +138,14 @@ function addGlobalStyle(styleID, newRules) {
 function show_tags() {
 	var cssRules = [];
 
-	cssRules[0]  = '.tumblr_savior a.tag {';
-	cssRules[0] += 'font-weight: normal !important;';
-	cssRules[0] += '}';
+	cssRules[0]  = '.tumblr_savior a.tag {font-weight: normal !important;}';
 	addGlobalStyle('notice_tags_css', cssRules);
 }
 
 function hide_tags() {
 	var cssRules = [];
 
-	cssRules[0]  = '.tumblr_savior a.tag {}';
+	cssRules[0]  = '.tumblr_savior a.tag {display: none !important;}';
 	addGlobalStyle('notice_tags_css', cssRules);
 }
 
@@ -232,50 +232,34 @@ function show_ratings() {
 	addGlobalStyle('savior_rating_style', cssRules);
 }
 
-function toggleHidePremium(hide) {
-	var cssRules = [];
-
-	if (hide) {
-		cssRules.push('#tumblr_radar.premium {display:none!important;}');
-	}
-	addGlobalStyle('premium_style', cssRules);
+styleRules = {
+	hide_premium: [ '#tumblr_radar.premium {display:none!important;}' ],
+	hide_radar: [
+		'div#tumblr_radar {display:none!important;}',
+		'ul.controls_section_radar {display:none!important;}'
+	],
+	hide_recommended: [ 'div.post.is_recommended {display:none!important;}' ],
+	hide_recommended_blogs: [ 'div.recommended_tumblelogs {display:none!important;}' ],
+	hide_some_more_blogs: [ 'li.recommended-unit-container {display:none!important;}' ],
+	hide_source: [
+		'div.post_source {display:none!important;}',
+		'div.post-source-footer {display:none!important;}'
+	],
+	hide_sponsored: [ 'li.remnantUnitContainer, li.remnant-unit-container, li.sponsored_post {display:none!important;}' ],
 }
 
-function toggleHideRecommended(hide) {
+function toggleStyle(id) {
+	var rules = styleRules[id];
+	var hide = settings[id];
 	var cssRules = [];
 
 	if (hide) {
-		cssRules.push('li.is_recommended {display:none!important;}');
-		cssRules.push('div.recommended_tumblelogs {display:none!important;}');
+		for (var i = 0; i < rules.length; i += 1) {
+			cssRules.push(rules[i]);
+		}
 	}
-	addGlobalStyle('recommended_style', cssRules);
-}
 
-function toggleHideSomeMoreBlogs(hide) {
-	var cssRules = [];
-
-	if (hide) {
-		cssRules.push('li.recommended-unit-container {display:none!important;}');
-	}
-	addGlobalStyle('some_more_blogs_style', cssRules);
-}
-
-function toggleHideSource(hide) {
-	var cssRules = [];
-
-	if (hide) {
-		cssRules.push('div.post_source {display:none!important;}');
-	}
-	addGlobalStyle('source_url_style', cssRules);
-}
-
-function toggleHideSponsored(hide) {
-	var cssRules = [];
-
-	if (hide) {
-		cssRules.push('li.remnantUnitContainer, li.remnant-unit-container, li.sponsored_post {display:none!important;}');
-	}
-	addGlobalStyle('sponsored_style', cssRules);
+	addGlobalStyle(id, cssRules);
 }
 
 function applySettings() {
@@ -303,11 +287,9 @@ function applySettings() {
 		hide_tags();
 	}
 
-	toggleHidePremium(settings.hide_premium);
-	toggleHideRecommended(settings.hide_recommended);
-	toggleHideSource(settings.hide_source);
-	toggleHideSponsored(settings.hide_sponsored);
-	toggleHideSomeMoreBlogs(settings.hide_some_more_blogs);
+	for (var id in styleRules) {
+		toggleStyle(id);
+	}
 }
 
 function buildRegex(entry) {

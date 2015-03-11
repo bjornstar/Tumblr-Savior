@@ -1,5 +1,5 @@
 var defaultSettings = {
-	'version': '0.4.16',
+	'version': '0.4.17',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -11,7 +11,9 @@ var defaultSettings = {
 	'black_notice': true,
 	'show_tags': true,
 	'hide_premium': true,
+	'hide_radar': true,
 	'hide_recommended': true,
-	'hide_sponsored': true,
-	'hide_some_more_blogs': true
+	'hide_recommended_blogs': true,
+	'hide_some_more_blogs': true,
+	'hide_sponsored': true
 }; //initialize default values.
