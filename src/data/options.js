@@ -202,7 +202,7 @@ function loadOptions() {
 	}
 
 	inandout = document.getElementById('inandout');
-	inandout.textContent = JSON.stringify(loadSettings);
+	inandout.textContent = JSON.stringify(loadSettings, null, 2);
 }
 
 function checkurl(url, filter) {

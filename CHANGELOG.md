@@ -1,5 +1,12 @@
 #Tumblr Savior Changelog
 
+##v0.4.18
+ * Asterisk should match any non-space character (fixes #14)
+ * Tags should be aligned properly when hiding source (fixes #15)
+ * Reorganized files to avoid duplicates in the Mozilla Add-On SDK (fixes #17)
+ * Moved options css into separate file and tweaked to match tumblr background color
+ * Made the save/load tab pretty print json
+
 ##v0.4.17
  * Added an option to hide the radar
  * Added an option to hide the recommended blogs section in the sidebar
@@ -26,7 +33,7 @@
 
 ##v0.4.12
  * Toolbar button for Firefox, supports v30+
- * Added option to hide "recommended" posts (Thanks https://github.com/zero-jt)
+ * Added option to hide "recommended" posts @zero-jt
  * Added option to hide "sponsored" posts
  * Reorganized files, now the extension lives in src
  * Filled in README

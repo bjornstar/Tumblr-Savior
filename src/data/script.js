@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.17',
+	'version': '0.4.18',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -97,55 +97,56 @@ function needstobesaved(theStr) {
 	return rO;
 }
 
-function addGlobalStyle(styleID, newRules) {
-	var cStyle, elmStyle, elmHead, newRule;
+function createStyle(styleId) {
+	var elmStyle = document.createElement('style');
+	elmStyle.type = 'text/css';
+	elmStyle.id = styleId;
 
-	cStyle = document.getElementById(styleID);
+	return elmStyle;
+}
+
+
+function addGlobalStyle(styleId, newRules) {
+	var elmHead, cStyle, hadStyle, i, newRule;
+
 	elmHead = document.getElementsByTagName('head')[0];
 
 	if (!elmHead) {
 		return;
 	}
 
-	if (!cStyle) {
-		elmStyle = document.createElement('style');
-		elmStyle.type = 'text/css';
-		elmStyle.id = styleID;
-		while (newRules.length > 0) {
-			newRule = newRules.pop();
-			if (elmStyle.sheet && elmStyle.sheet.cssRules[0]) {
-				elmStyle.sheet.insertRule(newRule, 0);
-			} else {
-				elmStyle.appendChild(document.createTextNode(newRule));
-			}
+	cStyle = document.getElementById(styleId);
+
+	hadStyle = !!cStyle;
+
+	cStyle = cStyle || createStyle(styleId);
+
+	while (cStyle.sheet && cStyle.sheet.cssRules.length) {
+		cStyle.sheet.deleteRule(0);
+	}
+
+	for (i = 0; i < newRules.length; i += 1) {
+		newRule = newRules[i];
+
+		if (cStyle.sheet && cStyle.sheet.cssRules[0]) {
+			cStyle.sheet.insertRule(newRule, 0);
+		} else {
+			cStyle.appendChild(document.createTextNode(newRule));
 		}
-		elmHead.appendChild(elmStyle);
-	} else {
-		while (cStyle.sheet.cssRules.length > 0) {
-			cStyle.sheet.deleteRule(0);
-		}
-		while (newRules.length > 0) {
-			newRule = newRules.pop();
-			if (cStyle.sheet && cStyle.sheet.cssRules[0]) {
-				cStyle.sheet.insertRule(newRule, 0);
-			} else {
-				cStyle.appendChild(document.createTextNode(newRule));
-			}
-		}
+	}
+
+	if (!hadStyle) {
+		elmHead.appendChild(cStyle);
 	}
 }
 
 function show_tags() {
-	var cssRules = [];
-
-	cssRules[0]  = '.tumblr_savior a.tag {font-weight: normal !important;}';
+	var cssRules = [ '.tumblr_savior a.tag {font-weight: normal !important;}' ];
 	addGlobalStyle('notice_tags_css', cssRules);
 }
 
 function hide_tags() {
-	var cssRules = [];
-
-	cssRules[0]  = '.tumblr_savior a.tag {display: none !important;}';
+	var cssRules = [ '.tumblr_savior a.tag {display: none !important;}' ];
 	addGlobalStyle('notice_tags_css', cssRules);
 }
 
@@ -154,11 +155,7 @@ function show_white_notice() {
 
 	cssRules[0]  = '.whitelisted {';
 	cssRules[0] += 'background: #57b787;';
-	if (settings.black_notice) {
-		cssRules[0] += 'top: 50px;';
-	} else {
-		cssRules[0] += 'top: 20px;';
-	}
+	cssRules[0] += 'top: ' + (settings.black_notice ? 50 : 20) + 'px;';
 	cssRules[0] += '}';
 	addGlobalStyle('white_notice_style', cssRules);
 }
@@ -174,29 +171,19 @@ function show_black_notice() {
 }
 
 function hide_white_notice() {
-	var cssRules = [];
-
-	cssRules[0]  = '.whitelisted {';
-	cssRules[0] += 'display: none;';
-	cssRules[0] += '}';
+	var cssRules = [ '.whitelisted {display: none;}' ];
 	addGlobalStyle('white_notice_style', cssRules);
 }
 
 function hide_black_notice() {
-	var cssRules = [];
-
-	cssRules[0]  = '.blacklisted {';
-	cssRules[0] += 'display: none;';
-	cssRules[0] += '}';
+	var cssRules = [ '.blacklisted {display: none;}' ];
 	addGlobalStyle('black_notice_style', cssRules);
 }
 
 function hide_ratings() {
 	var cssRules = [];
 
-	cssRules[0]  = '.savior_rating {';
-	cssRules[0] += 'display: none;';
-	cssRules[0] += '}';
+	cssRules[0]  = '.savior_rating {display: none;}';
 	addGlobalStyle('savior_rating_style', cssRules);
 }
 
@@ -233,19 +220,31 @@ function show_ratings() {
 }
 
 styleRules = {
-	hide_premium: [ '#tumblr_radar.premium {display:none!important;}' ],
+	hide_premium: [
+		'#tumblr_radar.premium {display:none!important;}'
+	],
 	hide_radar: [
 		'div#tumblr_radar {display:none!important;}',
 		'ul.controls_section_radar {display:none!important;}'
 	],
-	hide_recommended: [ 'div.post.is_recommended {display:none!important;}' ],
-	hide_recommended_blogs: [ 'div.recommended_tumblelogs {display:none!important;}' ],
-	hide_some_more_blogs: [ 'li.recommended-unit-container {display:none!important;}' ],
+	hide_recommended: [
+		'div.post.is_recommended {display:none!important;}'
+	],
+	hide_recommended_blogs: [
+		'div.recommended_tumblelogs {display:none!important;}'
+	],
+	hide_some_more_blogs: [
+		'li.recommended-unit-container {display:none!important;}'
+	],
 	hide_source: [
 		'div.post_source {display:none!important;}',
-		'div.post-source-footer {display:none!important;}'
+		// Simply doing display: none will cause the tags to be too far to the left. (#15)
+		'div.post-source-footer { overflow: hidden; width: 0px; height: 1px; }',
+		'.post.post_source_reposition.has_source.generic_source .post_tags { padding-left: 0px; }'
 	],
-	hide_sponsored: [ 'li.remnantUnitContainer, li.remnant-unit-container, li.sponsored_post {display:none!important;}' ],
+	hide_sponsored: [
+		'li.remnantUnitContainer, li.remnant-unit-container, li.sponsored_post {display:none!important;}'
+	],
 }
 
 function toggleStyle(id) {
@@ -293,7 +292,8 @@ function applySettings() {
 }
 
 function buildRegex(entry) {
-	entry = entry.replace(/\?/g, '\\?').replace(/\+/g, '\\+').replace(/\)/g, '\\)').replace(/\(/g, '\\(').replace(/\[/g, '\\[').replace(/\x2a/g, '(\\w*?)');
+	// Escape all regex characters except for * which matches anything except spaces.
+	entry = entry.replace(/([\\\^\$\.\|\?\+\(\)\{\}])/g, '\\$&').replace(/\x2a/g, '([^\\s]*?)');
 
 	var str = '(^|\\W)(' + entry + ')(\\W|$)';
 	var re = new RegExp(str);
@@ -640,47 +640,39 @@ function wireupnodes() {
 	var cssRules = [];
 
 	document.addEventListener('animationstart', handlePostInserted, false);
-	document.addEventListener('MSAnimationStart', handlePostInserted, false);
 	document.addEventListener('webkitAnimationStart', handlePostInserted, false);
-	document.addEventListener('OAnimationStart', handlePostInserted, false);
 
-	cssRules[0]  = '@keyframes nodeInserted {';
-	cssRules[0] += '    from { clip: rect(1px, auto, auto, auto); }';
-	cssRules[0] += '    to { clip: rect(0px, auto, auto, auto); }';
-	cssRules[0] += '}';
+	cssRules.push(
+		'@keyframes nodeInserted {' +
+		'    from { clip: rect(1px, auto, auto, auto); }' +
+		'    to { clip: rect(0px, auto, auto, auto); }' +
+		'}'
+	);
 
-	cssRules[1]  = '@-moz-keyframes nodeInserted {';
-	cssRules[1] += '    from { clip: rect(1px, auto, auto, auto); }';
-	cssRules[1] += '    to { clip: rect(0px, auto, auto, auto); }';
-	cssRules[1] += '}';
+	cssRules.push(
+		'@-moz-keyframes nodeInserted {' +
+		'    from { clip: rect(1px, auto, auto, auto); }' +
+		'    to { clip: rect(0px, auto, auto, auto); }' +
+		'}'
+	);
 
-	cssRules[2]  = '@-webkit-keyframes nodeInserted {';
-	cssRules[2] += '    from { clip: rect(1px, auto, auto, auto); }';
-	cssRules[2] += '    to { clip: rect(0px, auto, auto, auto); }';
-	cssRules[2] += '}';
+	cssRules.push(
+		'@-webkit-keyframes nodeInserted {' +
+		'    from { clip: rect(1px, auto, auto, auto); }' +
+		'    to { clip: rect(0px, auto, auto, auto); }' +
+		'}'
+	);
 
-	cssRules[3]  = '@-ms-keyframes nodeInserted {';
-	cssRules[3] += '    from { clip: rect(1px, auto, auto, auto); }';
-	cssRules[3] += '    to { clip: rect(0px, auto, auto, auto); }';
-	cssRules[3] += '}';
-
-	cssRules[4]  = '@-o-keyframes nodeInserted {';
-	cssRules[4] += '    from { clip: rect(1px, auto, auto, auto); }';
-	cssRules[4] += '    to { clip: rect(0px, auto, auto, auto); }';
-	cssRules[4] += '}';
-
-	cssRules[5]  = 'li.post_container div.post, li.post, ol.posts li {';
-	cssRules[5] += '    animation-duration: 1ms;';
-	cssRules[5] += '    -o-animation-duration: 1ms;';
-	cssRules[5] += '    -ms-animation-duration: 1ms;';
-	cssRules[5] += '    -moz-animation-duration: 1ms;';
-	cssRules[5] += '    -webkit-animation-duration: 1ms;';
-	cssRules[5] += '    animation-name: nodeInserted;';
-	cssRules[5] += '    -o-animation-name: nodeInserted;';
-	cssRules[5] += '    -ms-animation-name: nodeInserted;';
-	cssRules[5] += '    -moz-animation-name: nodeInserted;';
-	cssRules[5] += '    -webkit-animation-name: nodeInserted;';
-	cssRules[5] += '}';
+	cssRules.push(
+		'li.post_container div.post, li.post, ol.posts li {' +
+		'    animation-duration: 1ms;' +
+		'    -moz-animation-duration: 1ms;' +
+		'    -webkit-animation-duration: 1ms;' +
+		'    animation-name: nodeInserted;' +
+		'    -moz-animation-name: nodeInserted;' +
+		'    -webkit-animation-name: nodeInserted;' +
+		'}'
+	);
 
 	addGlobalStyle('wires', cssRules);
 }
