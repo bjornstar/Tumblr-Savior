@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.18',
+	'version': '0.4.19',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -293,7 +293,7 @@ function applySettings() {
 
 function buildRegex(entry) {
 	// Escape all regex characters except for * which matches anything except spaces.
-	entry = entry.replace(/([\\\^\$\.\|\?\+\(\)\{\}])/g, '\\$&').replace(/\x2a/g, '([^\\s]*?)');
+	entry = entry.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace('*', '[^\\s]*?');
 
 	var str = '(^|\\W)(' + entry + ')(\\W|$)';
 	var re = new RegExp(str);

@@ -1,5 +1,9 @@
 #Tumblr Savior Changelog
 
+##v0.4.19
+ * I broke filters with the asterisk change in v0.4.18, sorry!
+ * Remove a data: uri from the options page since a Mozilla Add-On Editor was objecting to it
+
 ##v0.4.18
  * Asterisk should match any non-space character (fixes #14)
  * Tags should be aligned properly when hiding source (fixes #15)

@@ -160,7 +160,7 @@ function addInput(whichList, itemValue) {
 	optionAdd.appendChild(document.createTextNode('\u00A0'));
 
 	optionImage = document.createElement('img');
-	optionImage.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGFJREFUeNpiXLVmfTwDA8MEIHYICwm8COTrA9kHgLiAEch5D2QIAPEHkABUIZjPBNIBlQAJLEBS6MAEMgqqAxkUgMQZkewQQJKE6ESSAAkkIFlxgAlq5AeoaxciuaEAIMAAiDAi7M96B5wAAAAASUVORK5CYII=';
+	optionImage.src = '../data/x.png';
 	optionAdd.appendChild(optionImage);
 
 	optionAdd.appendChild(document.createTextNode('\u00A0'));
