@@ -1,5 +1,11 @@
 #Tumblr Savior Changelog
 
+##v0.4.20
+ * Fixed Safari's options popup that I broke in v0.4.19, I think I also broke live updates of the popups. (fixes #19)
+ * Added an option to hide tumblr's trending badges. (fixes #20)
+ * Added an option to disable tumblr savior on your inbox. (fixes #16)
+ * Removed the alert saying your settings are corrupt the first time you install in Safari. (fixes #21)
+
 ##v0.4.19
  * I broke filters with the asterisk change in v0.4.18, sorry!
  * Remove a data: uri from the options page since a Mozilla Add-On Editor was objecting to it

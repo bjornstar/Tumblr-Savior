@@ -37,7 +37,9 @@ settingsInputs = { //match up our settings object with our dom.
 		hide_sponsored: 'hide_sponsored_cb',
 		hide_some_more_blogs: 'hide_some_more_blogs_cb',
 		hide_radar: 'hide_radar_cb',
-		hide_recommended_blogs: 'hide_recommended_blogs_cb'
+		hide_recommended_blogs: 'hide_recommended_blogs_cb',
+		hide_trending_badges: 'hide_trending_badges_cb',
+		disable_on_inbox: 'disable_on_inbox_cb'
 	},
 	lists:  {
 		listBlack: 'listBlack',
@@ -108,7 +110,9 @@ function parseSettings() {
 		try {
 			parsedSettings = JSON.parse(localStorage.settings);
 		} catch (e) {
-			alert('Your stored settings are corrupt, Tumblr Savior has been reset back to the default settings.');
+			if (localStorage.settings) {
+				alert('Your stored settings are corrupt, Tumblr Savior has been reset back to the default settings.');
+			}
 			console.log(JSON.stringify(localStorage.settings));
 			parsedSettings = defaultSettings;
 		}

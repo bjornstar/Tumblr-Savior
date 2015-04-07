@@ -1,5 +1,5 @@
 var defaultSettings = {
-	'version': '0.4.19',
+	'version': '0.4.20',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -15,5 +15,7 @@ var defaultSettings = {
 	'hide_recommended': true,
 	'hide_recommended_blogs': true,
 	'hide_some_more_blogs': true,
-	'hide_sponsored': true
+	'hide_sponsored': true,
+	'hide_trending_badges': true,
+	'disable_on_inbox': false
 }; //initialize default values.

@@ -82,7 +82,7 @@ function chromeAddToBlackList(info, tab) {
 	if (theword && addToBlackList(theword)) {
 		chromeViews = chrome.extension.getViews();
 		for (chromeView = 0; chromeView < chromeViews.length; chromeView++) {
-			if (chromeViews[chromeView].location === chrome.extension.getURL('data/options/index.html')) {
+			if (chromeViews[chromeView].location === chrome.extension.getURL('data/options.html')) {
 				chromeViews[chromeView].location.reload();
 			}
 		}
@@ -121,13 +121,13 @@ function safariCommandHandler(event) {
 	switch (event.command) {
 	case 'options':
 		for (tab = 0; tab < safari.application.activeBrowserWindow.tabs.length; tab++) {
-			if (safari.application.activeBrowserWindow.tabs[tab].url === safari.extension.baseURI + 'data/options/index.html') {
+			if (safari.application.activeBrowserWindow.tabs[tab].url === safari.extension.baseURI + 'data/options.html') {
 				tabAlreadyOpened = tab;
 			}
 		}
 		if (tabAlreadyOpened === undefined) {
 			newTab = safari.application.activeBrowserWindow.openTab();
-			newTab.url = safari.extension.baseURI + 'data/options/index.html';
+			newTab.url = safari.extension.baseURI + 'data/options.html';
 		} else {
 			safari.application.activeBrowserWindow.tabs[tabAlreadyOpened].activate();
 		}
@@ -139,7 +139,7 @@ function safariCommandHandler(event) {
 				if (checkurl(safari.application.activeBrowserWindow.tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
 					safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage('refreshSettings');
 				}
-				if (safari.application.activeBrowserWindow.tabs[tab].url === safari.extension.baseURI + 'data/options/index.html') {
+				if (safari.application.activeBrowserWindow.tabs[tab].url === safari.extension.baseURI + 'data/options.html') {
 					safari.application.activeBrowserWindow.tabs[tab].page.dispatchMessage('settings', localStorage.settings);
 				}
 			}

@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.19',
+	'version': '0.4.20',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'hide_source': true,
@@ -22,7 +22,9 @@ var defaultSettings = {
 	'hide_recommended': true,
 	'hide_recommended_blogs': true,
 	'hide_some_more_blogs': true,
-	'hide_sponsored': true
+	'hide_sponsored': true,
+	'hide_trending_badges': true,
+	'disable_on_inbox': false
 }; //initialize default values.
 
 var invalidTumblrURLs = [
@@ -245,6 +247,9 @@ styleRules = {
 	hide_sponsored: [
 		'li.remnantUnitContainer, li.remnant-unit-container, li.sponsored_post {display:none!important;}'
 	],
+	hide_trending_badges: [
+		'div.explore-trending-badge-footer {display:none!important;}'
+	]
 }
 
 function toggleStyle(id) {
@@ -438,6 +443,10 @@ function checkPost(post) {
 				wln[n].parentNode.removeChild(wln[n]);
 			}
 		}
+	}
+
+	if (settings.disable_on_inbox && window.location.pathname.indexOf('/inbox') !== -1) {
+		return;
 	}
 
 	var postText = '';
