@@ -13,6 +13,7 @@ var defaultSettings = {
 	'show_notice': true,
 	'show_words': true,
 	'match_words': true,
+	'check_tags' : true,
 	'context_menu': true,
 	'white_notice': true,
 	'black_notice': true,
@@ -315,10 +316,10 @@ function buildIndexOf(entry) {
 }
 
 function parseSettings(savedSettings) {
-	// This parses the settings received from the options page and stashes them in the global
-	// settings object. If there is a parse error, we get a warning and default values. We also
-	// take this opportunity to pre-compile our blacklist and whitelist filters so we are not
-	// wasting time repeatedly building them while filtering.
+	/* This parses the settings received from the options page and stashes them in the global
+	 * settings object. If there is a parse error, we get a warning and default values. We also
+	 * take this opportunity to pre-compile our blacklist and whitelist filters so we are not
+	 * wasting time repeatedly building them while filtering. */
 
 	var i, entry, test;
 
@@ -453,13 +454,14 @@ function checkPost(post) {
 	postText += post.querySelector('.post_header').innerHTML.replace(noTags, ' ');
 	postText += post.querySelector('.post_content').innerHTML;
 
-	if (post.querySelector('.post_tags')) {
-		postText += post.querySelector('.post_tags').innerHTML.replace(noTags, ' ');
+	var postTags = post.querySelector('.post_tags');
+	if (settings.check_tags && postTags) {
+		postText += postTags.innerHTML.replace(noTags, ' ');
 	}
 
 	savedfrom = needstobesaved(postText);
 
-	if (savedfrom.bL.length && savedfrom.wL.length === 0) {
+	if (savedfrom.bL.length && !savedfrom.wL.length) {
 		if (settings.show_notice) {
 			author = getAuthor(post);
 

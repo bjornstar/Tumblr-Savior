@@ -28,6 +28,7 @@ settingsInputs = { //match up our settings object with our dom.
 		show_notice: 'show_notice_cb',
 		show_words: 'show_words_cb',
 		match_words: 'match_words_cb',
+		check_tags: 'check_tags_cb',
 		context_menu: 'context_menu_cb',
 		white_notice: 'white_notice_cb',
 		black_notice: 'black_notice_cb',

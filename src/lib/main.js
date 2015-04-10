@@ -25,7 +25,7 @@ function chromeMessageHandler(message, sender, sendResponse) {
 }
 
 function parseSettings() {
-	var parsedSettings;
+	var parsedSettings, checkKey, needToUpdate;
 
 	if (!localStorage || !localStorage.settings) {
 		parsedSettings = defaultSettings;
@@ -35,6 +35,17 @@ function parseSettings() {
 		} catch (e) {
 			parsedSettings = defaultSettings;
 		}
+		// Check to see if new setting(s) have been implemented
+		needToUpdate = false;
+		for (checkKey in defaultSettings) {
+			if (!(checkKey in parsedSettings)) {
+				// If setting is missing, update it with the default
+				parsedSettings[checkKey] = defaultSettings[checkKey];
+				needToUpdate = true;
+			}
+		}
+		if (needToUpdate)  // update localStorage to include new setting(s)
+			localStorage.settings = JSON.stringify(parsedSettings);
 	}
 
 	return parsedSettings;

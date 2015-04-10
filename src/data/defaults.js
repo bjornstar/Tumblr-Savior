@@ -6,6 +6,7 @@ var defaultSettings = {
 	'show_notice': true,
 	'show_words': true,
 	'match_words': true,
+	'check_tags' : true,
 	'context_menu': true,
 	'white_notice': true,
 	'black_notice': true,
