@@ -13,7 +13,7 @@ var defaultSettings = {
 	'show_notice': true,
 	'show_words': true,
 	'match_words': true,
-	'check_tags' : true,
+	'ignore_tags' : false,
 	'context_menu': true,
 	'white_notice': true,
 	'black_notice': true,
@@ -455,7 +455,7 @@ function checkPost(post) {
 	postText += post.querySelector('.post_content').innerHTML;
 
 	var postTags = post.querySelector('.post_tags');
-	if (settings.check_tags && postTags) {
+	if (postTags && !settings.ignore_tags) {
 		postText += postTags.innerHTML.replace(noTags, ' ');
 	}
 
