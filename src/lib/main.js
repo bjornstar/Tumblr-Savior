@@ -25,28 +25,26 @@ function chromeMessageHandler(message, sender, sendResponse) {
 }
 
 function parseSettings() {
-	var parsedSettings, checkKey, needToUpdate;
+	var parsedSettings, checkSettings, checkKey, tempSettings;
 
 	if (!localStorage || !localStorage.settings) {
 		parsedSettings = defaultSettings;
-	} else {
+	} else do {
 		try {
-			parsedSettings = JSON.parse(localStorage.settings);
+			checkSettings = JSON.parse(localStorage.settings);
 		} catch (e) {
 			parsedSettings = defaultSettings;
+			break;	// there should really be goto statements in javascript
 		}
-		// Check to see if new setting(s) have been implemented
-		needToUpdate = false;
-		for (checkKey in defaultSettings) {
-			if (!(checkKey in parsedSettings)) {
-				// If setting is missing, update it with the default
-				parsedSettings[checkKey] = defaultSettings[checkKey];
-				needToUpdate = true;
-			}
-		}
-		if (needToUpdate)  // update localStorage to include new setting(s)
-			localStorage.settings = JSON.stringify(parsedSettings);
-	}
+
+		parsedSettings = {};
+		for (checkKey in defaultSettings)
+			parsedSettings[checkKey] = (checkKey in checkSettings) ? checkSettings[checkKey] : defaultSettings[checkKey];
+
+		tempSettings = JSON.stringify(parsedSettings);
+		if (JSON.stringify(checkSettings) !== tempSettings)
+			localStorage.settings = tempSettings;
+	} while(false);
 
 	return parsedSettings;
 }

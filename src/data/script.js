@@ -13,6 +13,8 @@ var defaultSettings = {
 	'show_notice': true,
 	'show_words': true,
 	'match_words': true,
+	'ignore_header': false,
+	'ignore_body': false,
 	'ignore_tags': false,
 	'context_menu': true,
 	'white_notice': true,
@@ -451,13 +453,18 @@ function checkPost(post) {
 	}
 
 	var postText = '';
-	postText += post.querySelector('.post_header').innerHTML.replace(noTags, ' ');
-	postText += post.querySelector('.post_content').innerHTML;
+
+	var postHeader = post.querySelector('.post_header');
+	if (postHeader && !settings.ignore_header)
+		postText += .innerHTML.replace(noTags, ' ');
+
+	var postContent = post.querySelector('.post_content');
+	if (postContent && !settings.ignore_body)
+		postText += .innerHTML;
 
 	var postTags = post.querySelector('.post_tags');
-	if (postTags && !settings.ignore_tags) {
+	if (postTags && !settings.ignore_tags)
 		postText += postTags.innerHTML.replace(noTags, ' ');
-	}
 
 	savedfrom = needstobesaved(postText);
 
