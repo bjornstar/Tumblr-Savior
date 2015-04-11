@@ -13,7 +13,7 @@ var defaultSettings = {
 	'show_notice': true,
 	'show_words': true,
 	'match_words': true,
-	'ignore_tags' : false,
+	'ignore_tags': false,
 	'context_menu': true,
 	'white_notice': true,
 	'black_notice': true,
