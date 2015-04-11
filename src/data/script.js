@@ -453,16 +453,16 @@ function checkPost(post) {
 	}
 
 	var postText = '';
-
 	var postHeader = post.querySelector('.post_header');
-	if (postHeader && !settings.ignore_header)
-		postText += .innerHTML.replace(noTags, ' ');
-
 	var postContent = post.querySelector('.post_content');
-	if (postContent && !settings.ignore_body)
-		postText += .innerHTML;
-
 	var postTags = post.querySelector('.post_tags');
+
+	if (postHeader && !settings.ignore_header)
+		postText += postHeader.innerHTML.replace(noTags, ' ');
+
+	if (postContent && !settings.ignore_body)
+		postText += postContent.innerHTML.replace(noTags, ' ');
+
 	if (postTags && !settings.ignore_tags)
 		postText += postTags.innerHTML.replace(noTags, ' ');
 
