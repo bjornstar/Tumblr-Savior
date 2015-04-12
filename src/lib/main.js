@@ -24,6 +24,19 @@ function chromeMessageHandler(message, sender, sendResponse) {
 	}
 }
 
+function checkSettings(parsedSettings) {
+	var checkedSettings, checkKey, strSettings; 
+	checkedSettings = {};
+	for (checkKey in defaultSettings)
+		checkedSettings[checkKey] = (checkKey in parsedSettings) ? parsedSettings[checkKey] : defaultSettings[checkKey];
+
+	strSettings = JSON.stringify(checkedSettings);
+	if (JSON.stringify(parsedSettings) !== strSettings)
+		localStorage.settings = strSettings;
+	
+	return checkedSettings;
+}
+
 function parseSettings() {
 	var parsedSettings;
 
@@ -32,6 +45,7 @@ function parseSettings() {
 	} else {
 		try {
 			parsedSettings = JSON.parse(localStorage.settings);
+			parsedSettings = checkSettings(parsedSettings);
 		} catch (e) {
 			parsedSettings = defaultSettings;
 		}
