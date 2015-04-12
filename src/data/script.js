@@ -13,9 +13,6 @@ var defaultSettings = {
 	'show_notice': true,
 	'show_words': true,
 	'match_words': true,
-	'ignore_header': false,
-	'ignore_body': false,
-	'ignore_tags': false,
 	'context_menu': true,
 	'white_notice': true,
 	'black_notice': true,
@@ -318,10 +315,10 @@ function buildIndexOf(entry) {
 }
 
 function parseSettings(savedSettings) {
-	/* This parses the settings received from the options page and stashes them in the global
-	 * settings object. If there is a parse error, we get a warning and default values. We also
-	 * take this opportunity to pre-compile our blacklist and whitelist filters so we are not
-	 * wasting time repeatedly building them while filtering. */
+	// This parses the settings received from the options page and stashes them in the global
+	// settings object. If there is a parse error, we get a warning and default values. We also
+	// take this opportunity to pre-compile our blacklist and whitelist filters so we are not
+	// wasting time repeatedly building them while filtering.
 
 	var i, entry, test;
 
@@ -453,22 +450,16 @@ function checkPost(post) {
 	}
 
 	var postText = '';
-	var postHeader = post.querySelector('.post_header');
-	var postContent = post.querySelector('.post_content');
-	var postTags = post.querySelector('.post_tags');
+	postText += post.querySelector('.post_header').innerHTML.replace(noTags, ' ');
+	postText += post.querySelector('.post_content').innerHTML;
 
-	if (!settings.ignore_header)
-		postText += postHeader.innerHTML.replace(noTags, ' ');
-
-	if (!settings.ignore_body)
-		postText += postContent.innerHTML;
-
-	if (postTags && !settings.ignore_tags)
-		postText += postTags.innerHTML.replace(noTags, ' ');
+	if (post.querySelector('.post_tags')) {
+		postText += post.querySelector('.post_tags').innerHTML.replace(noTags, ' ');
+	}
 
 	savedfrom = needstobesaved(postText);
 
-	if (savedfrom.bL.length && !savedfrom.wL.length) {
+	if (savedfrom.bL.length && savedfrom.wL.length === 0) {
 		if (settings.show_notice) {
 			author = getAuthor(post);
 
