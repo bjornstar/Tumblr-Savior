@@ -24,27 +24,32 @@ function chromeMessageHandler(message, sender, sendResponse) {
 	}
 }
 
+function checkSettings(parsedSettings) {
+	var checkedSettings, checkKey, strSettings; 
+	checkedSettings = {};
+	for (checkKey in defaultSettings)
+		checkedSettings[checkKey] = (checkKey in parsedSettings) ? parsedSettings[checkKey] : defaultSettings[checkKey];
+
+	strSettings = JSON.stringify(checkedSettings);
+	if (JSON.stringify(parsedSettings) !== strSettings)
+		localStorage.settings = strSettings;
+	
+	return checkedSettings;
+}
+
 function parseSettings() {
-	var parsedSettings, checkSettings, checkKey, tempSettings;
+	var parsedSettings;
 
 	if (!localStorage || !localStorage.settings) {
 		parsedSettings = defaultSettings;
-	} else do {
+	} else {
 		try {
-			checkSettings = JSON.parse(localStorage.settings);
+			parsedSettings = JSON.parse(localStorage.settings);
+			parsedSettings = checkSettings(parsedSettings);
 		} catch (e) {
 			parsedSettings = defaultSettings;
-			break;	// there should really be goto statements in javascript
 		}
-
-		parsedSettings = {};
-		for (checkKey in defaultSettings)
-			parsedSettings[checkKey] = (checkKey in checkSettings) ? checkSettings[checkKey] : defaultSettings[checkKey];
-
-		tempSettings = JSON.stringify(parsedSettings);
-		if (JSON.stringify(checkSettings) !== tempSettings)
-			localStorage.settings = tempSettings;
-	} while(false);
+	}
 
 	return parsedSettings;
 }
