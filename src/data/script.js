@@ -457,11 +457,11 @@ function checkPost(post) {
 	var postContent = post.querySelector('.post_content');
 	var postTags = post.querySelector('.post_tags');
 
-	if (postHeader && !settings.ignore_header)
+	if (!settings.ignore_header)
 		postText += postHeader.innerHTML.replace(noTags, ' ');
 
-	if (postContent && !settings.ignore_body)
-		postText += postContent.innerHTML.replace(noTags, ' ');
+	if (!settings.ignore_body)
+		postText += postContent.innerHTML;
 
 	if (postTags && !settings.ignore_tags)
 		postText += postTags.innerHTML.replace(noTags, ' ');
