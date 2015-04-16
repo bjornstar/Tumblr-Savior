@@ -24,7 +24,6 @@ inputLast = 0; //our unique ids for list items
 
 settingsInputs = { //match up our settings object with our dom.
 	checkboxes: {
-		hide_source: 'hide_source_cb',
 		show_notice: 'show_notice_cb',
 		show_words: 'show_words_cb',
 		match_words: 'match_words_cb',
@@ -32,6 +31,8 @@ settingsInputs = { //match up our settings object with our dom.
 		white_notice: 'white_notice_cb',
 		black_notice: 'black_notice_cb',
 		show_tags: 'show_tags_cb',
+		disable_on_inbox: 'disable_on_inbox_cb',
+		hide_source: 'hide_source_cb',
 		hide_premium: 'hide_premium_cb',
 		hide_recommended: 'hide_recommended_cb',
 		hide_sponsored: 'hide_sponsored_cb',
@@ -39,7 +40,7 @@ settingsInputs = { //match up our settings object with our dom.
 		hide_radar: 'hide_radar_cb',
 		hide_recommended_blogs: 'hide_recommended_blogs_cb',
 		hide_trending_badges: 'hide_trending_badges_cb',
-		disable_on_inbox: 'disable_on_inbox_cb'
+		hide_sponsored_notifications: 'hide_sponsored_notifications_cb',
 	},
 	lists:  {
 		listBlack: 'listBlack',

@@ -1,8 +1,7 @@
 var defaultSettings = {
-	'version': '0.4.20',
+	'version': '0.4.21',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
-	'hide_source': true,
 	'show_notice': true,
 	'show_words': true,
 	'match_words': true,
@@ -10,6 +9,8 @@ var defaultSettings = {
 	'white_notice': true,
 	'black_notice': true,
 	'show_tags': true,
+	'disable_on_inbox': false,
+	'hide_source': true,
 	'hide_premium': true,
 	'hide_radar': true,
 	'hide_recommended': true,
@@ -17,5 +18,5 @@ var defaultSettings = {
 	'hide_some_more_blogs': true,
 	'hide_sponsored': true,
 	'hide_trending_badges': true,
-	'disable_on_inbox': false
-}; //initialize default values.
+	'hide_sponsored_notifications': true
+}; // Initialize default values.
