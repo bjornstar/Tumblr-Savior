@@ -6,12 +6,15 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.21',
+	'version': '0.4.22',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
 	'show_words': true,
 	'match_words': true,
+	'ignore_header': false,
+	'ignore_body': false,
+	'ignore_tags': false,
 	'context_menu': true,
 	'white_notice': true,
 	'black_notice': true,
@@ -454,12 +457,18 @@ function checkPost(post) {
 	}
 
 	var postText = '';
-	postText += post.querySelector('.post_header').innerHTML.replace(noTags, ' ');
-	postText += post.querySelector('.post_content').innerHTML;
+	var postHeader = post.querySelector('.post_header');
+	var postContent = post.querySelector('.post_content');
+	var postTags = post.querySelector('.post_tags');
 
-	if (post.querySelector('.post_tags')) {
-		postText += post.querySelector('.post_tags').innerHTML.replace(noTags, ' ');
-	}
+	if (!settings.ignore_header)
+		postText += postHeader.innerHTML.replace(noTags, ' ');
+
+	if (!settings.ignore_body)
+		postText += postContent.innerHTML;
+
+	if (postTags && !settings.ignore_tags)
+		postText += postTags.innerHTML.replace(noTags, ' ');
 
 	savedfrom = needstobesaved(postText);
 
