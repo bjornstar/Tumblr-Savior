@@ -249,7 +249,7 @@ styleRules = {
 		'.post.post_source_reposition.has_source.generic_source .post_tags { padding-left: 0px; }'
 	],
 	hide_sponsored: [
-		'li.remnantUnitContainer, li.remnant-unit-container, li.sponsored_post {display:none!important;}'
+		'li.remnantUnitContainer, li.remnant-unit-container, li.sponsored_post, div.sponsored_post {display:none!important;}'
 	],
 	hide_trending_badges: [
 		'div.explore-trending-badge-footer {display:none!important;}'
