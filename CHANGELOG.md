@@ -1,5 +1,12 @@
 #Tumblr Savior Changelog
 
+##v0.4.22
+ * Added options to ignore header, content, and/or tags of posts
+
+##v0.4.21
+ * Added an option to hide sponsored notifications (ie. "Embrace your uncomfort zone")
+ * Re-organized the options to distinguish between controlling Tumblr Savior's behavior and Tumblr's behavior.
+
 ##v0.4.20
  * Fixed Safari's options popup that I broke in v0.4.19, I think I also broke live updates of the popups. (fixes #19)
  * Added an option to hide tumblr's trending badges. (fixes #20)

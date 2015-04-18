@@ -140,3 +140,7 @@ div {
   height: 240px;
   resize: vertical;
 }
+
+.ignore_label {
+  padding-right: 1em;
+}
