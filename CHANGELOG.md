@@ -6,6 +6,7 @@
  * We now use the built-in tumblr icons for whitelist / blacklist notices, removed the base64 encoded icon from the userscript.
  * Fixed an issue where styles were being duplicated on saves.
  * Fixed an issue where some sponsored posts were getting through (fixes #27)
+ * Multiple asterisks in a blacklist / whitelist entry no longer cause an error (fixes #29)
 
 ##v0.4.21
  * Added an option to hide sponsored notifications (ie. "Embrace your uncomfort zone")

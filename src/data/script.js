@@ -306,7 +306,7 @@ function applySettings() {
 
 function buildRegex(entry) {
 	// Escape all regex characters except for * which matches anything except spaces.
-	entry = entry.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace('*', '[^\\s]*?');
+	entry = entry.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/[*]/g, '[^\\s]*?');
 
 	var str = '(^|\\W)(' + entry + ')(\\W|$)';
 	var re = new RegExp(str);
