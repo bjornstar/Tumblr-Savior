@@ -1,7 +1,11 @@
 #Tumblr Savior Changelog
 
 ##v0.4.22
- * Added options to ignore header, content, and/or tags of posts
+ * Added options to ignore header, content, and/or tags of posts.
+ * Added an option to hide yahoo advertisements (fixes #28)
+ * We now use the built-in tumblr icons for whitelist / blacklist notices, removed the base64 encoded icon from the userscript.
+ * Fixed an issue where styles were being duplicated on saves.
+ * Fixed an issue where some sponsored posts were getting through (fixes #27)
 
 ##v0.4.21
  * Added an option to hide sponsored notifications (ie. "Embrace your uncomfort zone")

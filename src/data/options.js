@@ -44,6 +44,7 @@ settingsInputs = { //match up our settings object with our dom.
 		hide_recommended_blogs: 'hide_recommended_blogs_cb',
 		hide_trending_badges: 'hide_trending_badges_cb',
 		hide_sponsored_notifications: 'hide_sponsored_notifications_cb',
+		hide_yahoo_ads: 'hide_yahoo_ads_cb'
 	},
 	lists:  {
 		listBlack: 'listBlack',

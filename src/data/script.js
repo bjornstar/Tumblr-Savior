@@ -28,7 +28,8 @@ var defaultSettings = {
 	'hide_some_more_blogs': true,
 	'hide_sponsored': true,
 	'hide_trending_badges': true,
-	'hide_sponsored_notifications': true
+	'hide_sponsored_notifications': true,
+	'hide_yahoo_ads': true
 }; // Initialize default values.
 
 var invalidTumblrURLs = [
@@ -41,17 +42,6 @@ var gotSettings = false;
 var manuallyShown = {};
 var isTumblrSaviorRunning = false;
 var inProgress = {};
-var icon = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYW'
- + 'R5ccllPAAAAnNJREFUeNqMU09M02AU/8awC5vJsu2g4ExwkDgJQzfCEsWEgQxI1CVLvHDadYNE9IAm84KJ3EBPBjGe0ETw'
- + '6AXmwRBPXhjTkjCTicvC+FPKZC1tt7brs1/JcIMY92val+977/3e7/v6HgIAVAtMJpPR4XA463Q6XeV+/f8SbTbbWY/bfT'
- + '0QCAQpitI/m5wMV/p1WEElqcFgQFc7Ojq9Xm+Pt6vL53K5blxqbraZrVb0ZXk529Pbaz+loLHx/LmhwaHbnk5Pj/ua+2Zr'
- + 'S4vDpiYoiqKRK6AgmqJQU1OTiSCIelEU5WMGrODR+HhUtcCzLGxns3CYz4PAccCp63dzc/Di+TTs03s4BG719Q1UKqjDH5'
- + 'qmD7Cl9igE6rMUi6GJpxPoTuAu+pVOI5Ik0T5NawmRcHi06pKwgra2K66SLIEsiZBYjcOTaBRez87i3wNrJKlVpnZ3oAy7'
- + '3X6xigDjW2I1hZ07W1vAq/IxfD4fDA8Pw0m8mpl5c4pgdGTk/snAT7EYGI1GyGQy2rpQLGpWkiSwWiyWKgK9Xt/AsuwhDi'
- + 'iVSsckOMTv90OhUABeEIA5CoEHY2MPjy8R56tJwvTU1Eu8KBZFbTOZTKJgMIi6u7sRw7JIEiXE87zm6x8YvKcW1ZcVELip'
- + 'zGZzq8ALJVmW4fdBHtbXkyAIBa2irIqSlb/HI8m1PbW9G8qtLGEV+Xw+tfBh4XMoFOo/QxDI6bx8dEz1XY2vbDMMQ8Xj8Z'
- + 'VEIv41lfr5g+M4oUyAY7Tu+q4CK0xvbDCbm5sbuVxua37+/dulxcWPoiTxp4bl5DS2t7d3RcKRx1ar5UItU6qrdZz/hT8C'
- + 'DADaR5pMovP3DQAAAABJRU5ErkJggg==';
 
 var noTags = /<[^>]*>/g;
 
@@ -131,9 +121,12 @@ function addGlobalStyle(styleId, newRules) {
 		cStyle.sheet.deleteRule(0);
 	}
 
+	if (cStyle.innerText) {
+		cStyle.innerText = '';
+	}
+
 	for (i = 0; i < newRules.length; i += 1) {
 		newRule = newRules[i];
-
 		if (cStyle.sheet && cStyle.sheet.cssRules[0]) {
 			cStyle.sheet.insertRule(newRule, 0);
 		} else {
@@ -160,7 +153,7 @@ function show_white_notice() {
 	var cssRules = [];
 
 	cssRules[0]  = '.whitelisted {';
-	cssRules[0] += 'background: #57b787;';
+	cssRules[0] += 'background-color: #56bc8a;';
 	cssRules[0] += 'top: ' + (settings.black_notice ? 50 : 20) + 'px;';
 	cssRules[0] += '}';
 	addGlobalStyle('white_notice_style', cssRules);
@@ -170,9 +163,12 @@ function show_black_notice() {
 	var cssRules = [];
 
 	cssRules[0]  = '.blacklisted {';
-	cssRules[0] += 'background: #d93023;';
+	cssRules[0] += 'background-color: #d95e40;';
 	cssRules[0] += 'top: 20px;';
 	cssRules[0] += '}';
+	cssRules[1]  = '.blacklisted i{';
+	cssRules[1] += 'margin: 0px 0px 0px 4px;';
+	cssRules[1] += '}';
 	addGlobalStyle('black_notice_style', cssRules);
 }
 
@@ -204,6 +200,7 @@ function show_ratings() {
 	cssRules[0] += '-webkit-border-radius: 4px;';
 	cssRules[0] += '-webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, .46);';
 	cssRules[0] += 'border-radius: 4px;';
+	cssRules[0] += 'color: #fff;';
 	cssRules[0] += '}';
 	cssRules[1]  = '.savior_rating:hover {';
 	cssRules[1] += 'overflow: hidden;';
@@ -213,15 +210,16 @@ function show_ratings() {
 	cssRules[2]  = '.savior_rating:hover span{';
 	cssRules[2] += 'display: inline;';
 	cssRules[2] += '}';
-	cssRules[3]  = '.savior_rating img {';
-	cssRules[3] += 'margin: 2px 0px 0px 2px;';
+	cssRules[3]  = '.savior_rating i {';
+	cssRules[3] += 'margin: 0px 0px 0px 6px;';
 	cssRules[3] += '}';
 	cssRules[4]  = '.savior_rating span{';
 	cssRules[4] += 'display: none;';
 	cssRules[4] += 'line-height:20px;';
-	cssRules[4] += 'margin-left:2px;';
+	cssRules[4] += 'margin-left:4px;';
 	cssRules[4] += 'vertical-align: top;';
 	cssRules[4] += '}';
+
 	addGlobalStyle('savior_rating_style', cssRules);
 }
 
@@ -256,6 +254,9 @@ styleRules = {
 	],
 	hide_sponsored_notifications: [
 		'li.notification.takeover-container {display:none!important;}'
+	],
+	hide_yahoo_ads: [
+		'li.yamplus-unit-container {display:none!important;}'
 	]
 }
 
@@ -397,7 +398,7 @@ function handleReveal(e) {
 
 
 function checkPost(post) {
-	var olPosts, liPost, bln, wln, liRemove, n, savedfrom, author, li_notice, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, imgRating, spanWhitelisted, spanBlacklisted;
+	var olPosts, liPost, bln, wln, liRemove, n, savedfrom, author, li_notice, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, iconRating, spanWhitelisted, spanBlacklisted;
 
 	// We don't filter our own posts
 	if (post.className.indexOf('not_mine') === -1) {
@@ -576,7 +577,7 @@ function checkPost(post) {
 		}
 	}
 
-	divRating = document.getElementById('white_rating_' + post.id);
+	divRating = document.getElementById('whitelisted_post_' + post.id);
 
 	if (divRating) {
 		divRating.parentNode.removeChild(divRating);
@@ -590,23 +591,22 @@ function checkPost(post) {
 		}
 
 		divRating = document.createElement('div');
-		divRating.id = 'white_rating_' + post.id;
+		divRating.id = 'whitelisted_post_' + post.id;
 		divRating.className = 'savior_rating whitelisted';
 
-		imgRating = document.createElement('img');
-		imgRating.src = 'data:image/png;base64,' + icon;
-		imgRating.title = whiteListed[post.id].join(', ');
+		iconRating = document.createElement('i');
+		iconRating.className = 'icon_checkmark';
 
-		divRating.appendChild(imgRating);
+		divRating.appendChild(iconRating);
 
 		spanWhitelisted = document.createElement('span');
 		spanWhitelisted.textContent = whiteListed[post.id].join(', ');
 
 		divRating.appendChild(spanWhitelisted);
-		post.appendChild(divRating);
+		post.insertBefore(divRating, post.firstChild);
 	}
 
-	divRating = document.getElementById('black_rating_' + post.id);
+	divRating = document.getElementById('blacklisted_post_' + post.id);
 
 	if (divRating) {
 		divRating.parentNode.removeChild(divRating);
@@ -620,20 +620,19 @@ function checkPost(post) {
 		}
 
 		divRating = document.createElement('div');
-		divRating.id = 'black_rating_' + post.id;
+		divRating.id = 'blacklisted_post_' + post.id;
 		divRating.className = 'savior_rating blacklisted';
 
-		imgRating = document.createElement('img');
-		imgRating.src = 'data:image/png;base64,' + icon;
-		imgRating.title = blackListed[post.id].join(', ');
+		iconRating = document.createElement('i');
+		iconRating.className = 'icon_remove';
 
-		divRating.appendChild(imgRating);
+		divRating.appendChild(iconRating);
 
 		spanBlacklisted = document.createElement('span');
 		spanBlacklisted.textContent = blackListed[post.id].join(', ');
 
 		divRating.appendChild(spanBlacklisted);
-		post.appendChild(divRating);
+		post.insertBefore(divRating, post.firstChild);
 	}
 }
 
