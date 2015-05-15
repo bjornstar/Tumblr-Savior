@@ -1,5 +1,11 @@
 #Tumblr Savior Changelog
 
+##v0.4.23
+  * Added lists UI feature:
+    * When focused on non-empty input field, release enter to add new field and change focus to it
+    * When focused on empty input field, release backspace to remove current field.  Does not remove an input field if it is the only one.  If available, changes focus to previous field, else change focus to next field.
+  * Changed list remove button click-handler to named function (removeInputHandler), in order to be used with added feature.
+
 ##v0.4.22
  * Added options to ignore header, content, and/or tags of posts.
  * Added an option to hide yahoo advertisements (fixes #28)

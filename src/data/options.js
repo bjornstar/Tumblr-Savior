@@ -126,7 +126,6 @@ function parseSettings() {
 	return parsedSettings;
 }
 
-
 function removeInput(optionWhich) {
 	var optionInput = document.getElementById(optionWhich);
 	if (!optionInput) {
@@ -135,8 +134,52 @@ function removeInput(optionWhich) {
 	optionInput.parentNode.removeChild(optionInput);
 }
 
+function removeInputHandler(e) {
+	var removeThis = e.target;
+	while (removeThis.tagName !== 'DIV') {
+		removeThis = removeThis.parentNode;
+	}
+	if (removeThis.id.indexOf('_div') >= 0) {
+		removeInput(removeThis.id);
+	}
+	e.preventDefault();
+	e.stopPropagation();
+}
+
+function inputKeyUpHandler(e) {
+	var wasEmptyObject, nextFocusId, keycode = e.which, target = e.target, inputLength = target.value.length, divObject = target.parentNode, wasEmptyObj = divObject.getElementsByTagName('PARAM')[0], wasEmpty = 'true' === wasEmptyObj.value ? true : false;
+
+	if (8 === keycode) {
+		if (wasEmpty) {
+			var i, siblings = [divObject.previousSibling, divObject.nextSibling];
+			for (i = 0; i < siblings.length; i++) {
+				if (undefined !== siblings[i] && "DIV" === siblings[i].tagName) {
+					nextFocusId = siblings[i].getElementsByTagName('INPUT')[0].id;
+					removeInputHandler(e);
+					break;
+				}
+			}
+		}
+		else if (! inputLength) {
+			wasEmptyObj.value = 'true';
+			return;
+		}
+	}
+	else if (13 === keycode && ! wasEmpty) {
+		var whichList = divObject.parentNode.id;
+		nextFocusId = 'option' + whichList + inputLast; 
+		addInput(whichList);
+	}
+	else {
+		wasEmptyObj.value = inputLength ? 'false' : 'true';
+		return;
+	}
+
+	if (nextFocusId) document.getElementById(nextFocusId).focus();
+}
+
 function addInput(whichList, itemValue) {
-	var listDiv, listAdd, optionInput, currentLength, removeThis, optionAdd, optionImage, optionLinebreak, optionDiv;
+	var listDiv, listAdd, optionInput, currentLength, optionAdd, optionImage, optionLinebreak, optionDiv;
 
 	if (itemValue === undefined) { //if we don't pass an itemValue, make it blank.
 		itemValue = '';
@@ -151,20 +194,20 @@ function addInput(whichList, itemValue) {
 	optionInput.value = itemValue;
 	optionInput.name = 'option' + whichList;
 	optionInput.id = 'option' + whichList + currentLength;
+	optionInput.addEventListener('focus', function(e) {
+		e.target.addEventListener('keyup', inputKeyUpHandler);
+	});
+	optionInput.addEventListener('blur', function(e) {
+		e.target.removeEventListener('keyup', inputKeyUpHandler);
+	});
+
+	optionWasEmpty = document.createElement('param');
+	optionWasEmpty.name = 'wasEmpty';
+	optionWasEmpty.value = itemValue.length ? 'false' : 'true';
 
 	optionAdd = document.createElement('a');
 	optionAdd.href = '#';
-	optionAdd.addEventListener('click', function (e) {
-		removeThis = e.target;
-		while (removeThis.tagName !== 'DIV') {
-			removeThis = removeThis.parentNode;
-		}
-		if (removeThis.id.indexOf('_div') >= 0) {
-			removeInput(removeThis.id);
-		}
-		e.preventDefault();
-		e.stopPropagation();
-	}, false);
+	optionAdd.addEventListener('click', removeInputHandler, false);
 
 	optionAdd.appendChild(document.createTextNode('\u00A0'));
 
@@ -179,6 +222,7 @@ function addInput(whichList, itemValue) {
 	optionDiv.id = 'option' + whichList + currentLength + '_div';
 	optionDiv.appendChild(optionAdd);
 	optionDiv.appendChild(optionInput);
+	optionDiv.appendChild(optionWasEmpty);
 	optionDiv.appendChild(optionLinebreak);
 
 	listDiv.insertBefore(optionDiv, listAdd);
