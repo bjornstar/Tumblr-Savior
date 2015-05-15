@@ -147,28 +147,35 @@ function removeInputHandler(e) {
 }
 
 function inputKeyUpHandler(e) {
-	var keycode = e.which;
-	if (8 !== keycode && 13 !== keycode) return;
+	var wasEmptyObject, nextFocusId, keycode = e.which, target = e.target, inputLength = target.value.length, divObject = target.parentNode, wasEmptyObj = divObject.getElementsByTagName('PARAM')[0], wasEmpty = 'true' === wasEmptyObj.value ? true : false;
 
-	var nextFocusId, divObject = e.target, inputLength = divObject.value.length;
-	while (divObject.tagName !== 'DIV') divObject = divObject.parentNode;
-
-	if (0 === inputLength && 8 === keycode) {
-		var i, siblings = [divObject.previousSibling, divObject.nextSibling];
-		for (i = 0; i < siblings.length; i++)
-			if (undefined !== siblings[i] && "DIV" === siblings[i].tagName) {
-				nextFocusId = siblings[i].getElementsByTagName('INPUT')[0].id;
-				removeInputHandler(e);
-				break;
+	if (8 === keycode) {
+		if (wasEmpty) {
+			var i, siblings = [divObject.previousSibling, divObject.nextSibling];
+			for (i = 0; i < siblings.length; i++) {
+				if (undefined !== siblings[i] && "DIV" === siblings[i].tagName) {
+					nextFocusId = siblings[i].getElementsByTagName('INPUT')[0].id;
+					removeInputHandler(e);
+					break;
+				}
 			}
+		}
+		else if (! inputLength) {
+			wasEmptyObj.value = 'true';
+			return;
+		}
 	}
-	else if (0 !== inputLength && 13 === keycode) {
+	else if (13 === keycode && ! wasEmpty) {
 		var whichList = divObject.parentNode.id;
 		nextFocusId = 'option' + whichList + inputLast; 
 		addInput(whichList);
 	}
+	else {
+		wasEmptyObj.value = inputLength ? 'false' : 'true';
+		return;
+	}
 
-	if (undefined !== nextFocusId) document.getElementById(nextFocusId).focus();
+	if (nextFocusId) document.getElementById(nextFocusId).focus();
 }
 
 function addInput(whichList, itemValue) {
@@ -194,6 +201,10 @@ function addInput(whichList, itemValue) {
 		e.target.removeEventListener('keyup', inputKeyUpHandler);
 	});
 
+	optionWasEmpty = document.createElement('param');
+	optionWasEmpty.name = 'wasEmpty';
+	optionWasEmpty.value = itemValue.length ? 'false' : 'true';
+
 	optionAdd = document.createElement('a');
 	optionAdd.href = '#';
 	optionAdd.addEventListener('click', removeInputHandler, false);
@@ -211,6 +222,7 @@ function addInput(whichList, itemValue) {
 	optionDiv.id = 'option' + whichList + currentLength + '_div';
 	optionDiv.appendChild(optionAdd);
 	optionDiv.appendChild(optionInput);
+	optionDiv.appendChild(optionWasEmpty);
 	optionDiv.appendChild(optionLinebreak);
 
 	listDiv.insertBefore(optionDiv, listAdd);
