@@ -7,4 +7,4 @@
 .DS_Store
 src.safariextension
 *.key
-*.cs
+*.csr

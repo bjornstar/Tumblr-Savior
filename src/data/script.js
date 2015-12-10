@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.22',
+	'version': '0.4.23',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -45,6 +45,49 @@ var inProgress = {};
 
 var noTags = /<[^>]*>/g;
 
+var howToHide = '{display:none!important;}';
+
+var styleRules = {
+	hide_premium: [
+		'#tumblr_radar.premium' + howToHide
+	],
+	hide_radar: [
+		'div#tumblr_radar' + howToHide,
+		'ul.controls_section_radar' + howToHide
+	],
+	hide_recommended: [
+		'div.post.is_recommended' + howToHide
+	],
+	hide_recommended_blogs: [
+		'div.recommended_tumblelogs' + howToHide
+	],
+	hide_some_more_blogs: [
+		'li.recommended-unit-container' + howToHide
+	],
+	hide_source: [
+		'div.post_source' + howToHide,
+		// Simply doing display: none will cause the tags to be too far to the left. (#15)
+		'div.post-source-footer { overflow: hidden; width: 0px; height: 1px; }',
+		'.post.post_source_reposition.has_source.generic_source .post_tags { padding-left: 0px; }'
+	],
+	hide_sponsored: [
+		'li.remnantUnitContainer' + howToHide,
+		'li.remnant-unit-container' + howToHide,
+		'li.video-ad-container' + howToHide,
+		'li.sponsored_post' + howToHide,
+		'div.sponsored_post' + howToHide
+	],
+	hide_sponsored_notifications: [
+		'li.notification.takeover-container' + howToHide
+	],
+	hide_trending_badges: [
+		'div.explore-trending-badge-footer' + howToHide
+	],
+	hide_yahoo_ads: [
+		'li.yamplus-unit-container' + howToHide
+	]
+};
+
 var whiteListed = {};
 var blackListed = {};
 
@@ -71,26 +114,27 @@ function detectBrowser() {
 var browser = detectBrowser();
 
 function needstobesaved(theStr) {
-	var blackList, whiteList, rO, i;
+	var blackList, whiteList, returnObject, i;
+
 	blackList = settings.listBlack;
 	whiteList = settings.listWhite;
 
-	rO = { bL: [], wL: [] }; //returnObject
+	returnObject = { bL: [], wL: [] };
 
-	theStr = theStr.toLowerCase();
+	normalizedStr = theStr.toLowerCase().replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<');
 
 	for (i = 0; i < blackList.length; i += 1) {
-		if (filters.black[i](theStr)) {
-			rO.bL.push(blackList[i]);
+		if (filters.black[i](normalizedStr)) {
+			returnObject.bL.push(blackList[i]);
 		}
 	}
 	for (i = 0; i < whiteList.length; i += 1) {
-		if (filters.white[i](theStr)) {
-			rO.wL.push(whiteList[i]);
+		if (filters.white[i](normalizedStr)) {
+			returnObject.wL.push(whiteList[i]);
 		}
 	}
 
-	return rO;
+	return returnObject;
 }
 
 function createStyle(styleId) {
@@ -221,43 +265,6 @@ function show_ratings() {
 	cssRules[4] += '}';
 
 	addGlobalStyle('savior_rating_style', cssRules);
-}
-
-styleRules = {
-	hide_premium: [
-		'#tumblr_radar.premium {display:none!important;}'
-	],
-	hide_radar: [
-		'div#tumblr_radar {display:none!important;}',
-		'ul.controls_section_radar {display:none!important;}'
-	],
-	hide_recommended: [
-		'div.post.is_recommended {display:none!important;}'
-	],
-	hide_recommended_blogs: [
-		'div.recommended_tumblelogs {display:none!important;}'
-	],
-	hide_some_more_blogs: [
-		'li.recommended-unit-container {display:none!important;}'
-	],
-	hide_source: [
-		'div.post_source {display:none!important;}',
-		// Simply doing display: none will cause the tags to be too far to the left. (#15)
-		'div.post-source-footer { overflow: hidden; width: 0px; height: 1px; }',
-		'.post.post_source_reposition.has_source.generic_source .post_tags { padding-left: 0px; }'
-	],
-	hide_sponsored: [
-		'li.remnantUnitContainer, li.remnant-unit-container, li.sponsored_post, div.sponsored_post {display:none!important;}'
-	],
-	hide_trending_badges: [
-		'div.explore-trending-badge-footer {display:none!important;}'
-	],
-	hide_sponsored_notifications: [
-		'li.notification.takeover-container {display:none!important;}'
-	],
-	hide_yahoo_ads: [
-		'li.yamplus-unit-container {display:none!important;}'
-	]
 }
 
 function toggleStyle(id) {

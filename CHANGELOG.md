@@ -1,5 +1,9 @@
 #Tumblr Savior Changelog
 
+##v0.4.23 - 2015-12-10
+ * Fixed an issue where you were unable to block HTML Encoded entities: &, <, and > (fixes #31)
+ * Block a new type of ad: `video-ad-container` (fixes #34)
+
 ##v0.4.22
  * Added options to ignore header, content, and/or tags of posts.
  * Added an option to hide yahoo advertisements (fixes #28)
