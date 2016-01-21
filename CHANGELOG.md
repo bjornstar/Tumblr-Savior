@@ -1,5 +1,8 @@
 #Tumblr Savior Changelog
 
+##v0.4.24 - 2016-01-21
+ * Added an option in the Tumblr Behavior section to remove the t.umblr.com redirect (fixes #36)
+
 ##v0.4.23 - 2015-12-10
  * Fixed an issue where you were unable to block HTML Encoded entities: &, <, and > (fixes #31)
  * Block a new type of ad: `video-ad-container` (fixes #34)

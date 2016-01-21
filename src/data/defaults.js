@@ -1,5 +1,5 @@
 var defaultSettings = {
-	'version': '0.4.23',
+	'version': '0.4.24',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -21,5 +21,6 @@ var defaultSettings = {
 	'hide_some_more_blogs': true,
 	'hide_sponsored': true,
 	'hide_trending_badges': true,
-	'hide_sponsored_notifications': true
+	'hide_sponsored_notifications': true,
+	'remove_redirects': true
 }; // Initialize default values.

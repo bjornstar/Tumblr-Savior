@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.23',
+	'version': '0.4.24',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -29,7 +29,8 @@ var defaultSettings = {
 	'hide_sponsored': true,
 	'hide_trending_badges': true,
 	'hide_sponsored_notifications': true,
-	'hide_yahoo_ads': true
+	'hide_yahoo_ads': true,
+	'remove_redirects': true
 }; // Initialize default values.
 
 var invalidTumblrURLs = [
@@ -403,9 +404,37 @@ function handleReveal(e) {
 	manuallyShown[searchUp.id.replace('notification_','')] = true;
 }
 
+// 2016-01-21 - Tumblr is now replacing external links in posts with their redirect service
+// http://t.umblr.com/redirect?z=http%3A%2F%2Flookbook.nu%2Flook%2F8018284-Diario-De-Una-Couturier-Skirt-Buttoned-And-Blue&t=ZjQ2YzcxNTlhYmFlZTQzNGYyMGRmMmJjY2JlZDFjMmJkNzczMDk0YyxheENoQUl3Wg%3D%3D
+
+regexRedirect = /z=([^&]*)/;
+
+function removeRedirect(link) {
+	var encodedUrl = link.href.match(regexRedirect)[1];
+	if (encodedUrl) {
+		link.href = decodeURIComponent(encodedUrl);
+	}
+}
+
+function removeRedirects(post) {
+	if (!settings.remove_redirects) {
+		return;
+	}
+
+	links = post.getElementsByTagName('A')
+
+	for (var i = 0; i < links.length; i += 1) {
+		var link = links[i];
+		if (link.href.indexOf('t.umblr.com') != -1) {
+			removeRedirect(link);
+		}
+	}
+}
 
 function checkPost(post) {
 	var olPosts, liPost, bln, wln, liRemove, n, savedfrom, author, li_notice, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, iconRating, spanWhitelisted, spanBlacklisted;
+
+	removeRedirects(post);
 
 	// We don't filter our own posts
 	if (post.className.indexOf('not_mine') === -1) {
@@ -822,10 +851,10 @@ function initializeTumblrSavior() {
 function checkurl(url, filter) {
 	var filterRegex, re, f;
 
-	for (f = 0; f < filter.length; f++) {
+	for (f = 0; f < filter.length; f+= 1) {
 		filterRegex = filter[f].replace(/\x2a/g, '(.*?)');
 		re = new RegExp(filterRegex);
-		if (url.match(re)) {
+		if (re.test(url)) {
 			return true;
 		}
 	}
