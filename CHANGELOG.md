@@ -1,5 +1,8 @@
 #Tumblr Savior Changelog
 
+##v0.4.26 - 2016-03-13
+ * Add `applications` entry to manifest to work around [a bug in AMO validator](https://github.com/mozilla/amo-validator/issues/405)
+
 ##v0.4.25 - 2016-03-13
  * Block a new type of ad: `standalone-ad-container` (fixes #38)
  * Blacklist notices now get inserted at the same level as the post_container (fixes #7)

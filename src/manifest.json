@@ -30,5 +30,10 @@
 		"tabs",
 		"http://www.tumblr.com/*",
 		"https://www.tumblr.com/*"
-	]
+	],
+	"applications": {
+		"gecko": {
+			"id": "jid1-W5guVoyeUR0uBg@jetpack"
+		}
+	}
 }
