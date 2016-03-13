@@ -1,5 +1,10 @@
 #Tumblr Savior Changelog
 
+##v0.4.25 - 2016-03-13
+ * Block a new type of ad: `standalone-ad-container` (fixes #38)
+ * Blacklist notices now get inserted at the same level as the post_container (fixes #7)
+ * Start Tumblr Savior earlier, allows style based hiding to run before all content is loaded
+
 ##v0.4.24 - 2016-01-21
  * Added an option in the Tumblr Behavior section to remove the t.umblr.com redirect (fixes #36)
 

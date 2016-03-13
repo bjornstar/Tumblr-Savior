@@ -39,7 +39,7 @@ function workerDetached() {
 pageMod.PageMod({
 	include: ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'],
 	contentScriptFile: self.data.url('script.js'),
-	contentScriptWhen: 'ready',
+	contentScriptWhen: 'start',
 	onAttach: function onAttach(worker) {
 		workers.push(worker);
 		worker.on('message', messageHandler);

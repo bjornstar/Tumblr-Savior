@@ -1,12 +1,12 @@
 // ==UserScript==
-// @include        http://www.tumblr.com/*
-// @include        https://www.tumblr.com/*
-// @exclude        http://www.tumblr.com/upload/*
-// @exclude        https://www.tumblr.com/upload/*
+// @include http://www.tumblr.com/*
+// @include https://www.tumblr.com/*
+// @exclude http://www.tumblr.com/upload/*
+// @exclude https://www.tumblr.com/upload/*
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.24',
+	'version': '0.4.25',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -72,11 +72,11 @@ var styleRules = {
 		'.post.post_source_reposition.has_source.generic_source .post_tags { padding-left: 0px; }'
 	],
 	hide_sponsored: [
-		'li.remnantUnitContainer' + howToHide,
-		'li.remnant-unit-container' + howToHide,
-		'li.video-ad-container' + howToHide,
-		'li.sponsored_post' + howToHide,
-		'div.sponsored_post' + howToHide
+		'.remnantUnitContainer' + howToHide,
+		'.remnant-unit-container' + howToHide,
+		'.video-ad-container' + howToHide,
+		'.sponsored_post' + howToHide,
+		'.standalone-ad-container' + howToHide
 	],
 	hide_sponsored_notifications: [
 		'li.notification.takeover-container' + howToHide
@@ -93,26 +93,6 @@ var whiteListed = {};
 var blackListed = {};
 
 var filters = {};
-
-function detectBrowser() {
-	// Since Opera is just another version of chrome, we check the userAgent.
-	if (navigator.userAgent.indexOf('OPR') !== -1) {
-		return 'Opera';
-	}
-	if (window && window.chrome) {
-		return 'Chrome';
-	}
-	if (window && window.safari) {
-		return 'Safari';
-	}
-	if (navigator.userAgent.indexOf('Firefox') !== -1) {
-		return 'Firefox';
-	}
-	console.error('Tumblr Savior could not detect your browser.');
-	return 'Undetected Browser';
-}
-
-var browser = detectBrowser();
 
 function needstobesaved(theStr) {
 	var blackList, whiteList, returnObject, i;
@@ -145,7 +125,6 @@ function createStyle(styleId) {
 
 	return elmStyle;
 }
-
 
 function addGlobalStyle(styleId, newRules) {
 	var elmHead, cStyle, hadStyle, i, newRule;
@@ -432,9 +411,7 @@ function removeRedirects(post) {
 }
 
 function checkPost(post) {
-	var olPosts, liPost, bln, wln, liRemove, n, savedfrom, author, li_notice, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, iconRating, spanWhitelisted, spanBlacklisted;
-
-	removeRedirects(post);
+	var bln, wln, liRemove, n, savedfrom, author, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, iconRating, spanWhitelisted, spanBlacklisted;
 
 	// We don't filter our own posts
 	if (post.className.indexOf('not_mine') === -1) {
@@ -449,21 +426,11 @@ function checkPost(post) {
 		return;
 	}
 
-	olPosts = document.getElementById('posts');
-
-	if (olPosts.tagName !== 'OL') {
-		olPosts = document.getElementById('search_posts');
+	if (settings.disable_on_inbox && window.location.pathname.indexOf('/inbox') !== -1) {
+		return;
 	}
 
-	if (!olPosts) {
-		return console.error('Tumblr Savior doesn\'t know how to handle this page.');
-	}
-
-	if (post.tagName === 'DIV') {
-		liPost = post.parentNode;
-	} else {
-		liPost = post;
-	}
+	removeRedirects(post);
 
 	bln = post.getElementsByClassName('blacklisted');
 	wln = post.getElementsByClassName('whitelisted');
@@ -487,10 +454,6 @@ function checkPost(post) {
 				wln[n].parentNode.removeChild(wln[n]);
 			}
 		}
-	}
-
-	if (settings.disable_on_inbox && window.location.pathname.indexOf('/inbox') !== -1) {
-		return;
 	}
 
 	var postText = '';
@@ -595,20 +558,21 @@ function checkPost(post) {
 					div_sentence.appendChild(span_notice_tags);
 				}
 			}
-
-			if (liPost.nextSibling) {
-				olPosts.insertBefore(li_notice, liPost.nextSibling);
+			if (post.nextSibling) {
+				post.parentNode.insertBefore(li_notice, post.nextSibling);
 			} else {
-				olPosts.appendChild(li_notice);
+				post.parentNode.appendChild(li_notice);
 			}
 		}
-		liPost.style.display = 'none';
-	} else if (liPost.style.display === 'none' && liPost.className.indexOf('tumblr_hate') < 0) {
-		liPost.style.display = 'list-item';
+
+		post.style.display = 'none';
+
+	} else if (post.style.display === 'none' && post.className.indexOf('tumblr_hate') < 0) {
+		post.style.display = 'list-item';
 		if (settings.show_notice) {
 			liRemove = document.getElementById('notification_' + post.id);
 			if (liRemove) {
-				olPosts.removeChild(liRemove);
+				post.parentNode.removeChild(liRemove);
 			}
 		}
 	}
@@ -672,21 +636,38 @@ function checkPost(post) {
 	}
 }
 
+function detectBrowser() {
+	// Since Opera is just another version of chrome, we check the userAgent.
+	if (navigator.userAgent.indexOf('OPR') !== -1) {
+		return 'Opera';
+	}
+	if (window && window.chrome) {
+		return 'Chrome';
+	}
+	if (window && window.safari) {
+		return 'Safari';
+	}
+	if (navigator.userAgent.indexOf('Firefox') !== -1) {
+		return 'Firefox';
+	}
+	console.error('Tumblr Savior could not detect your browser.');
+	return 'Undetected Browser';
+}
+
+var browser = detectBrowser();
+
 function handlePostInserted(argPost) {
 	var post = argPost.target;
 
 	// If there's no post id, we don't need to scan the contents.
+	var postId = post.getAttribute('data-post-id');
 
-	if (!post.id || post.id.indexOf('post_') !== 0) {
-		return;
-	}
-
-	if (inProgress[post.id]) {
+	if (!postId || inProgress[postId]) {
 		return;
 	}
 
 	if (!gotSettings) {
-		inProgress[post.id] = true;
+		inProgress[postId] = post;
 		return;
 	}
 
@@ -721,7 +702,7 @@ function wireupnodes() {
 	);
 
 	cssRules.push(
-		'li.post_container div.post, li.post, ol.posts li {' +
+		'li.post_container div.post, li.post, ol.posts li, article.post {' +
 		'    animation-duration: 1ms;' +
 		'    -moz-animation-duration: 1ms;' +
 		'    -webkit-animation-duration: 1ms;' +
@@ -736,33 +717,37 @@ function wireupnodes() {
 
 function checkPosts() {
 	for (var postId in inProgress) {
-		checkPost(document.getElementById(postId));
+		var post = inProgress[postId];
+		checkPost(post);
 		delete inProgress[postId];
 	}
 }
 
 function diaper() {
 	var posts = document.getElementsByClassName('post');
+
 	for (var i = 0; i < posts.length; i += 1) {
 		var post = posts[i];
-		if (post.id && post.id.indexOf('post') === 0) {
-			inProgress[post.id] = true;
+		var postId = post.getAttribute('data-post-id');
+
+		if (postId) {
+			inProgress[postId] = post;
 		}
 	}
+
 	checkPosts();
 }
 
 function waitForPosts() {
-	var olPosts;
-
+	var posts = document.getElementsByClassName('post');
 	gotSettings = true;
-	olPosts = document.getElementById('posts');
-	if (olPosts === null && !isTumblrSaviorRunning) {
-		setTimeout(waitForPosts, 10);
+
+	if (!posts.length && !isTumblrSaviorRunning) {
+		setTimeout(waitForPosts, 0);
 	} else if (!isTumblrSaviorRunning) {
 		wireupnodes();
 		isTumblrSaviorRunning = true;
-		setTimeout(diaper, 200);
+		setTimeout(diaper, 0);
 	} else {
 		diaper();
 	}
@@ -810,7 +795,7 @@ function firefoxMessageHandler(data) {
 	waitForPosts();
 }
 
-function initializeTumblrSavior() {
+function initializeTumblrSavior(browser) {
 	switch (browser) {
 	case 'Chrome':
 	case 'Opera':
@@ -862,5 +847,5 @@ function checkurl(url, filter) {
 }
 
 if (!checkurl(window.location.href, invalidTumblrURLs)) {
-	initializeTumblrSavior();
+	initializeTumblrSavior(browser);
 }
