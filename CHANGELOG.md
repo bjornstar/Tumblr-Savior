@@ -1,5 +1,9 @@
 #Tumblr Savior Changelog
 
+##v0.4.27 - 2016-04-04
+ * If the filter is triggered but the content is not loaded, run it again
+ * Remove `applications` entry from manifest
+
 ##v0.4.26 - 2016-03-13
  * Add `applications` entry to manifest to work around [a bug in AMO validator](https://github.com/mozilla/amo-validator/issues/405)
 

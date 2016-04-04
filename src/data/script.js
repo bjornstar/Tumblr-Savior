@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.26',
+	'version': '0.4.27',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -461,14 +461,26 @@ function checkPost(post) {
 	var postContent = post.querySelector('.post_content');
 	var postTags = post.querySelector('.post_tags');
 
-	if (!settings.ignore_header)
+	if (!settings.ignore_header) {
+		if (!postHeader) {
+			return setTimeout(function () { checkPost(post); }, 0);
+		}
 		postText += postHeader.innerHTML.replace(noTags, ' ');
+	}
 
-	if (!settings.ignore_body)
+	if (!settings.ignore_body) {
+		if (!postContent) {
+			return setTimeout(function () { checkPost(post); }, 0);
+		}
 		postText += postContent.innerHTML;
+	}
 
-	if (postTags && !settings.ignore_tags)
+	if (postTags && !settings.ignore_tags) {
+		if (!postTags) {
+			return setTimeout(function () { checkPost(post); }, 0);
+		}
 		postText += postTags.innerHTML.replace(noTags, ' ');
+	}
 
 	savedfrom = needstobesaved(postText);
 

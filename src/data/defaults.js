@@ -1,5 +1,5 @@
 var defaultSettings = {
-	'version': '0.4.26',
+	'version': '0.4.27',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
