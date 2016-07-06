@@ -1,5 +1,9 @@
 #Tumblr Savior Changelog
 
+##v0.4.28 - 2016-07-06
+ * Include the new sidebar add when blocking Yahoo! ads (fixes #42)
+ * Add a link to https://paypal.me/bjornstar for people to show their appreciation (fixes #43)
+
 ##v0.4.27 - 2016-04-04
  * If the filter is triggered but the content is not loaded, run it again
  * Remove `applications` entry from manifest

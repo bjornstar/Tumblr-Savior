@@ -4,4 +4,6 @@
 
 This extension is open source and all source code can be found at [https://github.com/bjornstar/Tumblr-Savior](https://github.com/bjornstar/Tumblr-Savior).
 
+If you'd like to show your appreciation, send a little love his way at [paypal.me/bjornstar](https://paypal.me/bjornstar)
+
 *Disclaimer: Tumblr Savior is neither affiliated with nor supported by [Tumblr](https://www.tumblr.com/) in any way.*

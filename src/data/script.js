@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.27',
+	'version': '0.4.28',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -85,7 +85,8 @@ var styleRules = {
 		'div.explore-trending-badge-footer' + howToHide
 	],
 	hide_yahoo_ads: [
-		'li.yamplus-unit-container' + howToHide
+		'li.yamplus-unit-container' + howToHide,
+		'.sidebar-ad-container' + howToHide
 	]
 };
 
