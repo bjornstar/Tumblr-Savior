@@ -1,27 +1,24 @@
 var settings;
 
 function detectBrowser() {
-	try {
-		if (window && window.chrome) {
-			return 'Chrome';
-		}
-		if (window && window.safari) {
-			return 'Safari';
-		}
-	} catch (e) {
-		// I hate developing Firefox extensions.
-		return 'Firefox';
+	if (window && window.chrome) {
+		return 'Chrome';
+	}
+	if (window && window.safari) {
+		return 'Safari';
 	}
 }
 
 var browser = detectBrowser();
 
 function chromeMessageHandler(message, sender, sendResponse) {
+	var response = {};
+
 	if (message === 'getSettings') {
-		sendResponse({data: localStorage.settings});
-	} else {
-		sendResponse({}); // send a blank reply.
+		response.data = localStorage.settings;
 	}
+
+	sendResponse(response);
 }
 
 function parseSettings() {
@@ -178,11 +175,7 @@ function safariValidateHandler(event) {
 switch (browser) {
 case 'Chrome':
 	console.log('Setting up the',browser,'backend.');
-	if (chrome.extension.onMessage !== undefined) {
-		chrome.extension.onMessage.addListener(chromeMessageHandler);
-	} else if (chrome.extension.onRequest !== undefined) {
-		chrome.extension.onRequest.addListener(chromeMessageHandler);
-	}
+	chrome.runtime.onMessage.addListener(chromeMessageHandler);
 
 	settings = parseSettings();
 
@@ -202,11 +195,6 @@ case 'Safari':
 	safari.application.addEventListener('command', safariCommandHandler, false);
 	safari.application.addEventListener('contextmenu', safariContextMenuHandler, false);
 	safari.application.addEventListener('validate', safariValidateHandler, false);
-	break;
-case 'Firefox':
-	console.log('Setting up the',browser,'backend.');
-	// Developing extensions for this browser sucks...
-	exports.main = require('./firefox.js');
 	break;
 default:
 	console.error('I\'m sorry, but your browser extension system was not detected correctly.');

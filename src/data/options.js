@@ -245,14 +245,12 @@ function chromeNotifyTumblr(tabs) {
 function notifyBrowsers(newSettings) {
 	switch (browser) {
 	case 'Chrome':
+	case 'Firefox':
 	case 'Opera':
-		chrome.tabs.getAllInWindow(null, chromeNotifyTumblr);
+		chrome.tabs.query({ url: '*://*.tumblr.com/*' }, chromeNotifyTumblr);
 		break;
 	case 'Safari':
 		safari.self.tab.dispatchMessage('refreshSettings', newSettings);
-		break;
-	case 'Firefox':
-		addon.postMessage(JSON.stringify(newSettings));
 		break;
 	}
 }

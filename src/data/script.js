@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.4.28',
+	'version': '0.5.0',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -103,7 +103,7 @@ function needstobesaved(theStr) {
 
 	returnObject = { bL: [], wL: [] };
 
-	normalizedStr = theStr.toLowerCase().replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<');
+	normalizedStr = theStr.toLowerCase().replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/\s+/g, ' ');
 
 	for (i = 0; i < blackList.length; i += 1) {
 		if (filters.black[i](normalizedStr)) {
@@ -294,7 +294,7 @@ function applySettings() {
 
 function buildRegex(entry) {
 	// Escape all regex characters except for * which matches anything except spaces.
-	entry = entry.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/[*]/g, '[^\\s]*?');
+	entry = entry.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, ' ').replace(/[*]/g, '[^\\s]*?');
 
 	var str = '(^|\\W)(' + entry + ')(\\W|$)';
 	var re = new RegExp(str);
@@ -651,8 +651,11 @@ function checkPost(post) {
 
 function detectBrowser() {
 	// Since Opera is just another version of chrome, we check the userAgent.
-	if (navigator.userAgent.indexOf('OPR') !== -1) {
+	if (window && window.navigator.userAgent.indexOf('OPR') !== -1) {
 		return 'Opera';
+	}
+	if (window && window.navigator.userAgent.indexOf('Firefox') !== -1) {
+		return 'Firefox';
 	}
 	if (window && window.chrome) {
 		return 'Chrome';
@@ -660,9 +663,7 @@ function detectBrowser() {
 	if (window && window.safari) {
 		return 'Safari';
 	}
-	if (navigator.userAgent.indexOf('Firefox') !== -1) {
-		return 'Firefox';
-	}
+
 	console.error('Tumblr Savior could not detect your browser.');
 	return 'Undetected Browser';
 }
@@ -794,15 +795,7 @@ function chromeHandleMessage(event) {
 	if (!event) {
 		return console.error('There seems to be something wrong with Tumblr Savior.');
 	}
-
 	parseSettings(event.data);
-
-	applySettings();
-	waitForPosts();
-}
-
-function firefoxMessageHandler(data) {
-	parseSettings(data);
 
 	applySettings();
 	waitForPosts();
@@ -811,35 +804,21 @@ function firefoxMessageHandler(data) {
 function initializeTumblrSavior(browser) {
 	switch (browser) {
 	case 'Chrome':
+	case 'Firefox':
 	case 'Opera':
-		if (chrome.extension.onMessage !== undefined) {
-			chrome.extension.onMessage.addListener(
-				function (request) {
-					if (request === 'refreshSettings') {
-						chrome.extension.sendMessage(null, 'getSettings', chromeHandleMessage);
-					}
+		chrome.runtime.onMessage.addListener(
+			function (request) {
+				if (request === 'refreshSettings') {
+					chrome.runtime.sendMessage(null, 'getSettings', null, chromeHandleMessage);
 				}
-			);
-			chrome.extension.sendMessage(null, 'getSettings', chromeHandleMessage);
-		} else if (chrome.extension.onRequest !== undefined) {
-			chrome.extension.onRequest.addListener(
-				function (request) {
-					if (request === 'refreshSettings') {
-						chrome.extension.sendRequest('getSettings', chromeHandleMessage);
-					}
-				}
-			);
-			chrome.extension.sendRequest('getSettings', chromeHandleMessage);
-		}
+			}
+		);
+		chrome.runtime.sendMessage(null, 'getSettings', null, chromeHandleMessage);
 		break;
 	case 'Safari':
 		window.addEventListener('contextmenu', safariContextMenuHandler, false);
 		safari.self.addEventListener('message', safariMessageHandler, false);
 		safari.self.tab.dispatchMessage('getSettings');
-		break;
-	case 'Firefox':
-		self.on('message', firefoxMessageHandler);
-		self.postMessage('getSettings');
 		break;
 	default:
 		console.error('I\'m sorry, but Tumblr Savior could not detect which browser you are using.');

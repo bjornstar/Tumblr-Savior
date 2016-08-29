@@ -1,5 +1,9 @@
 #Tumblr Savior Changelog
 
+##v0.5.0 - 2016-08-29
+ * Firefox version is now a WebExtension, removed old code.
+ * Cleaned up multiple spaces to make it more natural to block bits that could have multiple spaces (soandso reblogged whositwhatsit)
+
 ##v0.4.28 - 2016-07-06
  * Include the new sidebar add when blocking Yahoo! ads (fixes #42)
  * Add a link to https://paypal.me/bjornstar for people to show their appreciation (fixes #43)
