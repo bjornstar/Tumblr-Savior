@@ -372,6 +372,7 @@ function handleReveal(e) {
 
 	e.preventDefault();
 	e.stopPropagation();
+	e.stopImmediatePropagation();
 
 	searchUp = e.target;
 
