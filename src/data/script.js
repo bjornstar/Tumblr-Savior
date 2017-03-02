@@ -370,18 +370,21 @@ function getAuthor(post) {
 function handleReveal(e) {
 	var searchUp;
 
-	e.preventDefault();
-	e.stopPropagation();
-	e.stopImmediatePropagation();
-
 	searchUp = e.target;
 
 	while (searchUp.tagName !== 'LI') {
+		if (searchUp.tagName === 'A') {
+			return;
+		}
 		searchUp = searchUp.parentNode;
 	}
 
+	e.preventDefault();
+	e.stopPropagation();
+
 	searchUp.previousSibling.style.display = 'list-item';
 	searchUp.style.display = 'none';
+
 	manuallyShown[searchUp.id.replace('notification_','')] = true;
 }
 
@@ -413,7 +416,7 @@ function removeRedirects(post) {
 }
 
 function checkPost(post) {
-	var bln, wln, liRemove, n, savedfrom, author, a_avatar, img_avatar, nipple_border, nipple, a_author, txtPosted, txtContents, j, br, a_reveal, i_reveal, span_notice_tags, span_tags, divRating, iconRating, spanWhitelisted, spanBlacklisted;
+	var bln, wln, liRemove, n, savedfrom, author, a_avatar, img_avatar, a_author, txtPosted, txtContents, j, span_notice_tags, span_tags, divRating, iconRating, spanWhitelisted, spanBlacklisted;
 
 	// We don't filter our own posts
 	if (post.className.indexOf('not_mine') === -1) {
@@ -436,6 +439,7 @@ function checkPost(post) {
 
 	bln = post.getElementsByClassName('blacklisted');
 	wln = post.getElementsByClassName('whitelisted');
+
 	liRemove = document.getElementById('notification_' + post.id);
 
 	if (liRemove) {
@@ -545,17 +549,9 @@ function checkPost(post) {
 				div_sentence.appendChild(document.createTextNode(' something from your blacklist.'));
 			}
 
-			a_reveal = document.createElement('a');
-			a_reveal.href = '#';
+			li_notice.addEventListener('click', handleReveal, true);
 
-			i_reveal = document.createElement('i');
-			i_reveal.appendChild(document.createTextNode(' -- click to show.'));
-
-			li_notice.addEventListener('click', handleReveal, false);
-
-			a_reveal.appendChild(i_reveal);
-
-			div_sentence.appendChild(a_reveal);
+			div_sentence.appendChild(document.createTextNode(' -- click to show.'));
 
 			if (settings.show_tags) {
 
