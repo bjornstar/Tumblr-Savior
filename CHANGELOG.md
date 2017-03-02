@@ -1,5 +1,12 @@
 #Tumblr Savior Changelog
 
+##v0.5.1 - 2017-03-02
+- Avoid tumblr opening a blog in a new tab when clicking on a blacklist notification (Thanks @EmandM!)
+- Remove several unused variables in the options page
+- Simplify browser and feature detection logic
+- Hide yahoo ads by default
+- Remove link & italics from blacklist notification
+
 ##v0.5.0 - 2016-08-29
  * Firefox version is now a WebExtension, removed old code.
  * Cleaned up multiple spaces to make it more natural to block bits that could have multiple spaces (soandso reblogged whositwhatsit)

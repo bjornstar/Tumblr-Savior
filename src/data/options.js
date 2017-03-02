@@ -1,22 +1,24 @@
 function getBrowser() {
-	// Since Opera is just another version of chrome, we check the userAgent.
 	if (navigator.userAgent.indexOf('OPR') !== -1) {
 		return 'Opera';
 	}
-	if (window && window.chrome) {
-		return 'Chrome';
-	}
-	if (window && window.safari) {
-		return 'Safari';
-	}
 	if (navigator.userAgent.indexOf('Firefox') !== -1) {
 		return 'Firefox';
+	}
+	if (navigator.userAgent.indexOf('Chrome') !== -1) {
+		return 'Chrome';
+	}
+	if (navigator.userAgent.indexOf('Safari') !== -1) {
+		return 'Safari';
 	}
 	console.error('Tumblr Savior could not detect your browser.');
 	return 'Undetected Browser';
 }
 
 var browser = getBrowser();
+
+var isSafariExtension = !!(window && window.safari);
+var isWebExtension = !!(window && window.chrome);
 
 var inputLast, settingsInputs;
 
@@ -229,7 +231,7 @@ function checkurl(url, filter) {
 	return false;
 }
 
-function chromeNotifyTumblr(tabs) {
+function webExtensionNotifyTumblr(tabs) {
 	var tab;
 	for (tab in tabs) {
 		if (tabs.hasOwnProperty(tab) && checkurl(tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
@@ -243,20 +245,16 @@ function chromeNotifyTumblr(tabs) {
 }
 
 function notifyBrowsers(newSettings) {
-	switch (browser) {
-	case 'Chrome':
-	case 'Firefox':
-	case 'Opera':
-		chrome.tabs.query({ url: '*://*.tumblr.com/*' }, chromeNotifyTumblr);
-		break;
-	case 'Safari':
+	if (isWebExtension) {
+		chrome.tabs.query({ url: '*://*.tumblr.com/*' }, webExtensionNotifyTumblr);
+	}
+	if (isSafariExtension) {
 		safari.self.tab.dispatchMessage('refreshSettings', newSettings);
-		break;
 	}
 }
 
 
-function chromeAddToBlackList(info, tab) {
+function webExtensionAddToBlackList(info, tab) {
 	var oldSettings, v, chromeViews, chromeView;
 
 	oldSettings = parseSettings();
@@ -336,7 +334,7 @@ function saveOptions() {
 
 	if (newSettings.context_menu) {
 		if (!oldSettings.context_menu) {
-			if (browser === 'Chrome' || browser === 'Opera') {
+			if (isWebExtension) {
 				cmAddToBlackList = chrome.contextMenus.create({
 					type: 'normal',
 					title: 'Add \'%s\' to Tumblr Savior black list',
@@ -347,7 +345,7 @@ function saveOptions() {
 			}
 		}
 	} else {
-		if (browser === 'Chrome' || browser === 'Opera') {
+		if (isWebExtension) {
 			chrome.contextMenus.removeAll();
 		}
 	}
@@ -376,10 +374,6 @@ function safariMessageHandler(event) {
 		loadOptions();
 		break;
 	}
-}
-
-function firefoxMessageHandler() {
-	addon.postMessage(localStorage.settings);
 }
 
 function importOptions() {
@@ -470,11 +464,6 @@ function contentLoaded() {
 	version_div = document.getElementById('version_div');
 	version_div.textContent = 'v' + defaultSettings.version; //use default so we're always showing current version regardless of what people have saved.
 
-	if (browser === 'Firefox') {
-		context_menu_div = document.getElementById('context_menu_div');
-		context_menu_div.setAttribute('style', 'display:none;');
-	}
-
 	if (browser !== 'Undetected') {
 		browser_span = document.getElementById('browser_span');
 		browser_span.textContent = 'for ' + browser + '\u2122';
@@ -483,14 +472,9 @@ function contentLoaded() {
 	loadOptions();
 }
 
-switch (browser) {
-case 'Safari':
+if (isSafariExtension) {
 	safari.self.addEventListener('message', safariMessageHandler, false);
 	safari.self.tab.dispatchMessage('getSettings');
-	break;
-case 'Firefox':
-	addon.on('message', firefoxMessageHandler);
-	break;
 }
 
 document.addEventListener('DOMContentLoaded', contentLoaded);

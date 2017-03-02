@@ -1,5 +1,5 @@
 var defaultSettings = {
-	'version': '0.5.0',
+	'version': '0.5.1',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -22,5 +22,6 @@ var defaultSettings = {
 	'hide_sponsored': true,
 	'hide_trending_badges': true,
 	'hide_sponsored_notifications': true,
+	'hide_yahoo_ads': true,
 	'remove_redirects': true
 }; // Initialize default values.
