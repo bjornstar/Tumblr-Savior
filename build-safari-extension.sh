@@ -8,8 +8,9 @@
 #
 # Requirements: certs/ directory as defined in README.md
 
-# To get greadlink, use  brew install coreutils
-[ "$(uname)" == "Darwin" ] && { shopt -s expand_aliases; alias readlink=greadlink; }
+# To get greadlink, use brew install coreutils
+# OSX xar doesn't work, brew install xar-mackyle
+[ "$(uname)" == "Darwin" ] && { shopt -s expand_aliases; alias readlink=greadlink; alias xar=xar-mackyle; }
 
 curdir="$( cd "$( dirname "$( readlink -f "${BASH_SOURCE[0]}" )" )/" && pwd )"
 certdir="${curdir}/certs"
