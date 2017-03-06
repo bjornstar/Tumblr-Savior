@@ -78,16 +78,14 @@ function chromeAddToBlackList(info, tab) {
 
 	if (theword && addToBlackList(theword)) {
 		chromeViews = chrome.extension.getViews();
+
 		for (chromeView = 0; chromeView < chromeViews.length; chromeView++) {
 			if (chromeViews[chromeView].location === chrome.extension.getURL('data/options.html')) {
 				chromeViews[chromeView].location.reload();
 			}
 		}
-		if (chrome.tabs.sendMessage !== undefined) {
-			chrome.tabs.sendMessage(tab.id, 'refreshSettings');
-		} else if (chrome.tabs.sendRequest !== undefined) {
-			chrome.tabs.sendRequest(tab.id, 'refreshSettings');
-		}
+
+		chrome.tabs.sendMessage(tab.id, 'refreshSettings');
 	}
 }
 

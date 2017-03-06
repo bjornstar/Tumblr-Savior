@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.5.1</string>
+	<string>0.5.2</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>Chrome</key>
@@ -69,7 +69,7 @@
 		</array>
 	</dict>
 	<key>Description</key>
-	<string>Tumblr Savior for Safari</string>
+	<string>Tired of iPad posts filling up your dashboard? Hate hearing about an athlete's latest blunders? Tumblr Savior is here to save you!</string>
 	<key>DeveloperIdentifier</key>
 	<string>4GANG9K96D</string>
 	<key>ExtensionInfoDictionaryVersion</key>

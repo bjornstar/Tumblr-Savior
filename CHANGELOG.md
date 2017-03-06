@@ -1,11 +1,17 @@
 #Tumblr Savior Changelog
 
+##v0.5.2 - 2017-03-06
+ * Use xar-mackyle on os x
+ * Include icon & screenshot for safari extension gallery
+ * Remove references to deprecated chrome.tabs.sendRequest
+ * Copy description into info.plist
+
 ##v0.5.1 - 2017-03-02
-- Avoid tumblr opening a blog in a new tab when clicking on a blacklist notification (Thanks @EmandM!)
-- Remove several unused variables in the options page
-- Simplify browser and feature detection logic
-- Hide yahoo ads by default
-- Remove link & italics from blacklist notification
+ * Avoid tumblr opening a blog in a new tab when clicking on a blacklist notification (Thanks @EmandM!)
+ * Remove several unused variables in the options page
+ * Simplify browser and feature detection logic
+ * Hide yahoo ads by default
+ * Remove link & italics from blacklist notification
 
 ##v0.5.0 - 2016-08-29
  * Firefox version is now a WebExtension, removed old code.

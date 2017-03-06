@@ -235,11 +235,7 @@ function webExtensionNotifyTumblr(tabs) {
 	var tab;
 	for (tab in tabs) {
 		if (tabs.hasOwnProperty(tab) && checkurl(tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
-			if (chrome.tabs.sendMessage) {
-				chrome.tabs.sendMessage(tabs[tab].id, 'refreshSettings');
-			} else if (chrome.tabs.sendRequest) {
-				chrome.tabs.sendRequest(tabs[tab].id, 'refreshSettings');
-			}
+			chrome.tabs.sendMessage(tabs[tab].id, 'refreshSettings');
 		}
 	}
 }
@@ -271,17 +267,14 @@ function webExtensionAddToBlackList(info, tab) {
 	}
 
 	chromeViews = chrome.extension.getViews();
+
 	for (chromeView in chromeViews) {
 		if (chromeViews.hasOwnProperty(chromeView) && chromeViews[chromeView].location === chrome.extension.getURL('options.html')) {
 			chromeViews[chromeView].location.reload();
 		}
 	}
 
-	if (chrome.tabs.sendMessage) {
-		chrome.tabs.sendMessage(tab.id, 'refreshSettings');
-	} else if (chrome.tabs.sendRequest) {
-		chrome.tabs.sendRequest(tab.id, 'refreshSettings');
-	}
+	chrome.tabs.sendMessage(tab.id, 'refreshSettings');
 }
 
 function resetLists() {
