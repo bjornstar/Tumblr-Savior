@@ -1,5 +1,9 @@
 #Tumblr Savior Changelog
 
+##v0.5.3 - 2017-03-07
+ * Shorten description in info.plist
+ * Improve localStorage handling in options (No more alert on empty settings in Safari)
+
 ##v0.5.2 - 2017-03-06
  * Use xar-mackyle on os x
  * Include icon & screenshot for safari extension gallery

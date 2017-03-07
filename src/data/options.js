@@ -111,17 +111,18 @@ function tabClick(whichTab) {
 
 function parseSettings() {
 	var parsedSettings;
+	var savedSettings = localStorage && localStorage.getItem('settings');
 
-	if (!localStorage || !localStorage.settings) {
+	if (!savedSettings) {
 		parsedSettings = defaultSettings;
 	} else {
 		try {
-			parsedSettings = JSON.parse(localStorage.settings);
+			parsedSettings = JSON.parse(savedSettings);
 		} catch (e) {
-			if (localStorage.settings) {
+			if (savedSettings) {
 				alert('Your stored settings are corrupt, Tumblr Savior has been reset back to the default settings.');
 			}
-			console.log(JSON.stringify(localStorage.settings));
+			console.log(savedSettings);
 			parsedSettings = defaultSettings;
 		}
 	}
@@ -263,7 +264,7 @@ function webExtensionAddToBlackList(info, tab) {
 			}
 		}
 		oldSettings.listBlack.push(info.selectionText.toLowerCase());
-		localStorage.settings = JSON.stringify(oldSettings);
+		localStorage.setItem('settings', JSON.stringify(oldSettings));
 	}
 
 	chromeViews = chrome.extension.getViews();
@@ -343,14 +344,14 @@ function saveOptions() {
 		}
 	}
 
-	localStorage.settings = JSON.stringify(newSettings);
+	localStorage.setItem('settings', JSON.stringify(newSettings));
 	notifyBrowsers(newSettings);
 	resetLists();
 	loadOptions();
 }
 
 function eraseOptions() {
-	localStorage.settings = JSON.stringify(defaultSettings);
+	localStorage.setItem('settings', JSON.stringify(defaultSettings));
 	notifyBrowsers(defaultSettings);
 	resetLists();
 	loadOptions();
@@ -362,7 +363,12 @@ function safariMessageHandler(event) {
 		location.reload();
 		break;
 	case 'settings':
-		localStorage.settings = event.message;
+		if (!event.message) {
+			localStorage.removeItem('settings');
+		} else {
+			localStorage.setItem('settings', event.message);
+		}
+
 		resetLists();
 		loadOptions();
 		break;
@@ -382,7 +388,7 @@ function importOptions() {
 		return;
 	}
 
-	localStorage.settings = JSON.stringify(importSettings);
+	localStorage.setItem('settings', JSON.stringify(importSettings));
 
 	resetLists();
 	loadOptions();
