@@ -1,4 +1,4 @@
-#Tumblr Savior
+# Tumblr Savior
 
 [Tumblr Savior](http://tumblr-savior.bjornstar.com/) is a free browser extension created and maintained by [Bjorn Stromberg](http://bjornstar.com/about) to improve his experience on the [Tumblr](https://www.tumblr.com/) dashboard. He thought you might also find it useful and decided to share it with you.
 

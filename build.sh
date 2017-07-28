@@ -4,13 +4,10 @@ echo "Building Tumblr Savior $VERSION"
 
 cd src
 zip ../Tumblr-Savior-$VERSION.zip ./* -r -9
-jpm xpi
-mv jid*.xpi ..
-
 cd ..
 
-mv src src.safariextension
+mkdir -p src.safariextension
+cp -r src/* src.safariextension
 ./build-safari-extension.sh src.safariextension
-mv src.safariextension src
-
+rm -rf src.safariextension
 mv src.safariextz Tumblr-Savior-$VERSION.safariextz

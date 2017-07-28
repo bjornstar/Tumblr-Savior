@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.5.3',
+	'version': '0.5.4',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -57,7 +57,9 @@ var styleRules = {
 		'ul.controls_section_radar' + howToHide
 	],
 	hide_recommended: [
-		'div.post.is_recommended' + howToHide
+		// These are actually posts that we are parsing, so hide the notification as well. (#41)
+		'div.post.is_recommended' + howToHide,
+		'div.post.is_recommended + li.tumblr_savior' + howToHide
 	],
 	hide_recommended_blogs: [
 		'div.recommended_tumblelogs' + howToHide
@@ -72,11 +74,14 @@ var styleRules = {
 		'.post.post_source_reposition.has_source.generic_source .post_tags { padding-left: 0px; }'
 	],
 	hide_sponsored: [
+		'.dfp-ad-container' + howToHide,
 		'.remnantUnitContainer' + howToHide,
 		'.remnant-unit-container' + howToHide,
+		'.standalone-ad-container' + howToHide,
 		'.video-ad-container' + howToHide,
+		// These are actually posts that we are parsing, so hide the notification as well. (#41)
 		'.sponsored_post' + howToHide,
-		'.standalone-ad-container' + howToHide
+		'.sponsored_post + li.tumblr_savior' + howToHide
 	],
 	hide_sponsored_notifications: [
 		'li.notification.takeover-container' + howToHide
