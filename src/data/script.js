@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.5.4',
+	'version': '0.5.5',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -43,8 +43,6 @@ var gotSettings = false;
 var manuallyShown = {};
 var isTumblrSaviorRunning = false;
 var inProgress = {};
-
-var noTags = /<[^>]*>/g;
 
 var howToHide = '{display:none!important;}';
 
@@ -92,6 +90,10 @@ var styleRules = {
 	hide_yahoo_ads: [
 		'li.yamplus-unit-container' + howToHide,
 		'.sidebar-ad-container' + howToHide
+	],
+	show_notice: [
+		// On search pages the list style is not removed, so let's make it pretty
+		'li.tumblr_savior { list-style: none; }'
 	]
 };
 
@@ -108,7 +110,7 @@ function needstobesaved(theStr) {
 
 	returnObject = { bL: [], wL: [] };
 
-	normalizedStr = theStr.toLowerCase().replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/\s+/g, ' ');
+	normalizedStr = theStr.toLowerCase().replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/\s+/g, ' ');
 
 	for (i = 0; i < blackList.length; i += 1) {
 		if (filters.black[i](normalizedStr)) {
@@ -217,6 +219,23 @@ function hide_ratings() {
 
 	cssRules[0]  = '.savior_rating {display: none;}';
 	addGlobalStyle('savior_rating_style', cssRules);
+}
+
+function extractText(node) {
+	// We were doing a naive tag removal and that worked until tumblr sometimes
+	// didn't escape html in blog descriptions. So now we do it explicitly (#54)
+	if (node.nodeType === 3) return node.textContent;
+
+	var collection = [];
+
+	function collectText(node) {
+		if (node.nodeType === 3) return collection.push(node.textContent);
+		node.childNodes.forEach(collectText);
+	}
+
+	node.childNodes.forEach(collectText)
+
+	return collection.join(' ');
 }
 
 function show_ratings() {
@@ -476,7 +495,7 @@ function checkPost(post) {
 		if (!postHeader) {
 			return setTimeout(function () { checkPost(post); }, 0);
 		}
-		postText += postHeader.innerHTML.replace(noTags, ' ');
+		postText += extractText(postHeader);
 	}
 
 	if (!settings.ignore_body) {
@@ -490,7 +509,7 @@ function checkPost(post) {
 		if (!postTags) {
 			return setTimeout(function () { checkPost(post); }, 0);
 		}
-		postText += postTags.innerHTML.replace(noTags, ' ');
+		postText += extractText(postTags);
 	}
 
 	savedfrom = needstobesaved(postText);

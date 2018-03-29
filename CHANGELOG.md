@@ -1,5 +1,9 @@
 # Tumblr Savior Changelog
 
+## v0.5.5 - 2018-03-29
+ * Directly extract the text ourselves instead of stripping out html tags (fixes #54)
+ * Add a CSS rule for li elements to remove list-style as it was missing on search result pages
+
 ## v0.5.4 - 2017-07-28
  * Block a new type of ad: `dfp-ad-container` (fixes #50)
  * Hide notifications when recommended or sponsored posts are hidden (fixes #41)
