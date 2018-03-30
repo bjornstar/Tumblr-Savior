@@ -1,5 +1,8 @@
 # Tumblr Savior Changelog
 
+## v0.5.6 - 2018-03-30
+ * Use old school iterator for old school browsers (fixes #55)
+
 ## v0.5.5 - 2018-03-29
  * Directly extract the text ourselves instead of stripping out html tags (fixes #54)
  * Add a CSS rule for li elements to remove list-style as it was missing on search result pages

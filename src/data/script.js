@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.5.5',
+	'version': '0.5.6',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -228,12 +228,9 @@ function extractText(node) {
 
 	var collection = [];
 
-	function collectText(node) {
-		if (node.nodeType === 3) return collection.push(node.textContent);
-		node.childNodes.forEach(collectText);
+	for (var i = 0; i < node.childNodes.length; i += 1) {
+		collection.push(extractText(node.childNodes[i]));
 	}
-
-	node.childNodes.forEach(collectText)
 
 	return collection.join(' ');
 }
