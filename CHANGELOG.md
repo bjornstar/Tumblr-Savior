@@ -1,5 +1,10 @@
 # Tumblr Savior Changelog
 
+## v0.5.7 - 2018-05-22
+ * Remove vendor prefixed rules for wireUpNodes (fixes #57)
+ * Make `disable on inbox` work on blog specific inboxes (fixes #56)
+ * When resetting a post, just remove the display style instead of setting it to `list-item`
+
 ## v0.5.6 - 2018-03-30
  * Use old school iterator for old school browsers (fixes #55)
 

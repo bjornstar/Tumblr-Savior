@@ -6,7 +6,7 @@
 // ==/UserScript==
 
 var defaultSettings = {
-	'version': '0.5.6',
+	'version': '0.5.7',
 	'listBlack': ['iphone', 'ipad'],
 	'listWhite': ['bjorn', 'octopus'],
 	'show_notice': true,
@@ -452,10 +452,6 @@ function checkPost(post) {
 		return;
 	}
 
-	if (settings.disable_on_inbox && window.location.pathname.indexOf('/inbox') !== -1) {
-		return;
-	}
-
 	removeRedirects(post);
 
 	bln = post.getElementsByClassName('blacklisted');
@@ -467,19 +463,25 @@ function checkPost(post) {
 		liRemove.parentNode.removeChild(liRemove);
 	}
 
-	if (bln.length) {
-		for (n = 0; n < bln.length; n++) {
-			if (bln[n].parentNode) {
-				bln[n].parentNode.removeChild(bln[n]);
-			}
+	for (n = 0; n < bln.length; n++) {
+		if (bln[n].parentNode) {
+			bln[n].parentNode.removeChild(bln[n]);
 		}
 	}
 
-	if (wln.length) {
-		for (n = 0; n < wln.length; n++) {
-			if (wln[n].parentNode) {
-				wln[n].parentNode.removeChild(wln[n]);
+	for (n = 0; n < wln.length; n++) {
+		if (wln[n].parentNode) {
+			wln[n].parentNode.removeChild(wln[n]);
+		}
+	}
+
+	if (settings.disable_on_inbox) {
+		var pathname = window.location.pathname;
+		if (pathname.indexOf('/inbox') !== -1 || pathname.indexOf('/messages') !== -1) {
+			if (post.style.display === 'none') {
+				post.style.display = '';
 			}
+			return;
 		}
 	}
 
@@ -599,7 +601,7 @@ function checkPost(post) {
 		post.style.display = 'none';
 
 	} else if (post.style.display === 'none' && post.className.indexOf('tumblr_hate') < 0) {
-		post.style.display = 'list-item';
+		post.style.display = '';
 		if (settings.show_notice) {
 			liRemove = document.getElementById('notification_' + post.id);
 			if (liRemove) {
@@ -693,7 +695,7 @@ function handlePostInserted(argPost) {
 
 	// If there's no post id, we don't need to scan the contents.
 	var postId = post.getAttribute('data-post-id');
-
+	console.log('handlePostInserted', postId);
 	if (!postId || inProgress[postId]) {
 		return;
 	}
@@ -710,7 +712,6 @@ function wireupnodes() {
 	var cssRules = [];
 
 	document.addEventListener('animationstart', handlePostInserted, false);
-	document.addEventListener('webkitAnimationStart', handlePostInserted, false);
 
 	cssRules.push(
 		'@keyframes nodeInserted {' +
@@ -720,27 +721,9 @@ function wireupnodes() {
 	);
 
 	cssRules.push(
-		'@-moz-keyframes nodeInserted {' +
-		'    from { clip: rect(1px, auto, auto, auto); }' +
-		'    to { clip: rect(0px, auto, auto, auto); }' +
-		'}'
-	);
-
-	cssRules.push(
-		'@-webkit-keyframes nodeInserted {' +
-		'    from { clip: rect(1px, auto, auto, auto); }' +
-		'    to { clip: rect(0px, auto, auto, auto); }' +
-		'}'
-	);
-
-	cssRules.push(
 		'li.post_container div.post, li.post, ol.posts li, article.post {' +
 		'    animation-duration: 1ms;' +
-		'    -moz-animation-duration: 1ms;' +
-		'    -webkit-animation-duration: 1ms;' +
 		'    animation-name: nodeInserted;' +
-		'    -moz-animation-name: nodeInserted;' +
-		'    -webkit-animation-name: nodeInserted;' +
 		'}'
 	);
 
