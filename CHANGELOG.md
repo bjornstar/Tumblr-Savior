@@ -1,5 +1,16 @@
 # Tumblr Savior Changelog
 
+## v1.0.0 - 2020-04-05
+ * Updated to work with the latest version of tumblr
+ * New default blacklist entries: coronavirus and trump
+ * New description in the manifest
+ * New option to remove reblog headers (enabled by default)
+ * Removed Safari support until I can find an Apple device
+ * Removed some obsolete options
+ * Removed support for filtering the inbox
+ * Removed showing whitelist matches for now
+ * Removed showing notices
+
 ## v0.5.7 - 2018-05-22
  * Remove vendor prefixed rules for wireUpNodes (fixes #57)
  * Make `disable on inbox` work on blog specific inboxes (fixes #56)

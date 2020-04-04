@@ -8,46 +8,33 @@ function getBrowser() {
 	if (navigator.userAgent.indexOf('Chrome') !== -1) {
 		return 'Chrome';
 	}
-	if (navigator.userAgent.indexOf('Safari') !== -1) {
-		return 'Safari';
-	}
 	console.error('Tumblr Savior could not detect your browser.');
 	return 'Undetected Browser';
 }
 
-var browser = getBrowser();
+const browser = getBrowser();
 
-var isSafariExtension = !!(window && window.safari);
-var isWebExtension = !!(window && window.chrome);
+const isWebExtension = !!(window && window.chrome);
 
-var inputLast, settingsInputs;
+let inputLast = 0; //our unique ids for list items
 
-inputLast = 0; //our unique ids for list items
-
-settingsInputs = { //match up our settings object with our dom.
+let settingsInputs = { //match up our settings object with our dom.
 	checkboxes: {
-		show_notice: 'show_notice_cb',
-		show_words: 'show_words_cb',
-		match_words: 'match_words_cb',
-		ignore_header: 'ignore_header_cb',
-		ignore_body: 'ignore_body_cb',
-		ignore_tags: 'ignore_tags_cb',
 		context_menu: 'context_menu_cb',
-		white_notice: 'white_notice_cb',
-		black_notice: 'black_notice_cb',
-		show_tags: 'show_tags_cb',
-		disable_on_inbox: 'disable_on_inbox_cb',
-		hide_source: 'hide_source_cb',
-		hide_premium: 'hide_premium_cb',
-		hide_recommended: 'hide_recommended_cb',
-		hide_sponsored: 'hide_sponsored_cb',
-		hide_some_more_blogs: 'hide_some_more_blogs_cb',
 		hide_radar: 'hide_radar_cb',
+		hide_reblog_header: 'hide_reblog_header_cb',
 		hide_recommended_blogs: 'hide_recommended_blogs_cb',
-		hide_trending_badges: 'hide_trending_badges_cb',
-		hide_sponsored_notifications: 'hide_sponsored_notifications_cb',
-		hide_yahoo_ads: 'hide_yahoo_ads_cb',
-		remove_redirects: 'remove_redirects_cb'
+		hide_source: 'hide_source_cb',
+		hide_sponsored: 'hide_sponsored_cb',
+		hide_sponsored_sidebar: 'hide_sponsored_sidebar_cb',
+		ignore_body: 'ignore_body_cb',
+		ignore_header: 'ignore_header_cb',
+		ignore_tags: 'ignore_tags_cb',
+		match_words: 'match_words_cb',
+		remove_redirects: 'remove_redirects_cb',
+		show_notice: 'show_notice_cb',
+		show_tags: 'show_tags_cb',
+		show_words: 'show_words_cb',
 	},
 	lists:  {
 		listBlack: 'listBlack',
@@ -242,12 +229,7 @@ function webExtensionNotifyTumblr(tabs) {
 }
 
 function notifyBrowsers(newSettings) {
-	if (isWebExtension) {
-		chrome.tabs.query({ url: '*://*.tumblr.com/*' }, webExtensionNotifyTumblr);
-	}
-	if (isSafariExtension) {
-		safari.self.tab.dispatchMessage('refreshSettings', newSettings);
-	}
+	chrome.tabs.query({ url: '*://*.tumblr.com/*' }, webExtensionNotifyTumblr);
 }
 
 
@@ -328,20 +310,16 @@ function saveOptions() {
 
 	if (newSettings.context_menu) {
 		if (!oldSettings.context_menu) {
-			if (isWebExtension) {
-				cmAddToBlackList = chrome.contextMenus.create({
-					type: 'normal',
-					title: 'Add \'%s\' to Tumblr Savior black list',
-					contexts: [ 'selection' ],
-					documentUrlPatterns: [ 'http://www.tumblr.com/*', 'https://www.tumblr.com/*' ],
-					onclick: chromeAddToBlackList
-				});
-			}
+			cmAddToBlackList = chrome.contextMenus.create({
+				type: 'normal',
+				title: 'Add \'%s\' to Tumblr Savior black list',
+				contexts: [ 'selection' ],
+				documentUrlPatterns: [ 'http://www.tumblr.com/*', 'https://www.tumblr.com/*' ],
+				onclick: chromeAddToBlackList
+			});
 		}
 	} else {
-		if (isWebExtension) {
-			chrome.contextMenus.removeAll();
-		}
+		chrome.contextMenus.removeAll();
 	}
 
 	localStorage.setItem('settings', JSON.stringify(newSettings));
@@ -355,24 +333,6 @@ function eraseOptions() {
 	notifyBrowsers(defaultSettings);
 	resetLists();
 	loadOptions();
-}
-
-function safariMessageHandler(event) {
-	switch (event.name) {
-	case 'reload':
-		location.reload();
-		break;
-	case 'settings':
-		if (!event.message) {
-			localStorage.removeItem('settings');
-		} else {
-			localStorage.setItem('settings', event.message);
-		}
-
-		resetLists();
-		loadOptions();
-		break;
-	}
 }
 
 function importOptions() {
@@ -469,11 +429,6 @@ function contentLoaded() {
 	}
 
 	loadOptions();
-}
-
-if (isSafariExtension) {
-	safari.self.addEventListener('message', safariMessageHandler, false);
-	safari.self.tab.dispatchMessage('getSettings');
 }
 
 document.addEventListener('DOMContentLoaded', contentLoaded);
