@@ -1,7 +1,7 @@
 const defaultSettings = {
 	'context_menu': true,
-	'hide_reblog_header': true,
 	'hide_radar': true,
+	'hide_reblog_header': true,
 	'hide_recommended_blogs': true,
 	'hide_source': true,
 	'hide_sponsored': true,
@@ -16,5 +16,5 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.0.0'
+	'version': '1.0.1'
 }; // Initialize default values.

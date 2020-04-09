@@ -1,5 +1,9 @@
 # Tumblr Savior Changelog
 
+## v1.0.1 - 2020-04-09
+ * Use width instead of min-width for warning icon (flexbug in firefox)
+ * Remove a console.log
+
 ## v1.0.0 - 2020-04-05
  * Updated to work with the latest version of tumblr
  * New default blacklist entries: coronavirus and trump

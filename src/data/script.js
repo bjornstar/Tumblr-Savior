@@ -16,7 +16,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.0.0'
+	'version': '1.0.1'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -319,11 +319,6 @@ function buildIndexOf(entry) {
 }
 
 function parseSettings(savedSettings) {
-	// This parses the settings received from the options page and stashes them in the global
-	// settings object. If there is a parse error, we get a warning and default values. We also
-	// take this opportunity to pre-compile our blacklist and whitelist filters so we are not
-	// wasting time repeatedly building them while filtering.
-
 	var i, entry, test;
 
 	try {
@@ -360,9 +355,6 @@ function parseSettings(savedSettings) {
 		}
 	}
 }
-
-// 2016-01-21 - Tumblr is now replacing external links in posts with their redirect service
-// http://t.umblr.com/redirect?z=http%3A%2F%2Flookbook.nu%2Flook%2F8018284-Diario-De-Una-Couturier-Skirt-Buttoned-And-Blue&t=ZjQ2YzcxNTlhYmFlZTQzNGYyMGRmMmJjY2JlZDFjMmJkNzczMDk0YyxheENoQUl3Wg%3D%3D
 
 const regexRedirect = /z=([^&]*)/;
 
@@ -548,12 +540,11 @@ function waitForMain() {
 }
 
 function chromeHandleMessage({ name, parameters }) {
-	console.log('chromeHandleMessage', name, parameters);
 	if (name === 'getSettings') {
 		parseSettings(parameters);
 	}
 
-	if (name === 'getCssMap') return;
+	// if (name === 'getCssMap') return;
 
 	applySettings();
 	waitForMain();
