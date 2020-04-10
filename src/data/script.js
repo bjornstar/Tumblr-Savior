@@ -16,7 +16,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.0.1'
+	'version': '1.1.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -108,7 +108,7 @@ const noticeStyle = [`
 		white-space: normal;
 	}
 	ts-notice svg {
-		min-width: 64px;
+		width: 64px;
 	}
 	ts-notice div.content {
 		flex: 1 1 0;
@@ -392,46 +392,48 @@ function listWords(list) {
 }
 
 function decoratePost(post, blackList, whiteList) {
-	if (blackList.length) {
-		const tsNotice = document.createElement('ts-notice');
-		tsNotice.className = '_3zgGl';
-
-		const divNotice = document.createElement('div');
-		divNotice.className = '_2m1qj';
-
-		const divContent = document.createElement('div');
-		divContent.className = 'content';
-
-		const h1Content = document.createElement('h1');
-		h1Content.appendChild(document.createTextNode('Content Warning'));
-		divContent.appendChild(h1Content);
-
-		const spanContent = document.createElement('span');
-		const textContent = 'This post may contain' +
-			(settings.show_words ? listWords(blackList) : ' something from your blacklist.');
-		const textNotice = document.createTextNode(textContent);
-		spanContent.appendChild(textNotice);
-
-		divContent.appendChild(spanContent);
-
-		divNotice.appendChild(createWarningSVG());
-		divNotice.appendChild(divContent);
-		tsNotice.appendChild(divNotice);
-
-		post.insertBefore(tsNotice, post.querySelector('header').nextSibling);
-
-		const buttonShow = document.createElement('button');
-		buttonShow.className = 'tumblr-savior-show';
-		buttonShow.addEventListener('click', () => {
-			if (post.classList.contains('tumblr-savior-override')) {
-				post.classList.remove('tumblr-savior-override');
-			} else {
-				post.classList.add('tumblr-savior-override');
-			}
-		});
-
-		post.querySelector('footer ._1kqDq').appendChild(buttonShow);
+	if (!blackList.length) {
+		return;
 	}
+
+	const tsNotice = document.createElement('ts-notice');
+	tsNotice.className = '_3zgGl';
+
+	const divNotice = document.createElement('div');
+	divNotice.className = '_2m1qj';
+
+	const divContent = document.createElement('div');
+	divContent.className = 'content';
+
+	const h1Content = document.createElement('h1');
+	h1Content.appendChild(document.createTextNode('Content Warning'));
+	divContent.appendChild(h1Content);
+
+	const spanContent = document.createElement('span');
+	const textContent = 'This post may contain' +
+		(settings.show_words ? listWords(blackList) : ' something from your blacklist.');
+	const textNotice = document.createTextNode(textContent);
+	spanContent.appendChild(textNotice);
+
+	divContent.appendChild(spanContent);
+
+	divNotice.appendChild(createWarningSVG());
+	divNotice.appendChild(divContent);
+	tsNotice.appendChild(divNotice);
+
+	post.insertBefore(tsNotice, post.querySelector('header').nextSibling);
+
+	const buttonShow = document.createElement('button');
+	buttonShow.className = 'tumblr-savior-show';
+	buttonShow.addEventListener('click', () => {
+		if (post.classList.contains('tumblr-savior-override')) {
+			post.classList.remove('tumblr-savior-override');
+		} else {
+			post.classList.add('tumblr-savior-override');
+		}
+	});
+
+	post.querySelector('footer ._1kqDq').appendChild(buttonShow);
 }
 
 function undecoratePost(post) {
@@ -509,86 +511,44 @@ function handleAnimationStart(event) {
 	checkPost(post);
 }
 
-function diaper(main) {
+function checkPosts() {
 	const posts = document.getElementsByTagName('article');
 
 	Array.prototype.forEach.call(posts, checkPost);
 }
 
-function waitForMain() {
-	const [main] = document.getElementsByTagName('main');
-
-	if (main && isTumblrSaviorRunning) {
-		return diaper(main);
-	}
-
-	if (!isTumblrSaviorRunning) {
-		document.addEventListener('animationstart', handleAnimationStart, false);
-
-		addGlobalStyle('tumblr-savior-animation', tumblrSaviorAnimation);
-		addGlobalStyle('article-blacklisted', articleBlacklistedStyle);
-		addGlobalStyle('hydrating', hydratingStyle);
-		addGlobalStyle('hide-note-count', hideNoteCountStyle);
-		addGlobalStyle('hide-controls', hideControlsStyle);
-		addGlobalStyle('show-button', showButtonStyle);
-		addGlobalStyle('ts-notice', noticeStyle);
-
-		isTumblrSaviorRunning = true;
-	}
-
-	setTimeout(waitForMain, 0);
-}
-
 function chromeHandleMessage({ name, parameters }) {
 	if (name === 'getSettings') {
 		parseSettings(parameters);
+		applySettings();
+		checkPosts();
 	}
-
-	// if (name === 'getCssMap') return;
-
-	applySettings();
-	waitForMain();
 }
 
-function initializeTumblrSavior() {
+function initialize() {
+	document.addEventListener('animationstart', handleAnimationStart, false);
+
+	addGlobalStyle('tumblr-savior-animation', tumblrSaviorAnimation);
+	addGlobalStyle('article-blacklisted', articleBlacklistedStyle);
+	addGlobalStyle('hydrating', hydratingStyle);
+	addGlobalStyle('hide-note-count', hideNoteCountStyle);
+	addGlobalStyle('hide-controls', hideControlsStyle);
+	addGlobalStyle('show-button', showButtonStyle);
+	addGlobalStyle('ts-notice', noticeStyle);
+
 	chrome.runtime.onMessage.addListener(request => {
 		if (request === 'refreshSettings') {
 			chrome.runtime.sendMessage(null, { name: 'getSettings' }, null, chromeHandleMessage);
 		}
 	});
-	chrome.runtime.sendMessage(null, { name: 'getSettings' }, null, chromeHandleMessage);
-	// chrome.runtime.sendMessage(null, { name: 'getCssMap', cssMapUrl }, null, chromeHandleMessage);
+
+	return new Promise((resolve, reject) => {
+		chrome.runtime.sendMessage(null, { name: 'getSettings' }, null, message => {
+			chromeHandleMessage(message);
+			resolve();
+		});
+	});
 }
-
-function checkurl(url, filter) {
-	var filterRegex, re, f;
-
-	for (f = 0; f < filter.length; f+= 1) {
-		filterRegex = filter[f].replace(/\x2a/g, '(.*?)');
-		re = new RegExp(filterRegex);
-		if (re.test(url)) {
-			return true;
-		}
-	}
-	return false;
-}
-
-// function getCssMapUrl() {
-// 	return new Promise((resolve, reject) => {
-// 		const observer = new MutationObserver(mutationList => {
-// 			for (let i = 0; i < mutationList.length; i += 1) {
-// 				if (mutationList[i].target.nonce) {
-// 					const [textNode] = mutationList[i].addedNodes;
-// 					const [rawInitialState] = textNode.textContent.match(/\{.*\}/);
-// 					const { cssMapUrl } = JSON.parse(rawInitialState);
-// 					observer.disconnect();
-// 					return resolve(cssMapUrl);
-// 				}
-// 			}
-// 		});
-// 		observer.observe(document, { childList: true, subtree: true });
-// 	});
-// }
 
 function waitForHydration(baseContainer) {
 	baseContainer.classList.add('hydrating');
@@ -633,8 +593,8 @@ function waitForBaseContainer() {
 	});
 }
 
-const hydrationPromise = waitForBaseContainer().then(waitForHydration).catch(console.error);
+const baseContainer = waitForBaseContainer();
 
-// getCssMapUrl().then(cssMapUrl => { console.log(cssMapUrl) });
+const hydrationPromise = baseContainer.then(waitForHydration).catch(console.error);
 
-initializeTumblrSavior();
+baseContainer.then(initialize);

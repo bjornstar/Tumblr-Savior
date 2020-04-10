@@ -62,21 +62,22 @@ function addToBlackList(theword) {
 }
 
 function chromeAddToBlackList(info, tab) {
-	var theword, chromeViews, chromeView;
-	theword = info.selectionText;
+	const theword = info.selectionText.trim();
 
-	if (theword && addToBlackList(theword)) {
-		chromeViews = chrome.extension.getViews();
-
-		for (chromeView = 0; chromeView < chromeViews.length; chromeView++) {
-			if (chromeViews[chromeView].location === chrome.extension.getURL('data/options.html')) {
-				chromeViews[chromeView].location.reload();
-			}
-		}
-
-		chrome.tabs.sendMessage(tab.id, 'refreshSettings');
+	if (!theword || !addToBlackList(theword)) {
+		return;
 	}
+
+	const views = chrome.extension.getViews();
+	const optionsURI = chrome.extension.getURL('data/options.html');
+
+	Array.prototype.forEach.call(views, ({ location }) => {
+		if (location === optionsURI) location.reload();
+	});
+
+	chrome.tabs.sendMessage(tab.id, 'refreshSettings');
 }
+
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
 

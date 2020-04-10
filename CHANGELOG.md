@@ -1,5 +1,12 @@
 # Tumblr Savior Changelog
 
+## v1.1.0 - 2020-04-10
+ * Actually fix the width for the warning icon
+ * Add a trim to context menu selection because both Firefox and Opera like to include the trailing space
+ * Remove some obsolete code
+ * Fix an issue where the search page would not be filtered initially
+ * Update the README and the about tab to include a solicitation for sponsorship
+
 ## v1.0.1 - 2020-04-09
  * Use width instead of min-width for warning icon (flexbug in firefox)
  * Remove a console.log
