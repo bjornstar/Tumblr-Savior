@@ -103,19 +103,24 @@ const showButtonStyle = [`
 
 const noticeStyle = [`
 	ts-notice ._2m1qj {
-		background-color: rgba(0,0,0,10%);
+		background-color: var(--gray-7);
 		display: flex;
 		white-space: normal;
 	}
 	ts-notice svg {
-		width: 64px;
+		max-height: 32px;
 	}
 	ts-notice div.content {
 		flex: 1 1 0;
 		padding-left: 10px;
 	}
 	ts-notice h1 {
-		margin-top: 5px;
+		display: inline; 
+		font-size: inherit; 
+		font-weight: bold;
+	}
+	ts-notice .content>h1::after { 
+		content: ': '; 
 	}
 	article.tumblr-savior-blacklisted.tumblr-savior-override ts-notice {
 		display: none;
@@ -406,7 +411,7 @@ function decoratePost(post, blackList, whiteList) {
 	divContent.className = 'content';
 
 	const h1Content = document.createElement('h1');
-	h1Content.appendChild(document.createTextNode('Content Warning'));
+	h1Content.appendChild(document.createTextNode('Content warning'));
 	divContent.appendChild(h1Content);
 
 	const spanContent = document.createElement('span');
