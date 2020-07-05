@@ -1,0 +1,25 @@
+{
+  "name": "tumblr-savior",
+  "version": "1.2.0",
+  "description": "Would you like to control what shows up on your dashboard? Tumblr Savior is here to save you!",
+  "scripts": {
+    "lint": "eslint src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bjornstar/Tumblr-Savior.git"
+  },
+  "keywords": [
+    "webextension",
+    "filter"
+  ],
+  "author": "Bjorn Stromberg <bjorn@bjornstar.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bjornstar/Tumblr-Savior/issues"
+  },
+  "homepage": "https://github.com/bjornstar/Tumblr-Savior#readme",
+  "devDependencies": {
+    "eslint": "^7.4.0"
+  }
+}

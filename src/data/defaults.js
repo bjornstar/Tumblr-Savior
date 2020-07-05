@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 const defaultSettings = {
 	'context_menu': true,
 	'hide_radar': true,
@@ -16,5 +17,5 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.1.0'
+	'version': '1.2.0'
 }; // Initialize default values.

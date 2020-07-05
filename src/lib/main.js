@@ -1,54 +1,43 @@
-var settings;
+/* global defaultSettings:readonly */
 
-function chromeMessageHandler({ name, parameters }, sender, sendResponse) {
-	var response = { name };
-
-	if (name === 'getSettings') {
-		response.parameters = localStorage.settings;
-	}
-
-	sendResponse(response);
-}
+let hasContextMenu = false;
 
 function parseSettings() {
-	var parsedSettings;
+	let parsedSettings = defaultSettings;
 
-	if (!localStorage || !localStorage.settings) {
-		parsedSettings = defaultSettings;
-	} else {
+	if (localStorage && localStorage.getItem('settings')) {
 		try {
 			parsedSettings = JSON.parse(localStorage.settings);
 		} catch (e) {
-			parsedSettings = defaultSettings;
+			console.error('Failed to parse settings');
 		}
 	}
 
 	return parsedSettings;
 }
 
-function checkurl(url, filter) {
-	var f, filterRegex, re;
+function setupContextMenu() {
+	const { context_menu } = parseSettings();
 
-	if (url === undefined || url === null) {
-		return false;
+	if (!context_menu) {
+		chrome.contextMenus.removeAll();
+		hasContextMenu = false;
+	} else if (!hasContextMenu && (context_menu === 'true' || context_menu === true)) {
+		chrome.contextMenus.create({
+			type: 'normal',
+			title: 'Add \'%s\' to Tumblr Savior black list',
+			contexts: ['selection'],
+			documentUrlPatterns: ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'],
+			onclick: chromeAddToBlackList
+		});
+		hasContextMenu = true;
 	}
-
-	for (f = 0; f < filter.length; f++) {
-		filterRegex = filter[f].replace(/\x2a/g, '(.*?)');
-		re = new RegExp(filterRegex);
-		if (url.match(re)) {
-			return true;
-		}
-	}
-	return false;
 }
 
 function addToBlackList(theword) {
-	var oldSettings, v;
+	const oldSettings = parseSettings();
 
-	oldSettings = parseSettings();
-
-	for (v = 0; v < oldSettings.listBlack.length; v++) {
+	for (let v = 0; v < oldSettings.listBlack.length; v++) {
 		if (oldSettings.listBlack[v].toLowerCase() === theword.toLowerCase()) {
 			alert('\'' + theword + '\' is already on your black list.');
 			return false;
@@ -56,7 +45,7 @@ function addToBlackList(theword) {
 	}
 
 	oldSettings.listBlack.push(theword.toLowerCase());
-	localStorage.settings = JSON.stringify(oldSettings);
+	localStorage.setItem('settings', JSON.stringify(oldSettings));
 
 	return true;
 }
@@ -79,16 +68,17 @@ function chromeAddToBlackList(info, tab) {
 }
 
 
+function chromeMessageHandler({ name }, sender, sendResponse) {
+	const response = { name };
+
+	if (name === 'getSettings') {
+		setupContextMenu();
+		response.parameters = localStorage.getItem('settings');
+	}
+
+	sendResponse(response);
+}
+
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
 
-settings = parseSettings();
-
-if (settings.context_menu === 'true' || settings.context_menu === true) {
-	chrome.contextMenus.create({
-		'type': 'normal',
-		'title': 'Add \'%s\' to Tumblr Savior black list',
-		'contexts': ['selection'],
-		'documentUrlPatterns': ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'],
-		'onclick': chromeAddToBlackList
-	});
-}
+setupContextMenu();

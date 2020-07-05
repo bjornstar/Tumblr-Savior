@@ -1,5 +1,18 @@
 # Tumblr Savior Changelog
 
+## v1.2.0 - 2020-07-05
+ * Try a new way to hide sponsored posts (fixes #68)
+ * Do not extract text from the `ts-notice`
+ * All logic regarding the context menu is now in `main.js`, this fixes a bug where enabling the context menu would cause it to stop working
+ * Add a missing article in options
+ * Use a css variable for the warning background color
+ * Drop the uppercase w from the content warning
+ * Use more es6 code
+ * Add an extra line break before last line in the about tab
+ * Add Edge as a potential supported browser
+ * Add a `package.json`
+ * Start using eslint
+
 ## v1.1.0 - 2020-04-10
  * Actually fix the width for the warning icon
  * Add a trim to context menu selection because both Firefox and Opera like to include the trailing space

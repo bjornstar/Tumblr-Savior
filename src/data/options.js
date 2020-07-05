@@ -1,20 +1,4 @@
-function getBrowser() {
-	if (navigator.userAgent.indexOf('OPR') !== -1) {
-		return 'Opera';
-	}
-	if (navigator.userAgent.indexOf('Firefox') !== -1) {
-		return 'Firefox';
-	}
-	if (navigator.userAgent.indexOf('Chrome') !== -1) {
-		return 'Chrome';
-	}
-	console.error('Tumblr Savior could not detect your browser.');
-	return 'Undetected Browser';
-}
-
-const browser = getBrowser();
-
-const isWebExtension = !!(window && window.chrome);
+/* global defaultSettings:readonly */
 
 let inputLast = 0; //our unique ids for list items
 
@@ -48,7 +32,7 @@ function tabClick(whichTab) {
 	tabs = document.getElementById('tabs');
 
 	for (tab in tabs.children) {
-		if (tabs.children.hasOwnProperty(tab)) {
+		if (Object.prototype.hasOwnProperty.call(tabs.children, tab)) {
 			currentTab = tabs.children[tab];
 			if (typeof currentTab === 'object') {
 				if (currentTab.id !== whichTab.id) {
@@ -117,7 +101,6 @@ function parseSettings() {
 	return parsedSettings;
 }
 
-
 function removeInput(optionWhich) {
 	var optionInput = document.getElementById(optionWhich);
 	if (!optionInput) {
@@ -176,12 +159,12 @@ function addInput(whichList, itemValue) {
 }
 
 function loadOptions() {
-	var loadSettings, settingsInput, settingsValue, listEntry, version_div, browser_span, context_menu_div, inandout;
+	var loadSettings, settingsInput, settingsValue, listEntry, inandout;
 
 	loadSettings = parseSettings();
 
 	for (settingsValue in settingsInputs.checkboxes) {
-		if (settingsInputs.checkboxes.hasOwnProperty(settingsValue)) {
+		if (Object.prototype.hasOwnProperty.call(settingsInputs.checkboxes, settingsValue)) {
 			settingsInput = document.getElementById(settingsInputs.checkboxes[settingsValue]);
 			if (settingsInput !== undefined) {
 				settingsInput.checked = loadSettings[settingsValue];
@@ -190,10 +173,10 @@ function loadOptions() {
 	}
 
 	for (settingsValue in settingsInputs.lists) {
-		if (settingsInputs.lists.hasOwnProperty(settingsValue)) {
+		if (Object.prototype.hasOwnProperty.call(settingsInputs.lists, settingsValue)) {
 			settingsInput = settingsInputs.lists[settingsValue];
 			for (listEntry in loadSettings[settingsValue]) {
-				if (loadSettings[settingsValue].hasOwnProperty(listEntry)) {
+				if (Object.prototype.hasOwnProperty.call(loadSettings[settingsValue], listEntry)) {
 					addInput(settingsInput, loadSettings[settingsValue][listEntry]);
 				}
 			}
@@ -208,7 +191,7 @@ function loadOptions() {
 function checkurl(url, filter) {
 	var f, filterRegex, re;
 	for (f in filter) {
-		if (filter.hasOwnProperty(f)) {
+		if (Object.prototype.hasOwnProperty.call(filter, f)) {
 			filterRegex = filter[f].replace(/\x2a/g, '(.*?)');
 			re = new RegExp(filterRegex);
 			if (url.match(re)) {
@@ -220,44 +203,15 @@ function checkurl(url, filter) {
 }
 
 function webExtensionNotifyTumblr(tabs) {
-	var tab;
-	for (tab in tabs) {
-		if (tabs.hasOwnProperty(tab) && checkurl(tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
+	for (let tab in tabs) {
+		if (Object.prototype.hasOwnProperty.call(tabs, tab) && checkurl(tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
 			chrome.tabs.sendMessage(tabs[tab].id, 'refreshSettings');
 		}
 	}
 }
 
-function notifyBrowsers(newSettings) {
+function notifyBrowsers() {
 	chrome.tabs.query({ url: '*://*.tumblr.com/*' }, webExtensionNotifyTumblr);
-}
-
-
-function webExtensionAddToBlackList(info, tab) {
-	var oldSettings, v, chromeViews, chromeView;
-
-	oldSettings = parseSettings();
-
-	if (info.selectionText) {
-		for (v = 0; v < oldSettings.listBlack.length; v++) {
-			if (oldSettings.listBlack[v].toLowerCase() === info.selectionText.toLowerCase()) {
-				alert('\'' + info.selectionText + '\' is already on your black list.');
-				return;
-			}
-		}
-		oldSettings.listBlack.push(info.selectionText.toLowerCase());
-		localStorage.setItem('settings', JSON.stringify(oldSettings));
-	}
-
-	chromeViews = chrome.extension.getViews();
-
-	for (chromeView in chromeViews) {
-		if (chromeViews.hasOwnProperty(chromeView) && chromeViews[chromeView].location === chrome.extension.getURL('options.html')) {
-			chromeViews[chromeView].location.reload();
-		}
-	}
-
-	chrome.tabs.sendMessage(tab.id, 'refreshSettings');
 }
 
 function resetLists() {
@@ -279,13 +233,12 @@ function resetLists() {
 }
 
 function saveOptions() {
-	var oldSettings, newSettings, settingsInput, settingsValue, cmAddToBlackList, i, listInputs;
+	var newSettings, settingsInput, settingsValue, i, listInputs;
 
-	oldSettings = parseSettings();
 	newSettings = {};
 
 	for (settingsValue in settingsInputs.checkboxes) {
-		if (settingsInputs.checkboxes.hasOwnProperty(settingsValue)) {
+		if (Object.prototype.hasOwnProperty.call(settingsInputs.checkboxes, settingsValue)) {
 			settingsInput = document.getElementById(settingsInputs.checkboxes[settingsValue]);
 			if (settingsInput) {
 				newSettings[settingsValue] = settingsInput.checked;
@@ -294,7 +247,7 @@ function saveOptions() {
 	}
 
 	for (settingsValue in settingsInputs.lists) {
-		if (settingsInputs.lists.hasOwnProperty(settingsValue)) {
+		if (Object.prototype.hasOwnProperty.call(settingsInputs.lists, settingsValue)) {
 			newSettings[settingsValue] = [];
 			settingsInput = document.getElementById(settingsInputs.lists[settingsValue]);
 			listInputs = settingsInput.getElementsByTagName('input');
@@ -307,20 +260,6 @@ function saveOptions() {
 	}
 
 	newSettings.version = defaultSettings.version; //always update version info from default.
-
-	if (newSettings.context_menu) {
-		if (!oldSettings.context_menu) {
-			cmAddToBlackList = chrome.contextMenus.create({
-				type: 'normal',
-				title: 'Add \'%s\' to Tumblr Savior black list',
-				contexts: [ 'selection' ],
-				documentUrlPatterns: [ 'http://www.tumblr.com/*', 'https://www.tumblr.com/*' ],
-				onclick: chromeAddToBlackList
-			});
-		}
-	} else {
-		chrome.contextMenus.removeAll();
-	}
 
 	localStorage.setItem('settings', JSON.stringify(newSettings));
 	notifyBrowsers(newSettings);
@@ -361,14 +300,23 @@ function addInputClickHandler(e) {
 	e.stopPropagation();
 }
 
+function getBrowserName() {
+	if (navigator.userAgent.includes('OPR')) return 'Opera';
+	if (navigator.userAgent.includes('Firefox')) return 'Firefox';
+	if (navigator.userAgent.includes('Edg/')) return 'Edge';
+	if (navigator.userAgent.includes('Chrome')) return 'Chrome';
+
+	console.error('Tumblr Savior could not detect your browser.');
+
+	return 'Undetected Browser';
+}
+
 function contentLoaded() {
-	var save_btn, reset_btn, load_btn, listWhiteAdd, listBlackAdd, listsTab, settingsTab, saveloadTab, aboutTab, settingsValue, addButton, version_div, browser_span;
+	var save_btn, reset_btn, load_btn, listsTab, settingsTab, saveloadTab, aboutTab, settingsValue, addButton, version_div, browser_span;
 
 	save_btn = document.getElementById('save_btn');
 	reset_btn = document.getElementById('reset_btn');
 	load_btn = document.getElementById('load_btn');
-	listWhiteAdd = document.getElementById('listWhiteAdd');
-	listBlackAdd = document.getElementById('listBlackAdd');
 	listsTab = document.getElementById('listsTab');
 	settingsTab = document.getElementById('settingsTab');
 	saveloadTab = document.getElementById('saveloadTab');
@@ -389,7 +337,7 @@ function contentLoaded() {
 	});
 
 	for (settingsValue in settingsInputs.lists) {
-		if (settingsInputs.lists.hasOwnProperty(settingsValue)) {
+		if (Object.prototype.hasOwnProperty.call(settingsInputs.lists, settingsValue)) {
 			addButton = document.getElementById(settingsInputs.lists[settingsValue] + 'Add');
 			addButton.addEventListener('click', addInputClickHandler, false);
 		}
@@ -423,9 +371,10 @@ function contentLoaded() {
 	version_div = document.getElementById('version_div');
 	version_div.textContent = 'v' + defaultSettings.version; //use default so we're always showing current version regardless of what people have saved.
 
-	if (browser !== 'Undetected') {
+	const browserName = getBrowserName();
+	if (browserName !== 'Undetected') {
 		browser_span = document.getElementById('browser_span');
-		browser_span.textContent = 'for ' + browser + '\u2122';
+		browser_span.textContent = `for ${browserName}\u2122`;
 	}
 
 	loadOptions();

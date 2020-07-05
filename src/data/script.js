@@ -16,14 +16,13 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.1.0'
+	'version': '1.2.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
 
 let settings = defaultSettings;
 let gotSettings = false;
-let isTumblrSaviorRunning = false;
 
 const howToHide = '{display:none!important;}';
 
@@ -42,7 +41,7 @@ const styleRules = {
 		'.hjr__' + howToHide
 	],
 	hide_sponsored: [
-		'._1DxdS:not(._2jOH-)' + howToHide
+		'._1Bwz3 > ._1DxdS' + howToHide
 	],
 	hide_sponsored_sidebar: [
 		'._3bMU2' + howToHide
@@ -103,7 +102,7 @@ const showButtonStyle = [`
 
 const noticeStyle = [`
 	ts-notice ._2m1qj {
-		background-color: rgba(0,0,0,10%);
+		background-color: var(--gray-7);
 		display: flex;
 		white-space: normal;
 	}
@@ -195,7 +194,7 @@ function needsToBeSaved(text) {
 }
 
 function createStyle(styleId) {
-	var elmStyle = document.createElement('style');
+	const elmStyle = document.createElement('style');
 
 	elmStyle.type = 'text/css';
 	elmStyle.id = styleId;
@@ -204,17 +203,15 @@ function createStyle(styleId) {
 }
 
 function addGlobalStyle(styleId, newRules) {
-	var cStyle, hadStyle, i, newRule;
-
 	const [elmHead] = document.getElementsByTagName('head');
 
 	if (!elmHead) {
 		return;
 	}
 
-	cStyle = document.getElementById(styleId);
+	let cStyle = document.getElementById(styleId);
 
-	hadStyle = !!cStyle;
+	const hadStyle = !!cStyle;
 
 	cStyle = cStyle || createStyle(styleId);
 
@@ -226,14 +223,13 @@ function addGlobalStyle(styleId, newRules) {
 		cStyle.innerText = '';
 	}
 
-	for (i = 0; i < newRules.length; i += 1) {
-		newRule = newRules[i];
+	newRules.forEach(newRule => {
 		if (cStyle.sheet && cStyle.sheet.cssRules[0]) {
 			cStyle.sheet.insertRule(newRule, 0);
 		} else {
 			cStyle.appendChild(document.createTextNode(newRule));
 		}
-	}
+	});
 
 	if (!hadStyle) {
 		elmHead.appendChild(cStyle);
@@ -241,12 +237,12 @@ function addGlobalStyle(styleId, newRules) {
 }
 
 function show_tags() {
-	var cssRules = [ '.tumblr-savior-blacklisted .pOoZl {display:block!important;}' ];
+	const cssRules = [ '.tumblr-savior-blacklisted .pOoZl {display:block!important;}' ];
 	addGlobalStyle('show-tags', cssRules);
 }
 
 function hide_tags() {
-	var cssRules = [ '.tumblr-savior-blacklisted .pOoZl {display:none!important;}' ];
+	const cssRules = [ '.tumblr-savior-blacklisted .pOoZl {display:none!important;}' ];
 	addGlobalStyle('show-tags', cssRules);
 }
 
@@ -261,25 +257,11 @@ function extractText(node) {
 	// didn't escape html in blog descriptions. So now we do it explicitly (#54)
 	if (node.nodeType === 3) return node.textContent;
 
-	var collection = [];
-
-	for (var i = 0; i < node.childNodes.length; i += 1) {
-		collection.push(extractText(node.childNodes[i]));
-	}
-
-	return collection.join(' ');
+	return Array.prototype.map.call(node.childNodes, extractText).join(' ');
 }
 
 function toggleStyle(id) {
-	var rules = styleRules[id];
-	var hide = settings[id];
-	var cssRules = [];
-
-	if (hide) {
-		for (var i = 0; i < rules.length; i += 1) {
-			cssRules.push(rules[i]);
-		}
-	}
+	const cssRules = [...(settings[id] ? styleRules[id] : [])];
 
 	addGlobalStyle(id, cssRules);
 }
@@ -293,7 +275,7 @@ function applySettings() {
 
 	addGlobalStyle('show-notices', settings.show_notice ? [] : hideNoticesStyle);
 
-	for (var id in styleRules) {
+	for (let id in styleRules) {
 		toggleStyle(id);
 	}
 
@@ -304,8 +286,8 @@ function buildRegex(entry) {
 	// Escape all regex characters except for * which matches anything except spaces.
 	entry = entry.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, ' ').replace(/[*]/g, '[^\\s]*?');
 
-	var str = '(^|\\W)(' + entry + ')(\\W|$)';
-	var re = new RegExp(str);
+	const str = '(^|\\W)(' + entry + ')(\\W|$)';
+	const re = new RegExp(str);
 
 	return function testRegex(content) {
 		return content.match(re);
@@ -319,7 +301,7 @@ function buildIndexOf(entry) {
 }
 
 function parseSettings(savedSettings) {
-	var i, entry, test;
+	let i, entry, test;
 
 	try {
 		settings = JSON.parse(savedSettings);
@@ -391,7 +373,7 @@ function listWords(list) {
 	}, ':');
 }
 
-function decoratePost(post, blackList, whiteList) {
+function decoratePost(post, blackList) {
 	if (!blackList.length) {
 		return;
 	}
@@ -406,7 +388,7 @@ function decoratePost(post, blackList, whiteList) {
 	divContent.className = 'content';
 
 	const h1Content = document.createElement('h1');
-	h1Content.appendChild(document.createTextNode('Content Warning'));
+	h1Content.appendChild(document.createTextNode('Content warning'));
 	divContent.appendChild(h1Content);
 
 	const spanContent = document.createElement('span');
@@ -459,6 +441,7 @@ function checkPost(post) {
 	post.removeAttribute('data-tumblr-savior-blacklist');
 
 	let postText = '';
+
 	const postHeader = post.querySelector('header');
 	const postTags = post.querySelector('.pOoZl');
 
@@ -468,7 +451,7 @@ function checkPost(post) {
 
 	if (!settings.ignore_body) {
 		const postBody = Array.prototype.reduce.call(post.childNodes, (out, node) => {
-			if (node.tagName === 'HEADER' || node.tagName === 'FOOTER' || node.classList.contains('pOoZl')) {
+			if (['HEADER', 'FOOTER', 'TS-NOTICE'].includes(node.tagName) || node.classList.contains('pOoZl')) {
 				return out;
 			}
 			return out + node.innerHTML;
@@ -542,7 +525,7 @@ function initialize() {
 		}
 	});
 
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		chrome.runtime.sendMessage(null, { name: 'getSettings' }, null, message => {
 			chromeHandleMessage(message);
 			resolve();
@@ -578,7 +561,7 @@ function waitForHydration(baseContainer) {
 }
 
 function waitForBaseContainer() {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const observer = new MutationObserver(mutationList => {
 			for (let i = 0; i < mutationList.length; i += 1) {
 				for (let j = 0; j < mutationList[i].addedNodes.length; j += 1) {

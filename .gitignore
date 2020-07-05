@@ -8,3 +8,4 @@
 src.safariextension
 *.key
 *.csr
+node_modules
