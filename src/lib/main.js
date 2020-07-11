@@ -5,11 +5,13 @@ let hasContextMenu = false;
 function parseSettings() {
 	let parsedSettings = defaultSettings;
 
-	if (localStorage && localStorage.getItem('settings')) {
+	const savedSettings = localStorage && localStorage.getItem('settings');
+
+	if (savedSettings) {
 		try {
-			parsedSettings = JSON.parse(localStorage.settings);
+			parsedSettings = JSON.parse(savedSettings);
 		} catch (e) {
-			console.error('Failed to parse settings');
+			console.error('Failed to parse settings:', e);
 		}
 	}
 

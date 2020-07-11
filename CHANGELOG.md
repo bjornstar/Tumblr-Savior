@@ -1,5 +1,10 @@
 # Tumblr Savior Changelog
 
+## v1.3.0 - 2020-07-11
+ * Looks like the previous method of hiding sponsored posts didn't last, here's a new one
+ * Improve behavior when overlapping with tumblr's own content filter
+ * Use more es6 code
+
 ## v1.2.0 - 2020-07-05
  * Try a new way to hide sponsored posts (fixes #68)
  * Do not extract text from the `ts-notice`

@@ -16,7 +16,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.2.0'
+	'version': '1.3.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -41,7 +41,7 @@ const styleRules = {
 		'.hjr__' + howToHide
 	],
 	hide_sponsored: [
-		'._1Bwz3 > ._1DxdS' + howToHide
+		'._1DxdS:not([data-id])' + howToHide
 	],
 	hide_sponsored_sidebar: [
 		'._3bMU2' + howToHide
@@ -415,7 +415,21 @@ function decoratePost(post, blackList) {
 		}
 	});
 
-	post.querySelector('footer ._1kqDq').appendChild(buttonShow);
+	function createFooter() {
+		const controls = document.createElement('div');
+		controls.classList.add('_1kqDq');
+
+		const footer = document.createElement('footer')
+		footer.appendChild(controls);
+		footer.classList.add('_2dGhQ');
+		return footer;
+	}
+
+	const footer = post.querySelector('footer ._1kqDq') || post.appendChild(createFooter());
+
+	if (footer) {
+		footer.appendChild(buttonShow);
+	}
 }
 
 function undecoratePost(post) {

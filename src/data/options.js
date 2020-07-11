@@ -27,11 +27,11 @@ let settingsInputs = { //match up our settings object with our dom.
 };
 
 function tabClick(whichTab) {
-	var tabs, tab, currentTab, foregroundDiv, backgroundDiv, load_btn, save_btn, reset_btn, spacerDiv, switchto, switchfrom;
+	let currentTab;
 
-	tabs = document.getElementById('tabs');
+	const tabs = document.getElementById('tabs');
 
-	for (tab in tabs.children) {
+	for (let tab in tabs.children) {
 		if (Object.prototype.hasOwnProperty.call(tabs.children, tab)) {
 			currentTab = tabs.children[tab];
 			if (typeof currentTab === 'object') {
@@ -44,16 +44,16 @@ function tabClick(whichTab) {
 		}
 	}
 
-	foregroundDiv = document.getElementById('foregroundDiv');
-	backgroundDiv = document.getElementById('backgroundDiv');
-	load_btn = document.getElementById('load_btn');
-	save_btn = document.getElementById('save_btn');
-	reset_btn = document.getElementById('reset_btn');
-	spacerDiv = document.getElementById('spacer');
+	const foregroundDiv = document.getElementById('foregroundDiv');
+	const backgroundDiv = document.getElementById('backgroundDiv');
+	const load_btn = document.getElementById('load_btn');
+	const save_btn = document.getElementById('save_btn');
+	const reset_btn = document.getElementById('reset_btn');
+	const spacerDiv = document.getElementById('spacer');
 
 	if (foregroundDiv.children[0].id !== whichTab.id.replace('Tab', 'Div')) {
-		switchto = document.getElementById(whichTab.id.replace('Tab', 'Div'));
-		switchfrom = foregroundDiv.children[0];
+		const switchto = document.getElementById(whichTab.id.replace('Tab', 'Div'));
+		const switchfrom = foregroundDiv.children[0];
 		backgroundDiv.appendChild(switchfrom);
 		foregroundDiv.appendChild(switchto);
 		switch (whichTab.id) {
@@ -81,60 +81,46 @@ function tabClick(whichTab) {
 }
 
 function parseSettings() {
-	var parsedSettings;
-	var savedSettings = localStorage && localStorage.getItem('settings');
+	let parsedSettings = defaultSettings;
 
-	if (!savedSettings) {
-		parsedSettings = defaultSettings;
-	} else {
+	const savedSettings = localStorage && localStorage.getItem('settings');
+
+	if (savedSettings) {
 		try {
 			parsedSettings = JSON.parse(savedSettings);
 		} catch (e) {
-			if (savedSettings) {
-				alert('Your stored settings are corrupt, Tumblr Savior has been reset back to the default settings.');
-			}
-			console.log(savedSettings);
-			parsedSettings = defaultSettings;
+			console.error('Failed to parse settings:', e);
 		}
 	}
 
 	return parsedSettings;
 }
 
-function removeInput(optionWhich) {
-	var optionInput = document.getElementById(optionWhich);
-	if (!optionInput) {
-		return;
-	}
-	optionInput.parentNode.removeChild(optionInput);
+function removeElement(id) {
+	const element = document.getElementById(id);
+	element && element.parentNode.removeChild(element);
 }
 
-function addInput(whichList, itemValue) {
-	var listDiv, listAdd, optionInput, currentLength, removeThis, optionAdd, optionImage, optionLinebreak, optionDiv;
+function addInput(whichList, itemValue = '') {
+	let currentLength = inputLast++; //have unique DOM id's
 
-	if (itemValue === undefined) { //if we don't pass an itemValue, make it blank.
-		itemValue = '';
-	}
+	const listDiv = document.getElementById(whichList);
+	const listAdd = document.getElementById(whichList + 'Add');
 
-	currentLength = inputLast++; //have unique DOM id's
-
-	listDiv = document.getElementById(whichList);
-	listAdd = document.getElementById(whichList + 'Add');
-
-	optionInput = document.createElement('input');
+	const optionInput = document.createElement('input');
 	optionInput.value = itemValue;
 	optionInput.name = 'option' + whichList;
 	optionInput.id = 'option' + whichList + currentLength;
 
-	optionAdd = document.createElement('a');
+	const optionAdd = document.createElement('a');
 	optionAdd.href = '#';
 	optionAdd.addEventListener('click', function (e) {
-		removeThis = e.target;
+		let removeThis = e.target;
 		while (removeThis.tagName !== 'DIV') {
 			removeThis = removeThis.parentNode;
 		}
 		if (removeThis.id.indexOf('_div') >= 0) {
-			removeInput(removeThis.id);
+			removeElement(removeThis.id);
 		}
 		e.preventDefault();
 		e.stopPropagation();
@@ -142,14 +128,14 @@ function addInput(whichList, itemValue) {
 
 	optionAdd.appendChild(document.createTextNode('\u00A0'));
 
-	optionImage = document.createElement('img');
+	const optionImage = document.createElement('img');
 	optionImage.src = '../data/x.png';
 	optionAdd.appendChild(optionImage);
 
 	optionAdd.appendChild(document.createTextNode('\u00A0'));
 
-	optionLinebreak = document.createElement('br');
-	optionDiv = document.createElement('div');
+	const optionLinebreak = document.createElement('br');
+	const optionDiv = document.createElement('div');
 	optionDiv.id = 'option' + whichList + currentLength + '_div';
 	optionDiv.appendChild(optionAdd);
 	optionDiv.appendChild(optionInput);
@@ -159,23 +145,21 @@ function addInput(whichList, itemValue) {
 }
 
 function loadOptions() {
-	var loadSettings, settingsInput, settingsValue, listEntry, inandout;
+	const loadSettings = parseSettings();
 
-	loadSettings = parseSettings();
-
-	for (settingsValue in settingsInputs.checkboxes) {
+	for (const settingsValue in settingsInputs.checkboxes) {
 		if (Object.prototype.hasOwnProperty.call(settingsInputs.checkboxes, settingsValue)) {
-			settingsInput = document.getElementById(settingsInputs.checkboxes[settingsValue]);
+			const settingsInput = document.getElementById(settingsInputs.checkboxes[settingsValue]);
 			if (settingsInput !== undefined) {
 				settingsInput.checked = loadSettings[settingsValue];
 			}
 		}
 	}
 
-	for (settingsValue in settingsInputs.lists) {
+	for (const settingsValue in settingsInputs.lists) {
 		if (Object.prototype.hasOwnProperty.call(settingsInputs.lists, settingsValue)) {
-			settingsInput = settingsInputs.lists[settingsValue];
-			for (listEntry in loadSettings[settingsValue]) {
+			const settingsInput = settingsInputs.lists[settingsValue];
+			for (const listEntry in loadSettings[settingsValue]) {
 				if (Object.prototype.hasOwnProperty.call(loadSettings[settingsValue], listEntry)) {
 					addInput(settingsInput, loadSettings[settingsValue][listEntry]);
 				}
@@ -184,16 +168,15 @@ function loadOptions() {
 		}
 	}
 
-	inandout = document.getElementById('inandout');
+	const inandout = document.getElementById('inandout');
 	inandout.textContent = JSON.stringify(loadSettings, null, 2);
 }
 
 function checkurl(url, filter) {
-	var f, filterRegex, re;
-	for (f in filter) {
+	for (let f in filter) {
 		if (Object.prototype.hasOwnProperty.call(filter, f)) {
-			filterRegex = filter[f].replace(/\x2a/g, '(.*?)');
-			re = new RegExp(filterRegex);
+			const filterRegex = filter[f].replace(/\x2a/g, '(.*?)');
+			const re = new RegExp(filterRegex);
 			if (url.match(re)) {
 				return true;
 			}
@@ -215,29 +198,20 @@ function notifyBrowsers() {
 }
 
 function resetLists() {
-	var listsDiv, listsInputs, arrayRemove, i, toRemove;
+	const listsDiv = document.getElementById('listsDiv');
+	const listsInputs = listsDiv.getElementsByTagName('input');
 
-	listsDiv = document.getElementById('listsDiv');
-	listsInputs = listsDiv.getElementsByTagName('input');
+	const arrayRemove = Array.prototype.map.call(listsInputs, listsInput => `${listsInput.id}_div`);
 
-	arrayRemove = []; // put stuff in an array because firefox is dumb.
-
-	for (i = 0; i < listsInputs.length; i++) {
-		arrayRemove.push(listsInputs[i].id + '_div');
-	}
-
-	while (arrayRemove.length > 0) {
-		toRemove = arrayRemove.pop();
-		removeInput(toRemove);
-	}
+	arrayRemove.forEach(removeElement);
 }
 
 function saveOptions() {
-	var newSettings, settingsInput, settingsValue, i, listInputs;
+	let settingsInput, listInputs;
 
-	newSettings = {};
+	const newSettings = {};
 
-	for (settingsValue in settingsInputs.checkboxes) {
+	for (let settingsValue in settingsInputs.checkboxes) {
 		if (Object.prototype.hasOwnProperty.call(settingsInputs.checkboxes, settingsValue)) {
 			settingsInput = document.getElementById(settingsInputs.checkboxes[settingsValue]);
 			if (settingsInput) {
@@ -246,12 +220,12 @@ function saveOptions() {
 		}
 	}
 
-	for (settingsValue in settingsInputs.lists) {
+	for (let settingsValue in settingsInputs.lists) {
 		if (Object.prototype.hasOwnProperty.call(settingsInputs.lists, settingsValue)) {
 			newSettings[settingsValue] = [];
 			settingsInput = document.getElementById(settingsInputs.lists[settingsValue]);
 			listInputs = settingsInput.getElementsByTagName('input');
-			for (i = 0; i < listInputs.length; i++) {
+			for (let i = 0; i < listInputs.length; i += 1) {
 				if (listInputs[i].value !== '') {
 					newSettings[settingsValue].push(listInputs[i].value);
 				}
@@ -275,10 +249,9 @@ function eraseOptions() {
 }
 
 function importOptions() {
-	var inandout, dirtySettings, importSettings;
+	const dirtySettings = document.getElementById('inandout').value;
 
-	inandout = document.getElementById('inandout');
-	dirtySettings = inandout.value;
+	let importSettings;
 
 	try {
 		importSettings = JSON.parse(dirtySettings);
@@ -312,15 +285,13 @@ function getBrowserName() {
 }
 
 function contentLoaded() {
-	var save_btn, reset_btn, load_btn, listsTab, settingsTab, saveloadTab, aboutTab, settingsValue, addButton, version_div, browser_span;
-
-	save_btn = document.getElementById('save_btn');
-	reset_btn = document.getElementById('reset_btn');
-	load_btn = document.getElementById('load_btn');
-	listsTab = document.getElementById('listsTab');
-	settingsTab = document.getElementById('settingsTab');
-	saveloadTab = document.getElementById('saveloadTab');
-	aboutTab = document.getElementById('aboutTab');
+	const save_btn = document.getElementById('save_btn');
+	const reset_btn = document.getElementById('reset_btn');
+	const load_btn = document.getElementById('load_btn');
+	const listsTab = document.getElementById('listsTab');
+	const settingsTab = document.getElementById('settingsTab');
+	const saveloadTab = document.getElementById('saveloadTab');
+	const aboutTab = document.getElementById('aboutTab');
 
 	save_btn.addEventListener('click', saveOptions);
 
@@ -336,9 +307,9 @@ function contentLoaded() {
 		}
 	});
 
-	for (settingsValue in settingsInputs.lists) {
+	for (const settingsValue in settingsInputs.lists) {
 		if (Object.prototype.hasOwnProperty.call(settingsInputs.lists, settingsValue)) {
-			addButton = document.getElementById(settingsInputs.lists[settingsValue] + 'Add');
+			const addButton = document.getElementById(settingsInputs.lists[settingsValue] + 'Add');
 			addButton.addEventListener('click', addInputClickHandler, false);
 		}
 	}
@@ -368,12 +339,12 @@ function contentLoaded() {
 	}, false);
 
 
-	version_div = document.getElementById('version_div');
+	const version_div = document.getElementById('version_div');
 	version_div.textContent = 'v' + defaultSettings.version; //use default so we're always showing current version regardless of what people have saved.
 
 	const browserName = getBrowserName();
 	if (browserName !== 'Undetected') {
-		browser_span = document.getElementById('browser_span');
+		const browser_span = document.getElementById('browser_span');
 		browser_span.textContent = `for ${browserName}\u2122`;
 	}
 
