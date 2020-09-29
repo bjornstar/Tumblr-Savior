@@ -456,11 +456,11 @@ function checkPost(post) {
 
 	let postText = '';
 
-	const postHeader = post.querySelector('header');
+	const postHeader = post.querySelector('header').ariaLabel;
 	const postTags = post.querySelector('.pOoZl');
 
 	if (!settings.ignore_header) {
-		postText += extractText(postHeader);
+		postText += postHeader;
 	}
 
 	if (!settings.ignore_body) {
