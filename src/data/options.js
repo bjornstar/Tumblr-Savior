@@ -2,7 +2,7 @@
 
 let inputLast = 0; //our unique ids for list items
 
-let settingsInputs = { //match up our settings object with our dom.
+const settingsInputs = { //match up our settings object with our dom.
 	checkboxes: {
 		context_menu: 'context_menu_cb',
 		hide_radar: 'hide_radar_cb',

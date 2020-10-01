@@ -1,5 +1,14 @@
 # Tumblr Savior Changelog
 
+## v1.4.0 - 2020-10-01
+ * Use `aria-label` for header contents (Thanks @mtae!)
+ * Add github workflow for CI
+ * Remove deprecated safari extension build scripts
+ * [`package.json`] Add tumblr to keywords
+ * [`package.json`] Update devDependency `eslint` from `v7.4.0` to `v7.10.0`
+ * [`package.json`] Rename `lint` script to `test`
+ * [`LICENSE`] Make the copyright year a range of years
+
 ## v1.3.0 - 2020-07-11
  * Looks like the previous method of hiding sponsored posts didn't last, here's a new one
  * Improve behavior when overlapping with tumblr's own content filter
