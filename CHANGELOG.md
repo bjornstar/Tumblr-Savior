@@ -1,5 +1,9 @@
 # Tumblr Savior Changelog
 
+## v1.5.1 - 2020-10-08
+ * [`.github/workflows`] it's node dot js dot yml not nodejs dot yml
+ * [`PRIVACY.md`] Move to root of the project
+
 ## v1.5.0 - 2020-10-08
  * Adapted to a tumblr update that put the footer in a container (Fixes #73)
  * Use a `CSS_CLASS_MAP` so that we can refer to unobfuscated classNames
