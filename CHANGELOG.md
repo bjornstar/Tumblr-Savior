@@ -1,5 +1,10 @@
 # Tumblr Savior Changelog
 
+## v1.5.0 - 2020-10-08
+ * Adapted to a tumblr update that put the footer in a container (Fixes #73)
+ * Use a `CSS_CLASS_MAP` so that we can refer to unobfuscated classNames
+ * [`PRIVACY.md`] Added a privacy policy because the Microsoft Edge Add-on site requests one
+
 ## v1.4.0 - 2020-10-01
  * Use `aria-label` for header contents (Thanks @mtae!)
  * Add github workflow for CI

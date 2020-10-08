@@ -16,10 +16,33 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.4.0'
+	'version': '1.5.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
+const CSS_CLASS_MAP = {
+	contentSource: 'hjr__',
+	controlIcon: '_33VXm',
+	controls: '_1kqDq',
+	footerWrapper: '_3TeiW',
+	footer: '_2dGhQ',
+	listTimelineObject: '_1DxdS',
+	mrecContainer: '_3bMU2',
+	noteCountButton: '_3t3fM',
+	reblog: '_3zgGl',
+	reblogHeader: '_2zTTs',
+	stickyContainer: '_3wjj2',
+	tags: 'pOoZl',
+	textBlock: '_2m1qj'
+};
+
+/**
+ * @param className {keyof CSS_CLASS_MAP}
+ **/
+function css(className) {
+	return `.${CSS_CLASS_MAP[className]}`;
+}
+
 
 let settings = defaultSettings;
 let gotSettings = false;
@@ -31,20 +54,20 @@ const styleRules = {
 		'aside > div:nth-child(2)' + howToHide
 	],
 	hide_reblog_header: [
-		'._2zTTs' + howToHide,
-		'._3zgGl{padding-top:inherit;}'
+		css('reblogHeader') + howToHide,
+		css('reblog') + '{padding-top:inherit;}'
 	],
 	hide_recommended_blogs: [
 		'aside > div:nth-child(1)' + howToHide
 	],
 	hide_source: [
-		'.hjr__' + howToHide
+		css('contentSource') + howToHide
 	],
 	hide_sponsored: [
-		'._1DxdS:not([data-id])' + howToHide
+		css('listTimelineObject') + ':not([data-id])' + howToHide
 	],
 	hide_sponsored_sidebar: [
-		'._3bMU2' + howToHide
+		css('mrecContainer') + howToHide
 	]
 };
 
@@ -60,7 +83,7 @@ const tumblrSaviorAnimation = [`
 `];
 
 const articleBlacklistedStyle = [`
-	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) > :not(._3wjj2):not(header):not(footer):not(ts-notice) {
+	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) > :not(${css('stickyContainer')}):not(header):not(${css('footerWrapper')}):not(ts-notice) {
 		display: none;
 	}
 `];
@@ -72,13 +95,13 @@ const hydratingStyle = [`
 `];
 
 const hideNoteCountStyle = [`
-	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) ._3t3fM {
+	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) ${css('noteCountButton')} {
 		display: none;
 	}
 `];
 
 const hideControlsStyle = [`
-	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) ._33VXm {
+	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) ${css('controlIcon')} {
 		display: none;
 	}
 `];
@@ -101,7 +124,7 @@ const showButtonStyle = [`
 `];
 
 const noticeStyle = [`
-	ts-notice ._2m1qj {
+	ts-notice ${css('textBlock')} {
 		background-color: var(--gray-7);
 		display: flex;
 		white-space: normal;
@@ -237,20 +260,16 @@ function addGlobalStyle(styleId, newRules) {
 }
 
 function show_tags() {
-	const cssRules = [ '.tumblr-savior-blacklisted .pOoZl {display:block!important;}' ];
+	const cssRules = [ `.tumblr-savior-blacklisted ${css('tags')} {display:block!important;}` ];
 	addGlobalStyle('show-tags', cssRules);
 }
 
 function hide_tags() {
-	const cssRules = [ '.tumblr-savior-blacklisted .pOoZl {display:none!important;}' ];
+	const cssRules = [ `.tumblr-savior-blacklisted ${css('tags')} {display:none!important;}` ];
 	addGlobalStyle('show-tags', cssRules);
 }
 
-const hideNoticesStyle = [`
-	article.tumblr-savior-blacklisted {
-		display:none;
-	}
-`];
+const hideNoticesStyle = [ `article.tumblr-savior-blacklisted {display:none;}` ];
 
 function extractText(node) {
 	// We were doing a naive tag removal and that worked until tumblr sometimes
@@ -379,10 +398,10 @@ function decoratePost(post, blackList) {
 	}
 
 	const tsNotice = document.createElement('ts-notice');
-	tsNotice.className = '_3zgGl';
+	tsNotice.className = CSS_CLASS_MAP.reblog;
 
 	const divNotice = document.createElement('div');
-	divNotice.className = '_2m1qj';
+	divNotice.className = CSS_CLASS_MAP.textBlock;
 
 	const divContent = document.createElement('div');
 	divContent.className = 'content';
@@ -417,15 +436,15 @@ function decoratePost(post, blackList) {
 
 	function createFooter() {
 		const controls = document.createElement('div');
-		controls.classList.add('_1kqDq');
+		controls.classList.add(CSS_CLASS_MAP.controls);
 
 		const footer = document.createElement('footer')
 		footer.appendChild(controls);
-		footer.classList.add('_2dGhQ');
+		footer.classList.add(CSS_CLASS_MAP.footer);
 		return footer;
 	}
 
-	const footer = post.querySelector('footer ._1kqDq') || post.appendChild(createFooter());
+	const footer = post.querySelector(`footer ${css('controls')}`) || post.appendChild(createFooter());
 
 	if (footer) {
 		footer.appendChild(buttonShow);
@@ -457,7 +476,7 @@ function checkPost(post) {
 	let postText = '';
 
 	const postHeader = post.querySelector('header');
-	const postTags = post.querySelector('.pOoZl');
+	const postTags = post.querySelector(css('footer'));
 
 	if (!settings.ignore_header) {
 		postText += postHeader.getAttribute('aria-label');
@@ -465,7 +484,7 @@ function checkPost(post) {
 
 	if (!settings.ignore_body) {
 		const postBody = Array.prototype.reduce.call(post.childNodes, (out, node) => {
-			if (['HEADER', 'FOOTER', 'TS-NOTICE'].includes(node.tagName) || node.classList.contains('pOoZl')) {
+			if (['HEADER', 'FOOTER', 'TS-NOTICE'].includes(node.tagName) || node.classList.contains(CSS_CLASS_MAP.tags)) {
 				return out;
 			}
 			return out + node.innerHTML;
