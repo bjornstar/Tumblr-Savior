@@ -9,7 +9,7 @@
 
 ## v1.6.0 - 2020-10-10
  * Filter out the `footerWrapper` instead of the `footer` for the post body
- * Use the `tags` class instead of the footer for the post tags
+ * Use the `tags` class instead of the `footer` for the post tags
 
 ## v1.5.1 - 2020-10-08
  * [`.github/workflows`] Don't use $default-branch, just use your branch name
