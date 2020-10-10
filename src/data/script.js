@@ -16,7 +16,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.5.1'
+	'version': '1.6.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -476,20 +476,19 @@ function checkPost(post) {
 	let postText = '';
 
 	const postHeader = post.querySelector('header');
-	const postTags = post.querySelector(css('footer'));
+	const postTags = post.querySelector(css('tags'));
 
-	if (!settings.ignore_header) {
+	if (postHeader && !settings.ignore_header) {
 		postText += postHeader.getAttribute('aria-label');
 	}
 
 	if (!settings.ignore_body) {
-		const postBody = Array.prototype.reduce.call(post.childNodes, (out, node) => {
-			if (['HEADER', 'FOOTER', 'TS-NOTICE'].includes(node.tagName) || node.classList.contains(CSS_CLASS_MAP.tags)) {
+		const postBody = Array.prototype.reduce.call(post.childNodes, (out, { classList, innerHTML, tagName }) => {
+			if (['HEADER', 'TS-NOTICE'].includes(tagName) || classList.contains(CSS_CLASS_MAP.footerWrapper)) {
 				return out;
 			}
-			return out + node.innerHTML;
+			return out + innerHTML;
 		}, '');
-
 		postText += postBody;
 	}
 
