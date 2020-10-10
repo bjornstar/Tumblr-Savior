@@ -17,5 +17,5 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.6.0'
+	'version': '1.6.1'
 }; // Initialize default values.

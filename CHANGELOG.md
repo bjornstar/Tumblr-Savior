@@ -1,5 +1,9 @@
 # Tumblr Savior Changelog
 
+## v1.6.1 - 2020-10-10
+ * Move icon and screenshot from root to `media` directory
+ * [`.npmignore`] Ignore `.github` and `media` directories for npm package
+
 ## v1.6.0 - 2020-10-10
  * Filter out the `footerWrapper` instead of the `footer` for the post body
  * Use the `tags` class instead of the footer for the post tags
