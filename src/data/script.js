@@ -16,7 +16,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.6.1'
+	'version': '1.6.2'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';

@@ -1,5 +1,8 @@
 # Tumblr Savior Changelog
 
+## v1.6.2 - 2020-10-10
+ * [`manifest.json`] Forgot to update the version
+
 ## v1.6.1 - 2020-10-10
  * Move icon and screenshot from root to `media` directory
  * [`.npmignore`] Ignore `.github` and `media` directories for npm package
