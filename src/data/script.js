@@ -16,7 +16,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.6.2'
+	'version': '1.6.3'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -323,7 +323,7 @@ function parseSettings(savedSettings) {
 	let i, entry, test;
 
 	try {
-		settings = JSON.parse(savedSettings);
+		settings = JSON.parse(savedSettings) || defaultSettings;
 	} catch (err) {
 		console.warn('Tumblr Savior: Error parsing settings, using defaults.');
 		settings = defaultSettings;
