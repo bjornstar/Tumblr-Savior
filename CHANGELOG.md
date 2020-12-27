@@ -1,5 +1,8 @@
 # Tumblr Savior Changelog
 
+## v1.6.3 - 2020-12-27
+ * Properly apply default settings when there weren't any saved settings
+
 ## v1.6.2 - 2020-10-10
  * [`manifest.json`] Forgot to update the version
 
