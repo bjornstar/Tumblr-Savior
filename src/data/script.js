@@ -24,6 +24,7 @@ const CSS_CLASS_MAP = {
 	contentSource: 'hjr__',
 	controlIcon: '_33VXm',
 	controls: '_1kqDq',
+	filteredScreen: 'LihFc',
 	footerWrapper: '_3TeiW',
 	footer: '_2dGhQ',
 	listTimelineObject: '_1DxdS',
@@ -42,7 +43,6 @@ const CSS_CLASS_MAP = {
 function css(className) {
 	return `.${CSS_CLASS_MAP[className]}`;
 }
-
 
 let settings = defaultSettings;
 let gotSettings = false;
@@ -484,7 +484,7 @@ function checkPost(post) {
 
 	if (!settings.ignore_body) {
 		const postBody = Array.prototype.reduce.call(post.childNodes, (out, { classList, innerHTML, tagName }) => {
-			if (['HEADER', 'TS-NOTICE'].includes(tagName) || classList.contains(CSS_CLASS_MAP.footerWrapper)) {
+			if (['HEADER', 'TS-NOTICE'].includes(tagName) || classList.contains(CSS_CLASS_MAP.footerWrapper) || classList.contains(CSS_CLASS_MAP.filteredScreen)) {
 				return out;
 			}
 			return out + innerHTML;
