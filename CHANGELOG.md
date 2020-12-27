@@ -2,6 +2,7 @@
 
 ## v1.6.3 - 2020-12-27
  * Properly apply default settings when there weren't any saved settings
+ * Ignore `filteredScreen` content in the body, this avoids filtering out Tumblr's filter messages which do not have footers
 
 ## v1.6.2 - 2020-10-10
  * [`manifest.json`] Forgot to update the version
