@@ -1,5 +1,9 @@
 # Tumblr Savior Changelog
 
+## v1.7.0 - 2020-12-28
+ * Make "Ignore filtered content" an option (Fixes #76)
+ * Add an option to hide filtered content
+
 ## v1.6.3 - 2020-12-27
  * Properly apply default settings when there weren't any saved settings
  * Ignore `filteredScreen` content in the body, this avoids filtering out Tumblr's filter messages which do not have footers

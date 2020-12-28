@@ -1,5 +1,6 @@
 const defaultSettings = {
 	'context_menu': true,
+	'hide_filtered_content': false,
 	'hide_radar': true,
 	'hide_reblog_header': true,
 	'hide_recommended_blogs': true,
@@ -7,6 +8,7 @@ const defaultSettings = {
 	'hide_sponsored': true,
 	'hide_sponsored_sidebar': true,
 	'ignore_body': false,
+	'ignore_filtered_content': true,
 	'ignore_header': false,
 	'ignore_tags': false,
 	'listBlack': ['coronavirus', 'trump'],
@@ -16,7 +18,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.6.3'
+	'version': '1.7.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -29,6 +31,7 @@ const CSS_CLASS_MAP = {
 	footer: '_2dGhQ',
 	listTimelineObject: '_1DxdS',
 	mrecContainer: '_3bMU2',
+	noteCount: 'o_B3M',
 	noteCountButton: '_3t3fM',
 	reblog: '_3zgGl',
 	reblogHeader: '_2zTTs',
@@ -50,6 +53,9 @@ let gotSettings = false;
 const howToHide = '{display:none!important;}';
 
 const styleRules = {
+	hide_filtered_content: [
+		'.has-filtered-content' + howToHide
+	],
 	hide_radar: [
 		'aside > div:nth-child(2)' + howToHide
 	],
@@ -434,6 +440,17 @@ function decoratePost(post, blackList) {
 		}
 	});
 
+	function createFooterWrapper() {
+		const footerWrapper = document.createElement('div');
+		footerWrapper.classList.add(CSS_CLASS_MAP.footerWrapper);
+
+		const noteCount = document.createElement('div');
+		noteCount.classList.add(CSS_CLASS_MAP.noteCount);
+		footerWrapper.appendChild(noteCount);
+
+		return footerWrapper;
+	}
+
 	function createFooter() {
 		const controls = document.createElement('div');
 		controls.classList.add(CSS_CLASS_MAP.controls);
@@ -444,7 +461,9 @@ function decoratePost(post, blackList) {
 		return footer;
 	}
 
-	const footer = post.querySelector(`footer ${css('controls')}`) || post.appendChild(createFooter());
+	const footerWrapper = post.querySelector(css('footerWrapper')) || post.appendChild(createFooterWrapper());
+
+	const footer = post.querySelector(`footer ${css('controls')}`) || footerWrapper.appendChild(createFooter());
 
 	if (footer) {
 		footer.appendChild(buttonShow);
@@ -482,15 +501,17 @@ function checkPost(post) {
 		postText += postHeader.getAttribute('aria-label');
 	}
 
-	if (!settings.ignore_body) {
-		const postBody = Array.prototype.reduce.call(post.childNodes, (out, { classList, innerHTML, tagName }) => {
-			if (['HEADER', 'TS-NOTICE'].includes(tagName) || classList.contains(CSS_CLASS_MAP.footerWrapper) || classList.contains(CSS_CLASS_MAP.filteredScreen)) {
-				return out;
-			}
-			return out + innerHTML;
-		}, '');
-		postText += postBody;
-	}
+	let hasFilteredContent = false;
+
+	postText += Array.prototype.reduce.call(post.childNodes, (out, { classList, innerHTML, tagName }) => {
+		hasFilteredContent = hasFilteredContent || classList.contains(CSS_CLASS_MAP.filteredScreen);
+
+		if (settings.ignore_body || ['HEADER', 'TS-NOTICE'].includes(tagName) || classList.contains(CSS_CLASS_MAP.footerWrapper) || (settings.ignore_filtered_content && hasFilteredContent)) {
+			return out;
+		}
+
+		return out + innerHTML;
+	}, '');
 
 	if (postTags && !settings.ignore_tags) {
 		postText += extractText(postTags);
@@ -506,6 +527,10 @@ function checkPost(post) {
 	if (whiteList.length) {
 		post.classList.add('tumblr-savior-override');
 		post.setAttribute('data-tumblr-savior-whitelist', whiteList.join(', '));
+	}
+
+	if (hasFilteredContent) {
+		post.classList.add('has-filtered-content');
 	}
 
 	if (settings.show_notice) {

@@ -5,6 +5,7 @@ let inputLast = 0; //our unique ids for list items
 const settingsInputs = { //match up our settings object with our dom.
 	checkboxes: {
 		context_menu: 'context_menu_cb',
+		hide_filtered_content: 'hide_filtered_content_cb',
 		hide_radar: 'hide_radar_cb',
 		hide_reblog_header: 'hide_reblog_header_cb',
 		hide_recommended_blogs: 'hide_recommended_blogs_cb',
@@ -12,6 +13,7 @@ const settingsInputs = { //match up our settings object with our dom.
 		hide_sponsored: 'hide_sponsored_cb',
 		hide_sponsored_sidebar: 'hide_sponsored_sidebar_cb',
 		ignore_body: 'ignore_body_cb',
+		ignore_filtered_content: 'ignore_filtered_content_cb',
 		ignore_header: 'ignore_header_cb',
 		ignore_tags: 'ignore_tags_cb',
 		match_words: 'match_words_cb',
