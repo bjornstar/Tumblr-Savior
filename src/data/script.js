@@ -4,6 +4,7 @@ const defaultSettings = {
 	'hide_radar': true,
 	'hide_reblog_header': true,
 	'hide_recommended_blogs': true,
+	'hide_recommended_posts': true,
 	'hide_source': true,
 	'hide_sponsored': true,
 	'hide_sponsored_sidebar': true,
@@ -18,11 +19,12 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.7.0'
+	'version': '1.8.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
 const CSS_CLASS_MAP = {
+	attribution: '_2r26Q',
 	contentSource: 'hjr__',
 	controlIcon: '_33VXm',
 	controls: '_1kqDq',
@@ -35,6 +37,7 @@ const CSS_CLASS_MAP = {
 	noteCountButton: '_3t3fM',
 	reblog: '_3zgGl',
 	reblogHeader: '_2zTTs',
+	recommendationReason: '_nUEo',
 	stickyContainer: '_3wjj2',
 	tags: 'pOoZl',
 	textBlock: '_2m1qj'
@@ -66,7 +69,11 @@ const styleRules = {
 	hide_recommended_blogs: [
 		'aside > div:nth-child(1)' + howToHide
 	],
+	hide_recommended_posts: [
+		'.recommended-post' + howToHide
+	],
 	hide_source: [
+		css('attribution') + howToHide,
 		css('contentSource') + howToHide
 	],
 	hide_sponsored: [
@@ -275,7 +282,7 @@ function hide_tags() {
 	addGlobalStyle('show-tags', cssRules);
 }
 
-const hideNoticesStyle = [ `article.tumblr-savior-blacklisted {display:none;}` ];
+const hideNoticesStyle = [ `article.tumblr-savior-blacklisted:not(.tumblr-savior-override) {display:none;}` ];
 
 function extractText(node) {
 	// We were doing a naive tag removal and that worked until tumblr sometimes
@@ -470,18 +477,21 @@ function decoratePost(post, blackList) {
 	}
 }
 
+function removeElement(element) {
+	element.parentNode.removeChild(element);
+}
+
+function removeByClassName(element, className) {
+	Array.prototype.forEach.call(element.getElementsByClassName(className), removeElement);
+}
+
+function removeByTagName(element, tagName) {
+	Array.prototype.forEach.call(element.getElementsByTagName(tagName), removeElement);
+}
+
 function undecoratePost(post) {
-	const existingNotices = post.getElementsByTagName('ts-notice');
-
-	Array.prototype.forEach.call(existingNotices, existingNotice => {
-		existingNotice.parentNode.removeChild(existingNotice);
-	});
-
-	const existingButtons = post.getElementsByClassName('tumblr-savior-show');
-
-	Array.prototype.forEach.call(existingButtons, existingButton => {
-		existingButton.parentNode.removeChild(existingButton);
-	});
+	removeByTagName(post, 'ts-notice');
+	removeByClassName(post, 'tumblr-savior-show');
 }
 
 function checkPost(post) {
@@ -513,6 +523,8 @@ function checkPost(post) {
 		return out + innerHTML;
 	}, '');
 
+	const isRecommendedPost = postTags && postTags.querySelector(css('recommendationReason'));
+
 	if (postTags && !settings.ignore_tags) {
 		postText += extractText(postTags);
 	}
@@ -533,14 +545,14 @@ function checkPost(post) {
 		post.classList.add('has-filtered-content');
 	}
 
-	if (settings.show_notice) {
-		hydrationPromise.then(() => {
-			undecoratePost(post);
-			decoratePost(post, blackList, whiteList);
-		});
-	} else {
-		undecoratePost(post);
+	if (isRecommendedPost) {
+		post.classList.add('recommended-post');
 	}
+
+	hydrationPromise.then(() => {
+		undecoratePost(post);
+		decoratePost(post, blackList, whiteList);
+	});
 }
 
 function handleAnimationStart(event) {

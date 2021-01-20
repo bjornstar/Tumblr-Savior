@@ -1,5 +1,11 @@
 # Tumblr Savior Changelog
 
+## v1.8.0 - 2021-01-20
+ * Changed the wording from `notification` to `content warning` since tumblr doesn't use notifications on the dashboard anymore
+ * Fixed a bug where whitelisted posts would be hidden when content warnings are disabled
+ * Restored the option to hide recommended posts (Fixes #66) (Fixes #64)
+ * Found another source attribution block to hide
+
 ## v1.7.0 - 2020-12-28
  * Make "Ignore filtered content" an option (Fixes #76)
  * Add an option to hide filtered content

@@ -9,6 +9,7 @@ const settingsInputs = { //match up our settings object with our dom.
 		hide_radar: 'hide_radar_cb',
 		hide_reblog_header: 'hide_reblog_header_cb',
 		hide_recommended_blogs: 'hide_recommended_blogs_cb',
+		hide_recommended_posts: 'hide_recommended_posts_cb',
 		hide_source: 'hide_source_cb',
 		hide_sponsored: 'hide_sponsored_cb',
 		hide_sponsored_sidebar: 'hide_sponsored_sidebar_cb',
