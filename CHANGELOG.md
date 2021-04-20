@@ -1,5 +1,9 @@
 # Tumblr Savior Changelog
 
+## v1.9.0 - 2021-04-20
+ * Updated `CSS_CLASS_MAP` to match tumblr's new one (https://assets.tumblr.com/pop/cssmap-e28281a0.json)
+ * tumblr removed the numbered css variables so we update ours to match
+
 ## v1.8.0 - 2021-01-20
  * Changed the wording from `notification` to `content warning` since tumblr doesn't use notifications on the dashboard anymore
  * Fixed a bug where whitelisted posts would be hidden when content warnings are disabled
