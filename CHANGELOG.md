@@ -1,44 +1,51 @@
 # Tumblr Savior Changelog
 
-## v1.9.0 - 2021-04-20
+## v1.10.0 / 2021-08-18
+ * Update CSS_CLASS_MAP -- https://assets.tumblr.com/pop/cssmap-6fca4540.json (Fixes #78)
+ * Use textContent instead of innerText for better performance
+ * [`package.json`] Update devDependency `eslint` from `v7.10.0` to `v7.32.0`
+ * [`CHANGELOG.md`] Use slashes to separate the version number from the year
+ * [`LICENSE`] Update most recent year to `2021`
+
+## v1.9.0 / 2021-04-20
  * Updated `CSS_CLASS_MAP` to match tumblr's new one (https://assets.tumblr.com/pop/cssmap-e28281a0.json)
  * tumblr removed the numbered css variables so we update ours to match
 
-## v1.8.0 - 2021-01-20
+## v1.8.0 / 2021-01-20
  * Changed the wording from `notification` to `content warning` since tumblr doesn't use notifications on the dashboard anymore
  * Fixed a bug where whitelisted posts would be hidden when content warnings are disabled
  * Restored the option to hide recommended posts (Fixes #66) (Fixes #64)
  * Found another source attribution block to hide
 
-## v1.7.0 - 2020-12-28
+## v1.7.0 / 2020-12-28
  * Make "Ignore filtered content" an option (Fixes #76)
  * Add an option to hide filtered content
 
-## v1.6.3 - 2020-12-27
+## v1.6.3 / 2020-12-27
  * Properly apply default settings when there weren't any saved settings
  * Ignore `filteredScreen` content in the body, this avoids filtering out Tumblr's filter messages which do not have footers
 
-## v1.6.2 - 2020-10-10
+## v1.6.2 / 2020-10-10
  * [`manifest.json`] Forgot to update the version
 
-## v1.6.1 - 2020-10-10
+## v1.6.1 / 2020-10-10
  * Move icon and screenshot from root to `media` directory
  * [`.npmignore`] Ignore `.github` and `media` directories for npm package
 
-## v1.6.0 - 2020-10-10
+## v1.6.0 / 2020-10-10
  * Filter out the `footerWrapper` instead of the `footer` for the post body
  * Use the `tags` class instead of the `footer` for the post tags
 
-## v1.5.1 - 2020-10-08
+## v1.5.1 / 2020-10-08
  * [`.github/workflows`] Don't use $default-branch, just use your branch name
  * [`PRIVACY.md`] Move to root of the project
 
-## v1.5.0 - 2020-10-08
+## v1.5.0 / 2020-10-08
  * Adapted to a tumblr update that put the footer in a container (Fixes #73)
  * Use a `CSS_CLASS_MAP` so that we can refer to unobfuscated classNames
  * [`PRIVACY.md`] Added a privacy policy because the Microsoft Edge Add-on site requests one
 
-## v1.4.0 - 2020-10-01
+## v1.4.0 / 2020-10-01
  * Use `aria-label` for header contents (Thanks @mtae!)
  * Add github workflow for CI
  * Remove deprecated safari extension build scripts
@@ -47,12 +54,12 @@
  * [`package.json`] Rename `lint` script to `test`
  * [`LICENSE`] Make the copyright year a range of years
 
-## v1.3.0 - 2020-07-11
+## v1.3.0 / 2020-07-11
  * Looks like the previous method of hiding sponsored posts didn't last, here's a new one
  * Improve behavior when overlapping with tumblr's own content filter
  * Use more es6 code
 
-## v1.2.0 - 2020-07-05
+## v1.2.0 / 2020-07-05
  * Try a new way to hide sponsored posts (fixes #68)
  * Do not extract text from the `ts-notice`
  * All logic regarding the context menu is now in `main.js`, this fixes a bug where enabling the context menu would cause it to stop working
@@ -65,18 +72,18 @@
  * Add a `package.json`
  * Start using eslint
 
-## v1.1.0 - 2020-04-10
+## v1.1.0 / 2020-04-10
  * Actually fix the width for the warning icon
  * Add a trim to context menu selection because both Firefox and Opera like to include the trailing space
  * Remove some obsolete code
  * Fix an issue where the search page would not be filtered initially
  * Update the README and the about tab to include a solicitation for sponsorship
 
-## v1.0.1 - 2020-04-09
+## v1.0.1 / 2020-04-09
  * Use width instead of min-width for warning icon (flexbug in firefox)
  * Remove a console.log
 
-## v1.0.0 - 2020-04-05
+## v1.0.0 / 2020-04-05
  * Updated to work with the latest version of tumblr
  * New default blacklist entries: coronavirus and trump
  * New description in the manifest
@@ -87,19 +94,19 @@
  * Removed showing whitelist matches for now
  * Removed showing notices
 
-## v0.5.7 - 2018-05-22
+## v0.5.7 / 2018-05-22
  * Remove vendor prefixed rules for wireUpNodes (fixes #57)
  * Make `disable on inbox` work on blog specific inboxes (fixes #56)
  * When resetting a post, just remove the display style instead of setting it to `list-item`
 
-## v0.5.6 - 2018-03-30
+## v0.5.6 / 2018-03-30
  * Use old school iterator for old school browsers (fixes #55)
 
-## v0.5.5 - 2018-03-29
+## v0.5.5 / 2018-03-29
  * Directly extract the text ourselves instead of stripping out html tags (fixes #54)
  * Add a CSS rule for li elements to remove list-style as it was missing on search result pages
 
-## v0.5.4 - 2017-07-28
+## v0.5.4 / 2017-07-28
  * Block a new type of ad: `dfp-ad-container` (fixes #50)
  * Hide notifications when recommended or sponsored posts are hidden (fixes #41)
  * Fix header markdown in the changelog
@@ -107,47 +114,47 @@
  * Got a new cert for Safari, the previous would expire next month
  * Updated build script
 
-## v0.5.3 - 2017-03-07
+## v0.5.3 / 2017-03-07
  * Shorten description in info.plist
  * Improve localStorage handling in options (No more alert on empty settings in Safari)
 
-## v0.5.2 - 2017-03-06
+## v0.5.2 / 2017-03-06
  * Use xar-mackyle on os x
  * Include icon & screenshot for safari extension gallery
  * Remove references to deprecated chrome.tabs.sendRequest
  * Copy description into info.plist
 
-## v0.5.1 - 2017-03-02
+## v0.5.1 / 2017-03-02
  * Avoid tumblr opening a blog in a new tab when clicking on a blacklist notification (Thanks @EmandM!)
  * Remove several unused variables in the options page
  * Simplify browser and feature detection logic
  * Hide yahoo ads by default
  * Remove link & italics from blacklist notification
 
-## v0.5.0 - 2016-08-29
+## v0.5.0 / 2016-08-29
  * Firefox version is now a WebExtension, removed old code.
  * Cleaned up multiple spaces to make it more natural to block bits that could have multiple spaces (soandso reblogged whositwhatsit)
 
-## v0.4.28 - 2016-07-06
+## v0.4.28 / 2016-07-06
  * Include the new sidebar add when blocking Yahoo! ads (fixes #42)
  * Add a link to https://paypal.me/bjornstar for people to show their appreciation (fixes #43)
 
-## v0.4.27 - 2016-04-04
+## v0.4.27 / 2016-04-04
  * If the filter is triggered but the content is not loaded, run it again
  * Remove `applications` entry from manifest
 
-## v0.4.26 - 2016-03-13
+## v0.4.26 / 2016-03-13
  * Add `applications` entry to manifest to work around [a bug in AMO validator](https://github.com/mozilla/amo-validator/issues/405)
 
-## v0.4.25 - 2016-03-13
+## v0.4.25 / 2016-03-13
  * Block a new type of ad: `standalone-ad-container` (fixes #38)
  * Blacklist notices now get inserted at the same level as the post_container (fixes #7)
  * Start Tumblr Savior earlier, allows style based hiding to run before all content is loaded
 
-## v0.4.24 - 2016-01-21
+## v0.4.24 / 2016-01-21
  * Added an option in the Tumblr Behavior section to remove the t.umblr.com redirect (fixes #36)
 
-## v0.4.23 - 2015-12-10
+## v0.4.23 / 2015-12-10
  * Fixed an issue where you were unable to block HTML Encoded entities: &, <, and > (fixes #31)
  * Block a new type of ad: `video-ad-container` (fixes #34)
 

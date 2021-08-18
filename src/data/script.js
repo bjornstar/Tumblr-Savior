@@ -19,28 +19,28 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.9.0'
+	'version': '1.10.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
 const CSS_CLASS_MAP = {
-	attribution: '_3QZzd', // [1]
-	contentSource: '_28g6n',
-	controlIcon: '_3Rgpb', // [1]
-	controls: '_8WDrj', // [1]
-	filteredScreen: '_7X-5c',
-	footerWrapper: 'IdU-A',
-	footer: 'Js4q5', // [5]
-	listTimelineObject: '_2erxf', // [1]
-	mrecContainer: '_1s9MS',
-	noteCount: '_1W1c2', // [2]
-	noteCountButton: '_2Qu8Z',
-	reblog: 'kg4ok',
-	reblogHeader: 'r_IvO',
-	recommendationReason: '_3GqQn', // [1]
-	stickyContainer: '_3sRV0',
-	tags: '_2BwP0', // [4]
-	textBlock: '_3MF9s'
+	attribution: 'N4RPg', // [3]
+	contentSource: 'jxQkY',
+	controlIcon: 'ZSAB8', // [1]
+	controls: 'aTcbY', // [3]
+	filteredScreen: 'dsPqS',
+	footerWrapper: 'icDHu',
+	footer: 'l3fvI', // [8]
+	listTimelineObject: 'IGdYk', // [1]
+	mrecContainer: 'JD7Cz',
+	noteCount: 'b_8BR', // [3]
+	noteCountButton: '_91ZJ',
+	reblog: 'pzcaM',
+	reblogHeader: 'pB3nk',
+	recommendationReasonTopTeaserWrapper: 'YCeHL',
+	stickyContainer: '_3ATg',
+	tags: 'YuqL0', // [3]
+	textBlock: 'shgTR' //[1]
 };
 
 /**
@@ -255,8 +255,8 @@ function addGlobalStyle(styleId, newRules) {
 		cStyle.sheet.deleteRule(0);
 	}
 
-	if (cStyle.innerText) {
-		cStyle.innerText = '';
+	if (cStyle.textContent) {
+		cStyle.textContent = '';
 	}
 
 	newRules.forEach(newRule => {
@@ -523,7 +523,7 @@ function checkPost(post) {
 		return out + innerHTML;
 	}, '');
 
-	const isRecommendedPost = postTags && postTags.querySelector(css('recommendationReason'));
+	const isRecommendedPost = post.querySelector(css('recommendationReasonTopTeaserWrapper'));
 
 	if (postTags && !settings.ignore_tags) {
 		postText += extractText(postTags);
