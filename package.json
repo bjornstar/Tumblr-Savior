@@ -1,6 +1,6 @@
 {
   "name": "tumblr-savior",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Would you like to control what shows up on your dashboard? Tumblr Savior is here to save you!",
   "scripts": {
     "test": "eslint src"
@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/bjornstar/Tumblr-Savior#readme",
   "devDependencies": {
-    "eslint": "^7.10.0"
+    "eslint": "^7.32.0"
   }
 }
