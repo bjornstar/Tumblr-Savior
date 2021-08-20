@@ -284,12 +284,12 @@ function hide_tags() {
 
 const hideNoticesStyle = [ `article.tumblr-savior-blacklisted:not(.tumblr-savior-override) {display:none;}` ];
 
-function extractText(node) {
+function extractText({ childNodes, nodeType, tagName, textContent }, isChildOfP) {
 	// We were doing a naive tag removal and that worked until tumblr sometimes
 	// didn't escape html in blog descriptions. So now we do it explicitly (#54)
-	if (node.nodeType === 3) return node.textContent;
+	if (nodeType === 3) return textContent + (isChildOfP ? '' : ' ');
 
-	return Array.prototype.map.call(node.childNodes, extractText).join(' ');
+	return Array.prototype.filter.call(childNodes, ({ textContent }) => textContent).map(child => extractText(child, isChildOfP || tagName === 'P')).join('');
 }
 
 function toggleStyle(id) {
@@ -513,15 +513,16 @@ function checkPost(post) {
 
 	let hasFilteredContent = false;
 
-	postText += Array.prototype.reduce.call(post.childNodes, (out, { classList, innerHTML, tagName }) => {
+	postText += Array.prototype.reduce.call(post.childNodes, (out, node) => {
+		const { classList, innerHTML, tagName } = node;
 		hasFilteredContent = hasFilteredContent || classList.contains(CSS_CLASS_MAP.filteredScreen);
 
 		if (settings.ignore_body || ['HEADER', 'TS-NOTICE'].includes(tagName) || classList.contains(CSS_CLASS_MAP.footerWrapper) || (settings.ignore_filtered_content && hasFilteredContent)) {
 			return out;
 		}
 
-		return out + innerHTML;
-	}, '');
+		return `${out} ${innerHTML} ${extractText(node)} `;
+	}, ' ');
 
 	const isRecommendedPost = post.querySelector(css('recommendationReasonTopTeaserWrapper'));
 

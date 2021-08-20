@@ -1,10 +1,13 @@
 # Tumblr Savior Changelog
 
+## v1.11.0 / 2021-08-20
+ * Include text extracted from post bodies so they can be filtered even if they've been heavily styled
+
 ## v1.10.0 / 2021-08-18
  * Update CSS_CLASS_MAP -- https://assets.tumblr.com/pop/cssmap-6fca4540.json (Fixes #78)
- * Use textContent instead of innerText for better performance
+ * Use `textContent` instead of `innerText` for better performance
  * [`package.json`] Update devDependency `eslint` from `v7.10.0` to `v7.32.0`
- * [`CHANGELOG.md`] Use slashes to separate the version number from the year
+ * [`CHANGELOG.md`] Use a slash to separate the version number from the year
  * [`LICENSE`] Update most recent year to `2021`
 
 ## v1.9.0 / 2021-04-20
