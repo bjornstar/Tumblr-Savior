@@ -9,3 +9,4 @@ src.safariextension
 *.key
 *.csr
 node_modules
+package-lock.json

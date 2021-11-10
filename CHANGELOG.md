@@ -1,10 +1,17 @@
 # Tumblr Savior Changelog
 
+## v1.12.0 / 2021-11-10
+* Update `CSS_CLASS_MAP` -- https://assets.tumblr.com/pop/cssmap-84fedc5a.json
+* [`.gitignore`] Add `package-lock.json`
+* [`options.html`] Remove periods from the end of labels
+* [`options.html`] Drop a the
+* [`package.json`] Update `eslint` from `7.32.0` to `8.2.0`
+
 ## v1.11.0 / 2021-08-20
  * Include text extracted from post bodies so they can be filtered even if they've been heavily styled
 
 ## v1.10.0 / 2021-08-18
- * Update CSS_CLASS_MAP -- https://assets.tumblr.com/pop/cssmap-6fca4540.json (Fixes #78)
+ * Update `CSS_CLASS_MAP` -- https://assets.tumblr.com/pop/cssmap-6fca4540.json (Fixes #78)
  * Use `textContent` instead of `innerText` for better performance
  * [`package.json`] Update devDependency `eslint` from `v7.10.0` to `v7.32.0`
  * [`CHANGELOG.md`] Use a slash to separate the version number from the year

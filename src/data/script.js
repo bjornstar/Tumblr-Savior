@@ -19,28 +19,29 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.10.0'
+	'version': '1.12.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
+// index is 0 based
 const CSS_CLASS_MAP = {
-	attribution: 'N4RPg', // [3]
-	contentSource: 'jxQkY',
-	controlIcon: 'ZSAB8', // [1]
-	controls: 'aTcbY', // [3]
-	filteredScreen: 'dsPqS',
-	footerWrapper: 'icDHu',
-	footer: 'l3fvI', // [8]
-	listTimelineObject: 'IGdYk', // [1]
-	mrecContainer: 'JD7Cz',
-	noteCount: 'b_8BR', // [3]
-	noteCountButton: '_91ZJ',
-	reblog: 'pzcaM',
-	reblogHeader: 'pB3nk',
-	recommendationReasonTopTeaserWrapper: 'YCeHL',
-	stickyContainer: '_3ATg',
-	tags: 'YuqL0', // [3]
-	textBlock: 'shgTR' //[1]
+	attribution: 'eqBap', // [3]
+	contentSource: 'd_FyU',
+	controlIcon: 'gc3fY', // [1]
+	controls: 'MCavR', // [3]
+	filteredScreen: 'W0ros',
+	footerWrapper: 'qYXF9',
+	footer: 'Ha4CC', // [8]
+	listTimelineObject: 'So6RQ', // [0]
+	mrecContainer: 'Yc2Sp',
+	noteCount: 'HsBU3', // [3]
+	noteCountButton: 'rlv6m',
+	reblog: 'u2tXn', // [1]
+	reblogHeader: 'fAAi8',
+	recommendationReasonTopTeaserWrapper: 'n_1Sv',
+	stickyContainer: 'AD_w7',
+	tags: 'hAFp3', // [3]
+	textBlock: 'k31gt' //[0]
 };
 
 /**

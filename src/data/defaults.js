@@ -20,5 +20,5 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.11.0'
+	'version': '1.12.0'
 }; // Initialize default values.
