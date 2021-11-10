@@ -1,5 +1,11 @@
 # Tumblr Savior Changelog
 
+## v1.12.1 / 2021-11-10
+* [`CI`] Only test on node v16
+* [`CI`] Also run `addons-linter` when testing
+* [`package.json`] Move `eslint` into it's own command
+* [`package.json`] Add `addons-linter`
+
 ## v1.12.0 / 2021-11-10
 * Update `CSS_CLASS_MAP` -- https://assets.tumblr.com/pop/cssmap-84fedc5a.json
 * [`.gitignore`] Add `package-lock.json`
