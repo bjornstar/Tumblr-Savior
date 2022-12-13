@@ -19,7 +19,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.12.1'
+	'version': '1.13.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -29,6 +29,7 @@ const CSS_CLASS_MAP = {
 	contentSource: 'd_FyU',
 	controlIcon: 'gc3fY', // [1]
 	controls: 'MCavR', // [3]
+	desktopContainer: 'B15CE', // [0]
 	filteredScreen: 'W0ros',
 	footerWrapper: 'qYXF9',
 	footer: 'Ha4CC', // [8]
@@ -39,9 +40,11 @@ const CSS_CLASS_MAP = {
 	reblog: 'u2tXn', // [1]
 	reblogHeader: 'fAAi8',
 	recommendationReasonTopTeaserWrapper: 'n_1Sv',
+	sidebar: 'vM8CJ', // [4]
+	sidebarItem: 'FZkjV',
 	stickyContainer: 'AD_w7',
 	tags: 'hAFp3', // [3]
-	textBlock: 'k31gt' //[0]
+	textBlock: 'k31gt' // [0]
 };
 
 /**
@@ -61,14 +64,22 @@ const styleRules = {
 		'.has-filtered-content' + howToHide
 	],
 	hide_radar: [
-		'aside > div:nth-child(2)' + howToHide
+		`aside > ${css('sidebarItem')}:nth-child(2)` + howToHide
 	],
 	hide_reblog_header: [
 		css('reblogHeader') + howToHide,
 		css('reblog') + '{padding-top:inherit;}'
 	],
-	hide_recommended_blogs: [
-		'aside > div:nth-child(1)' + howToHide
+	// We can drop the conditional when Firefox supports the :has selector
+	hide_recommended_blogs: [`
+		@supports(has) {
+			${css('desktopContainer')}:has([aria-label="Blogs like this one"])${howToHide}
+			${css('sidebarItem')}:has([aria-label="Check out these blogs"])${howToHide}
+		}
+		@supports not (has) {
+			${css('sidebar')} ${css('desktopContainer')}:nth-child(1)${howToHide}
+			aside > ${css('sidebarItem')}:nth-child(1)${howToHide}
+		}`
 	],
 	hide_recommended_posts: [
 		'.recommended-post' + howToHide

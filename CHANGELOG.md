@@ -1,5 +1,11 @@
 # Tumblr Savior Changelog
 
+## v1.13.0 / 2022-12-13
+* [`script.js`] Use more specific selectors for hiding sidebar items (Fixes #83)
+* [`options.js`] Replace deprecated `extension.getURL` with `runtime.getURL`
+* [`package.json`] Update devDependency `addons-linter`
+* [`package.json`] Update devDependency `eslint`
+
 ## v1.12.1 / 2021-11-10
 * [`CI`] Only test on node v16
 * [`CI`] Also run `addons-linter` when testing
