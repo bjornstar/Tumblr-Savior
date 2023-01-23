@@ -19,7 +19,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.13.0'
+	'version': '1.14.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -284,18 +284,6 @@ function addGlobalStyle(styleId, newRules) {
 	}
 }
 
-function show_tags() {
-	const cssRules = [ `.tumblr-savior-blacklisted ${css('tags')} {display:block!important;}` ];
-	addGlobalStyle('show-tags', cssRules);
-}
-
-function hide_tags() {
-	const cssRules = [ `.tumblr-savior-blacklisted ${css('tags')} {display:none!important;}` ];
-	addGlobalStyle('show-tags', cssRules);
-}
-
-const hideNoticesStyle = [ `article.tumblr-savior-blacklisted:not(.tumblr-savior-override) {display:none;}` ];
-
 function extractText({ childNodes, nodeType, tagName, textContent }, isChildOfP) {
 	// We were doing a naive tag removal and that worked until tumblr sometimes
 	// didn't escape html in blog descriptions. So now we do it explicitly (#54)
@@ -310,14 +298,12 @@ function toggleStyle(id) {
 	addGlobalStyle(id, cssRules);
 }
 
-function applySettings() {
-	if (settings.show_tags) {
-		show_tags();
-	} else {
-		hide_tags();
-	}
+const hideNoticesStyle = [ `article.tumblr-savior-blacklisted:not(.tumblr-savior-override) {display:none;}` ];
+const hideTagsStyle = [ `.tumblr-savior-blacklisted:not(.tumblr-savior-override) ${css('tags')} {display:none!important;}` ];
 
+function applySettings() {
 	addGlobalStyle('show-notices', settings.show_notice ? [] : hideNoticesStyle);
+	addGlobalStyle('show-tags', settings.show_tags ? [] : hideTagsStyle)
 
 	for (let id in styleRules) {
 		toggleStyle(id);
@@ -514,6 +500,8 @@ function checkPost(post) {
 	post.classList.remove('tumblr-savior-blacklisted');
 	post.removeAttribute('data-tumblr-savior-blacklist');
 
+	if (window.location.pathname.endsWith('/drafts')) return;
+
 	let postText = '';
 
 	const postHeader = post.querySelector('header');
@@ -564,7 +552,7 @@ function checkPost(post) {
 
 	hydrationPromise.then(() => {
 		undecoratePost(post);
-		decoratePost(post, blackList, whiteList);
+		decoratePost(post, blackList);
 	});
 }
 

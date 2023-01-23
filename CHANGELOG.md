@@ -1,5 +1,11 @@
 # Tumblr Savior Changelog
 
+## v1.14.0 / 2023-01-23
+* [`main.js`] Continue using `chrome` instead of `browser` (Fixes #85)
+* [`script.js`] Do not hide tags when a post is whitelisted (Fixes #86)
+* [`script.js`] Refactor show/hide tags code
+* [`script.js`] Skip blacklisting on drafts pages (Fixes #82)
+
 ## v1.13.0 / 2022-12-13
 * [`script.js`] Use more specific selectors for hiding sidebar items (Fixes #83)
 * [`options.js`] Replace deprecated `extension.getURL` with `runtime.getURL`

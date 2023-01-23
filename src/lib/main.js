@@ -60,7 +60,7 @@ function chromeAddToBlackList(info, tab) {
 	}
 
 	const views = chrome.extension.getViews();
-	const optionsURI = browser.runtime.getURL('data/options.html');
+	const optionsURI = chrome.runtime.getURL('data/options.html');
 
 	Array.prototype.forEach.call(views, ({ location }) => {
 		if (location === optionsURI) location.reload();
