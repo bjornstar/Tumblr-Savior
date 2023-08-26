@@ -19,32 +19,34 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.14.0'
+	'version': '1.15.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
 // index is 0 based
 const CSS_CLASS_MAP = {
-	attribution: 'eqBap', // [3]
+	attribution: 'eqBap',
 	contentSource: 'd_FyU',
-	controlIcon: 'gc3fY', // [1]
-	controls: 'MCavR', // [3]
-	desktopContainer: 'B15CE', // [0]
+	controlIcon: 'gc3fY',
+	controls: 'MCavR',
+	desktopContainer: 'B15CE',
 	filteredScreen: 'W0ros',
 	footerWrapper: 'qYXF9',
-	footer: 'Ha4CC', // [8]
-	listTimelineObject: 'So6RQ', // [0]
+	footer: 'Ha4CC',
+	listTimelineObject: 'So6RQ',
 	mrecContainer: 'Yc2Sp',
-	noteCount: 'HsBU3', // [3]
+	noteCount: 'gstmW',
 	noteCountButton: 'rlv6m',
-	reblog: 'u2tXn', // [1]
+	radar: 'Q55_h',
+	reblog: 'u2tXn',
 	reblogHeader: 'fAAi8',
 	recommendationReasonTopTeaserWrapper: 'n_1Sv',
-	sidebar: 'vM8CJ', // [4]
+	recommendedBlogs: 'PwJi6',
+	sidebar: 'e1knl',
 	sidebarItem: 'FZkjV',
 	stickyContainer: 'AD_w7',
-	tags: 'hAFp3', // [3]
-	textBlock: 'k31gt' // [0]
+	tags: 'hAFp3',
+	textBlock: 'k31gt'
 };
 
 /**
@@ -63,8 +65,13 @@ const styleRules = {
 	hide_filtered_content: [
 		'.has-filtered-content' + howToHide
 	],
-	hide_radar: [
-		`aside > ${css('sidebarItem')}:nth-child(2)` + howToHide
+	hide_radar: [`
+		@supports selector(:has(a)) {
+			${css('sidebarItem')}:has(${css('radar')})${howToHide}
+		}
+		@supports not selector(:has(a)) {
+			aside .radar${howToHide}
+		}`
 	],
 	hide_reblog_header: [
 		css('reblogHeader') + howToHide,
@@ -72,13 +79,12 @@ const styleRules = {
 	],
 	// We can drop the conditional when Firefox supports the :has selector
 	hide_recommended_blogs: [`
-		@supports(has) {
-			${css('desktopContainer')}:has([aria-label="Blogs like this one"])${howToHide}
-			${css('sidebarItem')}:has([aria-label="Check out these blogs"])${howToHide}
+		@supports selector(:has(a)) {
+			${css('sidebarItem')}:has(${css('recommendedBlogs')})${howToHide}
+			${css('desktopContainer')}:has(${css('recommendedBlogs')})${howToHide}
 		}
-		@supports not (has) {
-			${css('sidebar')} ${css('desktopContainer')}:nth-child(1)${howToHide}
-			aside > ${css('sidebarItem')}:nth-child(1)${howToHide}
+		@supports not selector(:has(a)) {
+			aside .recommendedBlogs${howToHide}
 		}`
 	],
 	hide_recommended_posts: [
@@ -244,7 +250,6 @@ function needsToBeSaved(text) {
 function createStyle(styleId) {
 	const elmStyle = document.createElement('style');
 
-	elmStyle.type = 'text/css';
 	elmStyle.id = styleId;
 
 	return elmStyle;
@@ -294,7 +299,6 @@ function extractText({ childNodes, nodeType, tagName, textContent }, isChildOfP)
 
 function toggleStyle(id) {
 	const cssRules = [...(settings[id] ? styleRules[id] : [])];
-
 	addGlobalStyle(id, cssRules);
 }
 
@@ -305,7 +309,7 @@ function applySettings() {
 	addGlobalStyle('show-notices', settings.show_notice ? [] : hideNoticesStyle);
 	addGlobalStyle('show-tags', settings.show_tags ? [] : hideTagsStyle)
 
-	for (let id in styleRules) {
+	for (const id in styleRules) {
 		toggleStyle(id);
 	}
 
@@ -368,23 +372,14 @@ function parseSettings(savedSettings) {
 	}
 }
 
-const regexRedirect = /z=([^&]*)/;
-
-function removeRedirect(link) {
-	const encodedUrl = link.href.match(regexRedirect)[1];
-	if (encodedUrl) {
-		link.href = decodeURIComponent(encodedUrl);
-	}
-}
-
 function removeRedirects(post) {
 	if (!settings.remove_redirects) return;
 
 	const links = post.getElementsByTagName('A')
 
 	Array.prototype.forEach.call(links, link => {
-		if (link.href.includes('t.umblr.com')) {
-			removeRedirect(link);
+		if (link.href.startsWith('https://href.li/?')) {
+			link.href = link.href.replace('https://href.li/?', '');
 		}
 	})
 }
@@ -445,34 +440,36 @@ function decoratePost(post, blackList) {
 		}
 	});
 
-	function createFooterWrapper() {
-		const footerWrapper = document.createElement('div');
-		footerWrapper.classList.add(CSS_CLASS_MAP.footerWrapper);
-
-		const noteCount = document.createElement('div');
-		noteCount.classList.add(CSS_CLASS_MAP.noteCount);
-		footerWrapper.appendChild(noteCount);
-
-		return footerWrapper;
-	}
-
-	function createFooter() {
-		const controls = document.createElement('div');
-		controls.classList.add(CSS_CLASS_MAP.controls);
-
-		const footer = document.createElement('footer')
-		footer.appendChild(controls);
-		footer.classList.add(CSS_CLASS_MAP.footer);
-		return footer;
-	}
-
 	const footerWrapper = post.querySelector(css('footerWrapper')) || post.appendChild(createFooterWrapper());
 
-	const footer = post.querySelector(`footer ${css('controls')}`) || footerWrapper.appendChild(createFooter());
+	const footer = last(post.querySelectorAll(`footer ${css('controls')}`)) || footerWrapper.appendChild(createFooter());
 
-	if (footer) {
-		footer.appendChild(buttonShow);
-	}
+	footer.appendChild(buttonShow);
+}
+
+function last(arrayLike) {
+	return Array.prototype.at.call(arrayLike, -1);
+}
+
+function createFooterWrapper() {
+	const footerWrapper = document.createElement('div');
+	footerWrapper.classList.add(CSS_CLASS_MAP.footerWrapper);
+
+	const noteCount = document.createElement('div');
+	noteCount.classList.add(CSS_CLASS_MAP.noteCount);
+	footerWrapper.appendChild(noteCount);
+
+	return footerWrapper;
+}
+
+function createFooter() {
+	const controls = document.createElement('div');
+	controls.classList.add(CSS_CLASS_MAP.controls);
+
+	const footer = document.createElement('footer')
+	footer.appendChild(controls);
+	footer.classList.add(CSS_CLASS_MAP.footer);
+	return footer;
 }
 
 function removeElement(element) {
@@ -603,6 +600,45 @@ function initialize() {
 	});
 }
 
+function addClassNameToParent(container, className) {
+	const element = container.querySelector(css(className));
+	if (element) {
+		element.parentNode.classList.add(className);
+	}
+}
+
+function observeAside(baseContainer) {
+	let asideObserver;
+	const observer = new MutationObserver(mutationList => {
+		for (let i = 0; i < mutationList.length; i += 1) {
+			if (mutationList[i].removedNodes.length && asideObserver) {
+				if (asideObserver) {
+					asideObserver.disconnect();
+					asideObserver = undefined;
+				}
+			}
+
+			if (mutationList[i].addedNodes.length && !asideObserver) {
+				const onAddAside = baseContainer.querySelector('aside');
+
+				if (!onAddAside) return;
+
+				addClassNameToParent(onAddAside, 'radar');
+				addClassNameToParent(onAddAside, 'recommendedBlogs');
+
+				asideObserver = asideObserver || new MutationObserver(() => {
+					addClassNameToParent(onAddAside, 'radar');
+					addClassNameToParent(onAddAside, 'recommendedBlogs');
+				});
+
+				asideObserver.observe(onAddAside, { childList: true, subtree: true });
+			}
+		}
+	});
+
+	observer.observe(baseContainer, { childList: true });
+}
+
 function waitForHydration(baseContainer) {
 	baseContainer.classList.add('hydrating');
 
@@ -646,8 +682,14 @@ function waitForBaseContainer() {
 	});
 }
 
-const baseContainer = waitForBaseContainer();
+const bcPromise = waitForBaseContainer();
 
-const hydrationPromise = baseContainer.then(waitForHydration).catch(console.error);
+const hydrationPromise = bcPromise.then(baseContainer => {
+	initialize(baseContainer);
 
-baseContainer.then(initialize);
+	if (!CSS.supports('selector(:has(a))')) {
+		observeAside(baseContainer);
+	}
+
+	return waitForHydration(baseContainer);
+}).catch(console.error);

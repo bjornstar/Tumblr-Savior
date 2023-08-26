@@ -1,5 +1,12 @@
 # Tumblr Savior Changelog
 
+## v1.15.0 / 2023-08-26
+* Update for the latest version of the desktop
+* New `CSS_CLASS_MAP` -- https://assets.tumblr.com/pop/cssmap-232fd5ad.json
+* Replaced `t.umblr.com` redirect removal with `href.li`
+* Updated workflows to run on node v20
+* Updated `eslint` & `addons-linter` to latest version
+
 ## v1.14.0 / 2023-01-23
 * [`main.js`] Continue using `chrome` instead of `browser` (Fixes #85)
 * [`script.js`] Do not hide tags when a post is whitelisted (Fixes #86)
