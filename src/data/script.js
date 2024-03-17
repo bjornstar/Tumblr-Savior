@@ -5,9 +5,11 @@ const defaultSettings = {
 	'hide_reblog_header': true,
 	'hide_recommended_blogs': true,
 	'hide_recommended_posts': true,
+	'hide_sidebar_buttons': true,
 	'hide_source': true,
 	'hide_sponsored': true,
 	'hide_sponsored_sidebar': true,
+	'hide_timeline_objects': true,
 	'ignore_body': false,
 	'ignore_filtered_content': true,
 	'ignore_header': false,
@@ -19,13 +21,14 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.15.0'
+	'version': '1.16.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
 // index is 0 based
 const CSS_CLASS_MAP = {
 	attribution: 'eqBap',
+	cell: 'rZlUD',
 	contentSource: 'd_FyU',
 	controlIcon: 'gc3fY',
 	controls: 'MCavR',
@@ -90,16 +93,22 @@ const styleRules = {
 	hide_recommended_posts: [
 		'.recommended-post' + howToHide
 	],
+	hide_sidebar_buttons: [
+		`aside > button${howToHide}`
+	],
 	hide_source: [
 		css('attribution') + howToHide,
 		css('contentSource') + howToHide
 	],
 	hide_sponsored: [
-		css('listTimelineObject') + ':not([data-id])' + howToHide
+		`${css('listTimelineObject')}.moatContainer ${howToHide}`,
 	],
 	hide_sponsored_sidebar: [
 		css('mrecContainer') + howToHide
-	]
+	],
+	hide_timeline_objects: [
+		`${css('cell')}[data-cell-id*="timelineObject"] ${howToHide}`,
+	],
 };
 
 const tumblrSaviorAnimation = [`
@@ -297,11 +306,6 @@ function extractText({ childNodes, nodeType, tagName, textContent }, isChildOfP)
 	return Array.prototype.filter.call(childNodes, ({ textContent }) => textContent).map(child => extractText(child, isChildOfP || tagName === 'P')).join('');
 }
 
-function toggleStyle(id) {
-	const cssRules = [...(settings[id] ? styleRules[id] : [])];
-	addGlobalStyle(id, cssRules);
-}
-
 const hideNoticesStyle = [ `article.tumblr-savior-blacklisted:not(.tumblr-savior-override) {display:none;}` ];
 const hideTagsStyle = [ `.tumblr-savior-blacklisted:not(.tumblr-savior-override) ${css('tags')} {display:none!important;}` ];
 
@@ -310,7 +314,8 @@ function applySettings() {
 	addGlobalStyle('show-tags', settings.show_tags ? [] : hideTagsStyle)
 
 	for (const id in styleRules) {
-		toggleStyle(id);
+		const cssRules = [...(settings[id] ? styleRules[id] : [])];
+		addGlobalStyle(id, cssRules);
 	}
 
 	gotSettings = true;
@@ -338,7 +343,7 @@ function parseSettings(savedSettings) {
 	let i, entry, test;
 
 	try {
-		settings = JSON.parse(savedSettings) || defaultSettings;
+		settings = { ...defaultSettings, ...JSON.parse(savedSettings) };
 	} catch (err) {
 		console.warn('Tumblr Savior: Error parsing settings, using defaults.');
 		settings = defaultSettings;
@@ -647,19 +652,11 @@ function waitForHydration(baseContainer) {
 			reject('Timed out waiting for hydration to complete');
 		}, 10000);
 
-		const hydrateCanary = document.createElement('hydrate-canary');
-
-		baseContainer.insertBefore(hydrateCanary, baseContainer.firstChild);
-
-		const observer = new MutationObserver(mutationList => {
-			for (let i = 0; i < mutationList.length; i += 1) {
-				if (Array.prototype.includes.call(mutationList[i].removedNodes, hydrateCanary)) {
-					observer.disconnect();
-					clearTimeout(hydrationTimeout);
-					baseContainer.classList.remove('hydrating');
-					return resolve();
-				}
-			}
+		const observer = new MutationObserver(() => {
+			observer.disconnect();
+			clearTimeout(hydrationTimeout);
+			baseContainer.classList.remove('hydrating');
+			resolve();
 		});
 
 		observer.observe(baseContainer, { childList: true });

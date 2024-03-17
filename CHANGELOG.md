@@ -1,5 +1,15 @@
 # Tumblr Savior Changelog
 
+## v1.16.0 / 2024-05-17
+* Updated hiding sponsored posts, now just does `moatContainer`
+* Removed the hydration canary in favor of assuming hydration has succeeded the first time the base container is updated
+* Apply default values when individual options have not been set yet
+* Added a new option to block posts that are `timelineObject`s
+* Added a new option to block buttons in the sidebar (Go ad-free today)
+* Reorganized the options slightly to separate sidebar from posts
+* Updates `eslint` & `addons-linter` to latest version
+* Update more workflows to use node v20
+
 ## v1.15.0 / 2023-08-26
 * Update for the latest version of the desktop
 * New `CSS_CLASS_MAP` -- https://assets.tumblr.com/pop/cssmap-232fd5ad.json

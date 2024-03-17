@@ -10,9 +10,11 @@ const settingsInputs = { //match up our settings object with our dom.
 		hide_reblog_header: 'hide_reblog_header_cb',
 		hide_recommended_blogs: 'hide_recommended_blogs_cb',
 		hide_recommended_posts: 'hide_recommended_posts_cb',
+		hide_sidebar_buttons: 'hide_sidebar_buttons_cb',
 		hide_source: 'hide_source_cb',
 		hide_sponsored: 'hide_sponsored_cb',
 		hide_sponsored_sidebar: 'hide_sponsored_sidebar_cb',
+		hide_timeline_objects: 'hide_timeline_objects_cb',
 		ignore_body: 'ignore_body_cb',
 		ignore_filtered_content: 'ignore_filtered_content_cb',
 		ignore_header: 'ignore_header_cb',
@@ -96,7 +98,7 @@ function parseSettings() {
 		}
 	}
 
-	return parsedSettings;
+	return { ...defaultSettings, ...parsedSettings };
 }
 
 function removeElement(id) {
