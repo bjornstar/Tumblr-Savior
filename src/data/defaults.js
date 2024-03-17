@@ -6,9 +6,11 @@ const defaultSettings = {
 	'hide_reblog_header': true,
 	'hide_recommended_blogs': true,
 	'hide_recommended_posts': true,
+	'hide_sidebar_buttons': true,
 	'hide_source': true,
 	'hide_sponsored': true,
 	'hide_sponsored_sidebar': true,
+	'hide_timeline_objects': true,
 	'ignore_body': false,
 	'ignore_filtered_content': true,
 	'ignore_header': false,
@@ -20,5 +22,5 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.15.0'
+	'version': '1.16.0'
 }; // Initialize default values.
