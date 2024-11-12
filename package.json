@@ -1,6 +1,6 @@
 {
   "name": "tumblr-savior",
-  "version": "1.16.0",
+  "version": "2.0.0",
   "description": "Would you like to control what shows up on your dashboard? Tumblr Savior is here to save you!",
   "scripts": {
     "addons-linter": "addons-linter src",
@@ -23,7 +23,8 @@
   },
   "homepage": "https://github.com/bjornstar/Tumblr-Savior#readme",
   "devDependencies": {
-    "addons-linter": "^6.24.0",
-    "eslint": "^8.57.0"
-  }
+    "addons-linter": "^7.3.0",
+    "eslint": "^9.14.0"
+  },
+  "type": "module"
 }

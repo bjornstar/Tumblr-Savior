@@ -1,4 +1,30 @@
-/* global defaultSettings:readonly */
+const defaultSettings = {
+	'context_menu': true,
+	'hide_filtered_content': false,
+	'hide_radar': true,
+	'hide_reblog_header': true,
+	'hide_recommended_blogs': true,
+	'hide_recommended_posts': true,
+	'hide_sidebar_buttons': true,
+	'hide_source': true,
+	'hide_sponsored': true,
+	'hide_sponsored_sidebar': true,
+	'hide_timeline_objects': true,
+	'ignore_body': false,
+	'ignore_filtered_content': true,
+	'ignore_header': false,
+	'ignore_tags': false,
+	'listBlack': ['trump'],
+	'listWhite': ['bjorn', 'octopus'],
+	'match_words': true,
+	'remove_redirects': true,
+	'show_notice': true,
+	'show_tags': true,
+	'show_words': true,
+	'version': '2.0.0'
+}; // Initialize default values.
+
+const { version } = defaultSettings;
 
 let inputLast = 0; //our unique ids for list items
 
@@ -61,44 +87,11 @@ function tabClick(whichTab) {
 		const switchfrom = foregroundDiv.children[0];
 		backgroundDiv.appendChild(switchfrom);
 		foregroundDiv.appendChild(switchto);
-		switch (whichTab.id) {
-		case 'aboutTab':
-			load_btn.style.display = 'none';
-			save_btn.style.display = 'none';
-			reset_btn.style.display = 'none';
-			spacerDiv.style.display = 'none';
-			break;
-		case 'saveloadTab':
-			load_btn.style.display = '';
-			save_btn.style.display = 'none';
-			reset_btn.style.display = '';
-			spacerDiv.style.display = 'none';
-			break;
-		case 'listsTab':
-		case 'settingsTab':
-			load_btn.style.display = 'none';
-			save_btn.style.display = '';
-			reset_btn.style.display = '';
-			spacerDiv.style.display = '';
-			break;
-		}
+		load_btn.style.display = ['aboutTab', 'listsTab', 'settingsTab'].includes(whichTab.id) ? 'none' : '';
+		save_btn.style.display = ['aboutTab', 'saveloadTab'].includes(whichTab.id) ? 'none' : '';
+		reset_btn.style.display = ['aboutTab'].includes(whichTab.id) ? 'none' : '';
+		spacerDiv.style.display = ['aboutTab', 'saveloadTab'].includes(whichTab.id) ? 'none' : '';
 	}
-}
-
-function parseSettings() {
-	let parsedSettings = defaultSettings;
-
-	const savedSettings = localStorage && localStorage.getItem('settings');
-
-	if (savedSettings) {
-		try {
-			parsedSettings = JSON.parse(savedSettings);
-		} catch (e) {
-			console.error('Failed to parse settings:', e);
-		}
-	}
-
-	return { ...defaultSettings, ...parsedSettings };
 }
 
 function removeElement(id) {
@@ -149,59 +142,6 @@ function addInput(whichList, itemValue = '') {
 	listDiv.insertBefore(optionDiv, listAdd);
 }
 
-function loadOptions() {
-	const loadSettings = parseSettings();
-
-	for (const settingsValue in settingsInputs.checkboxes) {
-		if (Object.prototype.hasOwnProperty.call(settingsInputs.checkboxes, settingsValue)) {
-			const settingsInput = document.getElementById(settingsInputs.checkboxes[settingsValue]);
-			if (settingsInput !== undefined) {
-				settingsInput.checked = loadSettings[settingsValue];
-			}
-		}
-	}
-
-	for (const settingsValue in settingsInputs.lists) {
-		if (Object.prototype.hasOwnProperty.call(settingsInputs.lists, settingsValue)) {
-			const settingsInput = settingsInputs.lists[settingsValue];
-			for (const listEntry in loadSettings[settingsValue]) {
-				if (Object.prototype.hasOwnProperty.call(loadSettings[settingsValue], listEntry)) {
-					addInput(settingsInput, loadSettings[settingsValue][listEntry]);
-				}
-			}
-			addInput(settingsInput); //prepare a blank input box.
-		}
-	}
-
-	const inandout = document.getElementById('inandout');
-	inandout.textContent = JSON.stringify(loadSettings, null, 2);
-}
-
-function checkurl(url, filter) {
-	for (let f in filter) {
-		if (Object.prototype.hasOwnProperty.call(filter, f)) {
-			const filterRegex = filter[f].replace(/\x2a/g, '(.*?)');
-			const re = new RegExp(filterRegex);
-			if (url.match(re)) {
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-function webExtensionNotifyTumblr(tabs) {
-	for (let tab in tabs) {
-		if (Object.prototype.hasOwnProperty.call(tabs, tab) && checkurl(tabs[tab].url, ['http://www.tumblr.com/*', 'https://www.tumblr.com/*'])) {
-			chrome.tabs.sendMessage(tabs[tab].id, 'refreshSettings');
-		}
-	}
-}
-
-function notifyBrowsers() {
-	chrome.tabs.query({ url: '*://*.tumblr.com/*' }, webExtensionNotifyTumblr);
-}
-
 function resetLists() {
 	const listsDiv = document.getElementById('listsDiv');
 	const listsInputs = listsDiv.getElementsByTagName('input');
@@ -238,38 +178,41 @@ function saveOptions() {
 		}
 	}
 
-	newSettings.version = defaultSettings.version; //always update version info from default.
-
-	localStorage.setItem('settings', JSON.stringify(newSettings));
-	notifyBrowsers(newSettings);
-	resetLists();
-	loadOptions();
+	return chrome.storage.local.set({ ...defaultSettings, ...newSettings, version });
 }
 
 function eraseOptions() {
-	localStorage.setItem('settings', JSON.stringify(defaultSettings));
-	notifyBrowsers(defaultSettings);
-	resetLists();
-	loadOptions();
+	return chrome.storage.local.set(defaultSettings);
 }
 
 function importOptions() {
-	const dirtySettings = document.getElementById('inandout').value;
+	const inandout = document.getElementById('inandout');
 
 	let importSettings;
 
 	try {
-		importSettings = JSON.parse(dirtySettings);
+		importSettings = JSON.parse(inandout.value);
+		return chrome.storage.local.set({ ...defaultSettings, ...importSettings, version });
 	} catch (e) {
+		console.error(e);
 		alert('Those are settings are corrupt, I\'m sorry but I can\'t use them.');
-		return;
 	}
+}
 
-	localStorage.setItem('settings', JSON.stringify(importSettings));
+function readLocalStorage() {
+	try {
+		const localStorageSettings = JSON.parse(localStorage.getItem('settings'));
+		if (!localStorageSettings) throw new Error('Nothing in localStorage');
+		const displaySettings = JSON.stringify(localStorageSettings, null, 2);
 
-	resetLists();
-	loadOptions();
-	notifyBrowsers(importSettings);
+		const inandout = document.getElementById('inandout');
+
+		inandout.value = displaySettings;
+		inandout.textContent = displaySettings;
+	} catch(e) {
+		console.error(e);
+		alert('Could not find any valid settings in localStorage, sorry!');
+	}
 }
 
 function addInputClickHandler(e) {
@@ -291,6 +234,7 @@ function getBrowserName() {
 
 function contentLoaded() {
 	const save_btn = document.getElementById('save_btn');
+	const read_btn = document.getElementById('read_btn');
 	const reset_btn = document.getElementById('reset_btn');
 	const load_btn = document.getElementById('load_btn');
 	const listsTab = document.getElementById('listsTab');
@@ -298,6 +242,7 @@ function contentLoaded() {
 	const saveloadTab = document.getElementById('saveloadTab');
 	const aboutTab = document.getElementById('aboutTab');
 
+	read_btn.addEventListener('click', readLocalStorage);
 	save_btn.addEventListener('click', saveOptions);
 
 	load_btn.addEventListener('click', function () {
@@ -343,9 +288,8 @@ function contentLoaded() {
 		e.stopPropagation();
 	}, false);
 
-
 	const version_div = document.getElementById('version_div');
-	version_div.textContent = 'v' + defaultSettings.version; //use default so we're always showing current version regardless of what people have saved.
+	version_div.textContent = 'v' + version;
 
 	const browserName = getBrowserName();
 	if (browserName !== 'Undetected') {
@@ -353,7 +297,59 @@ function contentLoaded() {
 		browser_span.textContent = `for ${browserName}\u2122`;
 	}
 
-	loadOptions();
+	return updateInputs();
 }
 
 document.addEventListener('DOMContentLoaded', contentLoaded);
+
+function v2AlertClick(e) {
+	tabClick(document.getElementById('saveloadTab'));
+	e.preventDefault();
+	e.stopPropagation();
+}
+
+function updateInputs() {
+	return chrome.storage.local.get().then(settings => {
+		const appliedSettings = { ...defaultSettings, ...settings };
+		const displaySettings = JSON.stringify(appliedSettings, null, 2);
+
+		const inandout = document.getElementById('inandout')
+
+		inandout.value = displaySettings;
+		inandout.textContent = displaySettings;
+
+		resetLists();
+
+		for (const settingsValue in settingsInputs.checkboxes) {
+			if (Object.prototype.hasOwnProperty.call(settingsInputs.checkboxes, settingsValue)) {
+				const settingsInput = document.getElementById(settingsInputs.checkboxes[settingsValue]);
+				if (settingsInput !== undefined) {
+					settingsInput.checked = appliedSettings[settingsValue];
+				}
+			}
+		}
+
+		for (const settingsValue in settingsInputs.lists) {
+			if (Object.prototype.hasOwnProperty.call(settingsInputs.lists, settingsValue)) {
+				const settingsInput = settingsInputs.lists[settingsValue];
+				for (const listEntry in appliedSettings[settingsValue]) {
+					if (Object.prototype.hasOwnProperty.call(appliedSettings[settingsValue], listEntry)) {
+						addInput(settingsInput, appliedSettings[settingsValue][listEntry]);
+					}
+				}
+				addInput(settingsInput); //prepare a blank input box.
+			}
+		}
+
+		document.querySelector('#v2_alert a').removeEventListener('click', v2AlertClick);
+
+		if (localStorage.getItem('settings') && !Object.keys(settings).length) {
+			document.getElementById('v2_alert').style.display = 'block';
+			document.querySelector('#v2_alert a').addEventListener('click', v2AlertClick, false);
+		} else {
+			document.getElementById('v2_alert').style.display = 'none';
+		}
+	});
+}
+
+chrome.storage.onChanged.addListener(updateInputs);

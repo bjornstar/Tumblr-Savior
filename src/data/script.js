@@ -14,14 +14,14 @@ const defaultSettings = {
 	'ignore_filtered_content': true,
 	'ignore_header': false,
 	'ignore_tags': false,
-	'listBlack': ['coronavirus', 'trump'],
+	'listBlack': ['trump'],
 	'listWhite': ['bjorn', 'octopus'],
 	'match_words': true,
 	'remove_redirects': true,
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1.16.0'
+	'version': '2.0.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -94,7 +94,7 @@ const styleRules = {
 		'.recommended-post' + howToHide
 	],
 	hide_sidebar_buttons: [
-		`aside > button${howToHide}`
+		`aside button${howToHide}`
 	],
 	hide_source: [
 		css('attribution') + howToHide,
@@ -317,8 +317,6 @@ function applySettings() {
 		const cssRules = [...(settings[id] ? styleRules[id] : [])];
 		addGlobalStyle(id, cssRules);
 	}
-
-	gotSettings = true;
 }
 
 function buildRegex(entry) {
@@ -339,15 +337,8 @@ function buildIndexOf(entry) {
 	};
 }
 
-function parseSettings(savedSettings) {
+function buildFilters() {
 	let i, entry, test;
-
-	try {
-		settings = { ...defaultSettings, ...JSON.parse(savedSettings) };
-	} catch (err) {
-		console.warn('Tumblr Savior: Error parsing settings, using defaults.');
-		settings = defaultSettings;
-	}
 
 	filters.black = [];
 	filters.white = [];
@@ -572,12 +563,15 @@ function checkPosts() {
 	Array.prototype.forEach.call(posts, checkPost);
 }
 
-function chromeHandleMessage({ name, parameters }) {
-	if (name === 'getSettings') {
-		parseSettings(parameters);
+function getSettings() {
+	return chrome.storage.local.get().then(savedSettings => {
+		settings = { ...defaultSettings, ...savedSettings };
+		gotSettings = true;
+
+		buildFilters();
 		applySettings();
 		checkPosts();
-	}
+	});
 }
 
 function initialize() {
@@ -591,18 +585,12 @@ function initialize() {
 	addGlobalStyle('show-button', showButtonStyle);
 	addGlobalStyle('ts-notice', noticeStyle);
 
-	chrome.runtime.onMessage.addListener(request => {
-		if (request === 'refreshSettings') {
-			chrome.runtime.sendMessage(null, { name: 'getSettings' }, null, chromeHandleMessage);
-		}
+	chrome.storage.onChanged.addListener((changes, area) => {
+		console.log('chrome.storage.onChanged', { area, changes });
+		return getSettings();
 	});
 
-	return new Promise((resolve) => {
-		chrome.runtime.sendMessage(null, { name: 'getSettings' }, null, message => {
-			chromeHandleMessage(message);
-			resolve();
-		});
-	});
+	return getSettings();
 }
 
 function addClassNameToParent(container, className) {

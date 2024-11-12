@@ -144,3 +144,17 @@ div {
 .ignore_label {
   padding-right: 1em;
 }
+
+#v2_alert {
+  background-color:lightyellow;
+  border: solid 1px #4F545A;
+  border-radius: 3px;
+  display: none;
+  margin-bottom:1em;
+  padding: 1em;
+  width: 50%;
+}
+
+#v2_alert a {
+  text-decoration: underline;
+}
