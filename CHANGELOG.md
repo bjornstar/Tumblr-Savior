@@ -1,5 +1,8 @@
 # Tumblr Savior Changelog
 
+## v2.0.1 / 2024-11-12
+* Update Firefox AddOn specific id value
+
 ## v2.0.0 / 2024-11-12
 * There is a one-time manual step you need to take in Tumblr Savior's options to read your localStorage settings and load it into browser extension storage.
   Go to the Save / Load tab and press the "Read from localStorage" button then you can press the "Load" button to have it applied. It will save it to your

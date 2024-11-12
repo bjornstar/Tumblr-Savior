@@ -1,6 +1,6 @@
 {
 	"name": "Tumblr Savior",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "Would you like to control what shows up on your dashboard? Tumblr Savior is here to save you!",
 	"action": {
 		"default_icon": "data/Icon-16.png",
@@ -13,7 +13,7 @@
   },
 	"browser_specific_settings": {
 		"gecko": {
-			"id": "tumblr-savior@bjornstar.com"
+			"id": "jid1-W5guVoyeUR0uBg@jetpack"
 		}
 	},
 	"content_scripts": [ {
