@@ -1,5 +1,14 @@
 # Tumblr Savior Changelog
 
+## v2.0.0 / 2024-11-12
+* There is a one-time manual step you need to take in Tumblr Savior's options to read your localStorage settings and load it into browser extension storage.
+  Go to the Save / Load tab and press the "Read from localStorage" button then you can press the "Load" button to have it applied. It will save it to your
+  browser extension storage and work as normal from there on out.
+* Switched to Manifest v3
+* Tweaked sidebar blocking methodology
+* [devDependencies] Updated `eslint` & `addons-linter` to latest versions
+* [Workflows] Use node v22 for testing
+
 ## v1.16.0 / 2024-05-17
 * Updated hiding sponsored posts, now just does `moatContainer`
 * Removed the hydration canary in favor of assuming hydration has succeeded the first time the base container is updated

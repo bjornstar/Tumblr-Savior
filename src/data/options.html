@@ -1,10 +1,10 @@
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width">
     <title>Options for Tumblr Savior</title>
-    <link rel="stylesheet" media="screen" href="../data/options.css">
-    <script src="../data/defaults.js" type="text/javascript"></script>
-    <script src="../data/options.js" type="text/javascript"></script>
+    <link rel="stylesheet" media="screen" href="options.css">
+    <script src="options.js" type="text/javascript"></script>
   </head>
   <body>
     <div id="title">
@@ -17,6 +17,9 @@
     <div id="content">
       <div id="foregroundDiv">
         <div id="listsDiv">
+          <div id="v2_alert">
+            <p>It looks like you've updated to Tumblr Savior v2 and have some old settings, <a href="#saveload">go to the Save/Load tab</a> to restore them.</p>
+          </div>
           <div id="listBlack">
             <h2>Black List</h2>
             <p>Tumblr Savior will save you from posts with these words in them:</p><br />
@@ -80,6 +83,7 @@
           <div id="remove_redirects_div">
             <input type="checkbox" id="remove_redirects_cb" name="remove_redirects_cb" /> <label for="remove_redirects_cb">Remove href.li redirects</label>
           </div>
+          <br />
           <h2>Sidebar</h2>
           <div id="hide_radar_div">
             <input type="checkbox" id="hide_radar_cb" name="hide_radar_cb" /> <label for="hide_radar_cb">Hide the radar</label>
@@ -88,7 +92,7 @@
             <input type="checkbox" id="hide_recommended_blogs_cb" name="hide_recommended_blogs_cb" /> <label for="hide_recommended_blogs_cb">Hide recommended blogs</label>
           </div>
           <div id="hide_sidebar_buttons_div">
-            <input type="checkbox" id="hide_sidebar_buttons_cb" name="hide_sidebar_buttons_cb" /> <label for="hide_sidebar_buttons_cb">Hide buttons</label>
+            <input type="checkbox" id="hide_sidebar_buttons_cb" name="hide_sidebar_buttons_cb" /> <label for="hide_sidebar_buttons_cb">Hide sidebar buttons</label>
           </div>
           <div id="hide_sponsored_sidebar_div">
             <input type="checkbox" id="hide_sponsored_sidebar_cb" name="hide_sponsored_sidebar_cb" /> <label for="hide_sponsored_sidebar_cb">Hide the sponsored section</label>
@@ -96,8 +100,11 @@
         </div>
         <div id="saveloadDiv">
           <h2>Save / Load</h2><br />
-          <textarea id="inandout"></textarea><br /><br />
-          <p>Copy the above text into a file to save. You can load your saved settings by pasting it back into this box and hitting the Load button. Press the Restore defaults button if something goes horribly wrong.</p><br />
+          <textarea id="inandout"></textarea>
+          <button id="read_btn" style="margin-top:5px">Read from localStorage</button>
+          <br /><br />
+          <p>If you've recently updated to Tumblr Savior v2, you should be able to restore your old settings by pressing the "Read from localStorage" button and then hitting the Load button.</p><br />
+          <p>To save your settings, copy the above text into a file. You can load your saved settings by pasting it back into this box and hitting the Load button.</p><br />
         </div>
         <div id="aboutDiv">
           <h2>About</h2><br />
