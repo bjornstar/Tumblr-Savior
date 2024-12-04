@@ -9,8 +9,8 @@
 	},
 	"background": {
 		"scripts": ["data/main.js"],
-    "service_worker": "data/main.js"
-  },
+		"service_worker": "data/main.js"
+	},
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "jid1-W5guVoyeUR0uBg@jetpack"
