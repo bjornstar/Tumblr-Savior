@@ -1,5 +1,9 @@
 # Tumblr Savior Changelog
 
+## v2.1.0 / 2024-12-04
+* Handle content inside of P tags as text (Fixes #94)
+* Remove a console.log
+
 ## v2.0.1 / 2024-11-12
 * Update Firefox AddOn specific id value
 

@@ -21,7 +21,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '2.0.1'
+	'version': '2.1.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -298,12 +298,10 @@ function addGlobalStyle(styleId, newRules) {
 	}
 }
 
-function extractText({ childNodes, nodeType, tagName, textContent }, isChildOfP) {
-	// We were doing a naive tag removal and that worked until tumblr sometimes
-	// didn't escape html in blog descriptions. So now we do it explicitly (#54)
-	if (nodeType === 3) return textContent + (isChildOfP ? '' : ' ');
+function extractText({ childNodes, nodeType, tagName, textContent }) {
+	if (nodeType === 3 || tagName === 'P') return textContent + ' ';
 
-	return Array.prototype.filter.call(childNodes, ({ textContent }) => textContent).map(child => extractText(child, isChildOfP || tagName === 'P')).join('');
+	return Array.prototype.filter.call(childNodes, ({ textContent }) => textContent).map(extractText).join('');
 }
 
 const hideNoticesStyle = [ `article.tumblr-savior-blacklisted:not(.tumblr-savior-override) {display:none;}` ];
@@ -585,10 +583,7 @@ function initialize() {
 	addGlobalStyle('show-button', showButtonStyle);
 	addGlobalStyle('ts-notice', noticeStyle);
 
-	chrome.storage.onChanged.addListener((changes, area) => {
-		console.log('chrome.storage.onChanged', { area, changes });
-		return getSettings();
-	});
+	chrome.storage.onChanged.addListener(() => getSettings());
 
 	return getSettings();
 }
