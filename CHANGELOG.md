@@ -1,5 +1,8 @@
 # Tumblr Savior Changelog
 
+## v2.1.1 / 2025-01-19
+* Do not hide buttons in `moreContent` asides (Fixes #95)
+
 ## v2.1.0 / 2024-12-04
 * Handle content inside of P tags as text (Fixes #94)
 * Remove a console.log

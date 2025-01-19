@@ -21,7 +21,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '2.1.0'
+	'version': '2.1.1'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -37,6 +37,7 @@ const CSS_CLASS_MAP = {
 	footerWrapper: 'qYXF9',
 	footer: 'Ha4CC',
 	listTimelineObject: 'So6RQ',
+	moreContent: 'oFuUq',
 	mrecContainer: 'Yc2Sp',
 	noteCount: 'gstmW',
 	noteCountButton: 'rlv6m',
@@ -94,7 +95,7 @@ const styleRules = {
 		'.recommended-post' + howToHide
 	],
 	hide_sidebar_buttons: [
-		`aside button${howToHide}`
+		`aside:not(${moreContent}) button${howToHide}`
 	],
 	hide_source: [
 		css('attribution') + howToHide,
