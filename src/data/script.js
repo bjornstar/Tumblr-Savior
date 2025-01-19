@@ -21,7 +21,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '2.1.1'
+	'version': '2.1.2'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -95,7 +95,7 @@ const styleRules = {
 		'.recommended-post' + howToHide
 	],
 	hide_sidebar_buttons: [
-		`aside:not(${moreContent}) button${howToHide}`
+		`aside:not(${css('moreContent')}) button${howToHide}`
 	],
 	hide_source: [
 		css('attribution') + howToHide,

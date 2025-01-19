@@ -1,5 +1,8 @@
 # Tumblr Savior Changelog
 
+## v2.1.2 / 2025-01-19
+* Fix syntax error for moreContent
+
 ## v2.1.1 / 2025-01-19
 * Do not hide buttons in `moreContent` asides (Fixes #95)
 
