@@ -1,5 +1,10 @@
 # Tumblr Savior Changelog
 
+## v2.2.0 / 2025-02-15
+* Make "Hide timeline objects" hide visible cells that don't have articles (Fixes #96)
+* [devDependencies] Update `addons-linter` & `eslint` to latest versions
+* [meta] Add `.npmrc` to disable `package-lock.json` and skip audit and funding messages
+
 ## v2.1.2 / 2025-01-19
 * Fix syntax error for moreContent
 

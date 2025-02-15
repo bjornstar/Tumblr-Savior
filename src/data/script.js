@@ -21,7 +21,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '2.1.2'
+	'version': '2.2.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -36,6 +36,7 @@ const CSS_CLASS_MAP = {
 	filteredScreen: 'W0ros',
 	footerWrapper: 'qYXF9',
 	footer: 'Ha4CC',
+	isVisible: 'KYCZY',
 	listTimelineObject: 'So6RQ',
 	moreContent: 'oFuUq',
 	mrecContainer: 'Yc2Sp',
@@ -108,7 +109,7 @@ const styleRules = {
 		css('mrecContainer') + howToHide
 	],
 	hide_timeline_objects: [
-		`${css('cell')}[data-cell-id*="timelineObject"] ${howToHide}`,
+		`${css('cell')}${css('isVisible')}:not(:has(article)) ${howToHide}`,
 	],
 };
 
