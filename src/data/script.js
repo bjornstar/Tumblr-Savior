@@ -21,18 +21,20 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '2.2.0'
+	'version': '2.3.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
-// index is 0 based
+
 const CSS_CLASS_MAP = {
 	attribution: 'eqBap',
+	blogRows: 'NedHV',
 	cell: 'rZlUD',
 	contentSource: 'd_FyU',
 	controlIcon: 'gc3fY',
 	controls: 'MCavR',
 	desktopContainer: 'B15CE',
+	diamondShape: 'jMbMz',
 	filteredScreen: 'W0ros',
 	footerWrapper: 'qYXF9',
 	footer: 'Ha4CC',
@@ -96,7 +98,7 @@ const styleRules = {
 		'.recommended-post' + howToHide
 	],
 	hide_sidebar_buttons: [
-		`aside:not(${css('moreContent')}) button${howToHide}`
+		`${css('sidebarItem')}:has(${css('diamondShape')})${howToHide}`
 	],
 	hide_source: [
 		css('attribution') + howToHide,
@@ -109,7 +111,7 @@ const styleRules = {
 		css('mrecContainer') + howToHide
 	],
 	hide_timeline_objects: [
-		`${css('cell')}${css('isVisible')}:not(:has(article)) ${howToHide}`,
+		`${css('cell')}${css('isVisible')}:not(:has(article)):not(${css('blogRows')}){visibility:hidden;height:0}`,
 	],
 };
 
