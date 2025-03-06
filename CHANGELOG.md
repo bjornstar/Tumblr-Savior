@@ -3,7 +3,7 @@
 ## v2.3.0 / 2025-03-06
 * Make "Hide sidebar buttons" exclusively for buttons with diamonds in them (Fixes #99)
 * Add an exclusion timeline objects that are `blogRows` (Fixes #98)
-* Change how we timeline objects to avoid needless thrashing
+* Change how we hide timeline objects to avoid needless thrashing
 * [devDependencies] Update `eslint` to latest version
 * [LICENSE] Update copyright notice through current year
 
