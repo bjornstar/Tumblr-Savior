@@ -1,5 +1,9 @@
 # Tumblr Savior Changelog
 
+## v2.3.1 / 2025-03-08
+* Exclude timeline objects that are `blogRow`
+* There was a missing word in the changelog last version
+
 ## v2.3.0 / 2025-03-06
 * Make "Hide sidebar buttons" exclusively for buttons with diamonds in them (Fixes #99)
 * Add an exclusion timeline objects that are `blogRows` (Fixes #98)

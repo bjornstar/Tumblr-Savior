@@ -21,14 +21,14 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '2.3.0'
+	'version': '1'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
 
 const CSS_CLASS_MAP = {
 	attribution: 'eqBap',
-	blogRows: 'NedHV',
+	blogRow: 'Ut4iZ',
 	cell: 'rZlUD',
 	contentSource: 'd_FyU',
 	controlIcon: 'gc3fY',
@@ -111,7 +111,7 @@ const styleRules = {
 		css('mrecContainer') + howToHide
 	],
 	hide_timeline_objects: [
-		`${css('cell')}${css('isVisible')}:not(:has(article)):not(${css('blogRows')}){visibility:hidden;height:0}`,
+		`${css('cell')}${css('isVisible')}:not(:has(article)):not(:has(${css('blogRow')})){visibility:hidden;height:0}`,
 	],
 };
 
