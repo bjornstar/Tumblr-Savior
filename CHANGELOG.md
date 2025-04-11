@@ -1,5 +1,9 @@
 # Tumblr Savior Changelog
 
+## v2.4.0 / 2025-04-11
+* Stop using `aria-label` for header content (Fixes #100)
+* Avoid adding white spaces for empty elements in `extractText`
+
 ## v2.3.1 / 2025-03-08
 * Exclude timeline objects that are `blogRow`
 * There was a missing word in the changelog last version

@@ -21,7 +21,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '1'
+	'version': '2.4.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -303,7 +303,7 @@ function addGlobalStyle(styleId, newRules) {
 }
 
 function extractText({ childNodes, nodeType, tagName, textContent }) {
-	if (nodeType === 3 || tagName === 'P') return textContent + ' ';
+	if (nodeType === 3 || tagName === 'P') return textContent + (textContent.endsWith(' ') ? '' : ' ');
 
 	return Array.prototype.filter.call(childNodes, ({ textContent }) => textContent).map(extractText).join('');
 }
@@ -503,7 +503,7 @@ function checkPost(post) {
 	const postTags = post.querySelector(css('tags'));
 
 	if (postHeader && !settings.ignore_header) {
-		postText += postHeader.getAttribute('aria-label');
+		postText += extractText(postHeader);
 	}
 
 	let hasFilteredContent = false;
