@@ -1,5 +1,11 @@
 # Tumblr Savior Changelog
 
+## v2.5.0 / 2025-04-28
+* Improve hiding timeline objects only on timelines (Fixes #101)
+* [README] Add some badges and links to where you can download published versions
+* [devDependencies] Update `addons-linter` & `eslint`
+* [.github] Update workflow filename to match other projects
+
 ## v2.4.0 / 2025-04-11
 * Stop using `aria-label` for header content (Fixes #100)
 * Avoid adding white spaces for empty elements in `extractText`

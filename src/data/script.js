@@ -21,7 +21,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '2.4.0'
+	'version': '2.5.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -53,7 +53,17 @@ const CSS_CLASS_MAP = {
 	sidebarItem: 'FZkjV',
 	stickyContainer: 'AD_w7',
 	tags: 'hAFp3',
-	textBlock: 'k31gt'
+	textBlock: 'k31gt',
+	timeline: [
+		"Gm6ol",
+		"iPJDl",
+		"NEYEx",
+		"Evcyl",
+		"j8ha0",
+		"AiNLD",
+		"pvWan",
+		"dZmD5"
+	]
 };
 
 /**
@@ -110,9 +120,9 @@ const styleRules = {
 	hide_sponsored_sidebar: [
 		css('mrecContainer') + howToHide
 	],
-	hide_timeline_objects: [
-		`${css('cell')}${css('isVisible')}:not(:has(article)):not(:has(${css('blogRow')})){visibility:hidden;height:0}`,
-	],
+	hide_timeline_objects: CSS_CLASS_MAP.timeline.map(timeline =>
+		`.${timeline} ${css('cell')}${css('isVisible')}:not(:has(article)){visibility:hidden;height:0}`,
+	),
 };
 
 const tumblrSaviorAnimation = [`
