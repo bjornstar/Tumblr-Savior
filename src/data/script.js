@@ -21,7 +21,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '2.5.0'
+	'version': '2.6.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -31,13 +31,15 @@ const CSS_CLASS_MAP = {
 	blogRow: 'Ut4iZ',
 	cell: 'rZlUD',
 	contentSource: 'd_FyU',
-	controlIcon: 'gc3fY',
-	controls: 'MCavR',
+	contentWrapper: 'VDRZ4',
 	desktopContainer: 'B15CE',
 	diamondShape: 'jMbMz',
+	engagementControls: 'rtfvT',
 	filteredScreen: 'W0ros',
+	footerContent: 'ndAE7',
 	footerWrapper: 'qYXF9',
-	footer: 'Ha4CC',
+	footer: 'gm9gb',
+	holder: 'LaNUG',
 	isVisible: 'KYCZY',
 	listTimelineObject: 'So6RQ',
 	moreContent: 'oFuUq',
@@ -54,6 +56,7 @@ const CSS_CLASS_MAP = {
 	stickyContainer: 'AD_w7',
 	tags: 'hAFp3',
 	textBlock: 'k31gt',
+	trailHeader: '_7Vla9',
 	timeline: [
 		"Gm6ol",
 		"iPJDl",
@@ -91,7 +94,7 @@ const styleRules = {
 		}`
 	],
 	hide_reblog_header: [
-		css('reblogHeader') + howToHide,
+		css('trailHeader') + howToHide,
 		css('reblog') + '{padding-top:inherit;}'
 	],
 	// We can drop the conditional when Firefox supports the :has selector
@@ -137,7 +140,7 @@ const tumblrSaviorAnimation = [`
 `];
 
 const articleBlacklistedStyle = [`
-	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) > :not(${css('stickyContainer')}):not(header):not(${css('footerWrapper')}):not(ts-notice) {
+	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) > div > :is(${css('holder')}, ${css('contentWrapper')}) {
 		display: none;
 	}
 `];
@@ -155,25 +158,29 @@ const hideNoteCountStyle = [`
 `];
 
 const hideControlsStyle = [`
-	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) ${css('controlIcon')} {
+	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) ${css('engagementControls')} {
 		display: none;
 	}
 `];
 
 const showButtonStyle = [`
 	.tumblr-savior-show {
-		border: 1px solid rgba(var(--black),.65);
-		color: rgba(var(--black),.65);
-		border-radius: 2px;
-		font-weight: 700;
-		padding: 5px 7px;
+		background-color: var(--content-tint);
+		color: var(--content-fg);
+		border-radius: 9999px;
+		font-size: .875rem;
+		font-weight: 500;
+		line-height: 1.25rem;
+		font-family: var(--font-family-modern);
+		padding: 10px 16px;
 		margin-left: 10px;
+		text-wrap-mode: nowrap;
 	}
 	.tumblr-savior-show::after {
 		content: "Show me"
 	}
 	.tumblr-savior-override .tumblr-savior-show::after {
-		content: "Hide this"
+		content: "Hide"
 	}
 `];
 
@@ -436,7 +443,8 @@ function decoratePost(post, blackList) {
 	divNotice.appendChild(divContent);
 	tsNotice.appendChild(divNotice);
 
-	post.insertBefore(tsNotice, post.querySelector('header').nextSibling);
+	const header = post.querySelector('header')
+	header.parentNode.insertBefore(tsNotice, header.nextSibling);
 
 	const buttonShow = document.createElement('button');
 	buttonShow.className = 'tumblr-savior-show';
@@ -450,7 +458,7 @@ function decoratePost(post, blackList) {
 
 	const footerWrapper = post.querySelector(css('footerWrapper')) || post.appendChild(createFooterWrapper());
 
-	const footer = last(post.querySelectorAll(`footer ${css('controls')}`)) || footerWrapper.appendChild(createFooter());
+	const footer = last(post.querySelectorAll(`footer ${css('footerContent')}`)) || footerWrapper.appendChild(createFooter());
 
 	footer.appendChild(buttonShow);
 }
@@ -472,7 +480,7 @@ function createFooterWrapper() {
 
 function createFooter() {
 	const controls = document.createElement('div');
-	controls.classList.add(CSS_CLASS_MAP.controls);
+	controls.classList.add(CSS_CLASS_MAP.footerContent);
 
 	const footer = document.createElement('footer')
 	footer.appendChild(controls);
@@ -518,7 +526,7 @@ function checkPost(post) {
 
 	let hasFilteredContent = false;
 
-	postText += Array.prototype.reduce.call(post.childNodes, (out, node) => {
+	postText += Array.prototype.reduce.call(post.firstChild.childNodes, (out, node) => {
 		const { classList, innerHTML, tagName } = node;
 		hasFilteredContent = hasFilteredContent || classList.contains(CSS_CLASS_MAP.filteredScreen);
 

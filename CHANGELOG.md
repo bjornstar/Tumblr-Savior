@@ -1,5 +1,8 @@
 # Tumblr Savior Changelog
 
+## v2.6.0 / 2025-10-09
+* Adjust script to handle new layout (Fixes #102)
+
 ## v2.5.0 / 2025-04-28
 * Improve hiding timeline objects only on timelines (Fixes #101)
 * [README] Add some badges and links to where you can download published versions
