@@ -31,6 +31,7 @@ const CSS_CLASS_MAP = {
 	blogRow: 'Ut4iZ',
 	cell: 'rZlUD',
 	contentSource: 'd_FyU',
+	contentWrapper: 'VDRZ4',
 	desktopContainer: 'B15CE',
 	diamondShape: 'jMbMz',
 	engagementControls: 'rtfvT',
@@ -139,7 +140,7 @@ const tumblrSaviorAnimation = [`
 `];
 
 const articleBlacklistedStyle = [`
-	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) > div > ${css('holder')} {
+	article.tumblr-savior-blacklisted:not(.tumblr-savior-override) > div > :is(${css('holder')}, ${css('contentWrapper')}) {
 		display: none;
 	}
 `];
@@ -179,7 +180,7 @@ const showButtonStyle = [`
 		content: "Show me"
 	}
 	.tumblr-savior-override .tumblr-savior-show::after {
-		content: "Hide this"
+		content: "Hide"
 	}
 `];
 
@@ -525,7 +526,7 @@ function checkPost(post) {
 
 	let hasFilteredContent = false;
 
-	postText += Array.prototype.reduce.call(post.childNodes, (out, node) => {
+	postText += Array.prototype.reduce.call(post.firstChild.childNodes, (out, node) => {
 		const { classList, innerHTML, tagName } = node;
 		hasFilteredContent = hasFilteredContent || classList.contains(CSS_CLASS_MAP.filteredScreen);
 
