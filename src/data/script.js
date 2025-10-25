@@ -21,7 +21,7 @@ const defaultSettings = {
 	'show_notice': true,
 	'show_tags': true,
 	'show_words': true,
-	'version': '2.6.0'
+	'version': '2.7.0'
 }; // Initialize default values.
 
 const BASE_CONTAINER_ID = 'base-container';
@@ -518,6 +518,7 @@ function checkPost(post) {
 	let postText = '';
 
 	const postHeader = post.querySelector('header');
+	const postBody = post.querySelector(css('holder')) || post.querySelector(css('contentWrapper'));
 	const postTags = post.querySelector(css('tags'));
 
 	if (postHeader && !settings.ignore_header) {
@@ -526,7 +527,7 @@ function checkPost(post) {
 
 	let hasFilteredContent = false;
 
-	postText += Array.prototype.reduce.call(post.firstChild.childNodes, (out, node) => {
+	postText += Array.prototype.reduce.call(postBody.childNodes, (out, node) => {
 		const { classList, innerHTML, tagName } = node;
 		hasFilteredContent = hasFilteredContent || classList.contains(CSS_CLASS_MAP.filteredScreen);
 

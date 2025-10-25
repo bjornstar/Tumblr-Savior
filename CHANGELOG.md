@@ -1,5 +1,8 @@
 # Tumblr Savior Changelog
 
+## v2.7.0 / 2025-10-25
+* Improve post body definition (Fixes #104)
+
 ## v2.6.0 / 2025-10-09
 * Adjust script to handle new layout (Fixes #102)
 
